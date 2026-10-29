@@ -13,6 +13,7 @@ Copy-Item -LiteralPath (Join-Path $modRoot 'SaberWorkshop/bin/Release/net472/Sab
 Copy-Item -LiteralPath (Join-Path $modRoot 'README.md') -Destination (Join-Path $package 'README.md')
 Copy-Item -LiteralPath (Join-Path $modRoot 'Legacy/LICENSE') -Destination (Join-Path $package 'LICENSE.Legacy.txt')
 Copy-Item -LiteralPath (Join-Path $modRoot '../LICENSE') -Destination (Join-Path $package 'LICENSE.txt')
-$zip=Join-Path $modRoot '../SaberWorkshop-0.1.0-BeatSaber-1.40.8.zip'
+$version=(Get-Content -LiteralPath (Join-Path $modRoot 'SaberWorkshop/manifest.json') -Raw|ConvertFrom-Json).version
+$zip=Join-Path $modRoot "../SaberWorkshop-$version-BeatSaber-1.40.8.zip"
 Compress-Archive -Path (Join-Path $package '*') -DestinationPath $zip -Force
 Write-Output "Built package: $zip"

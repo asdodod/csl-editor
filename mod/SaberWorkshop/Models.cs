@@ -7,7 +7,7 @@ namespace SaberWorkshop;
 public class WorkshopProject
 {
     public int Version=1;
-    public string Name="Новый меч";
+    public string Name="New saber";
     public string SourceFile="";
     public string SourceHash="";
     public Dictionary<string,string> ShaderFiles=new Dictionary<string,string>();
@@ -34,7 +34,7 @@ public class TextureEdit
 }
 public class ProfilePart
 {
-    public string Id=Guid.NewGuid().ToString("N");public string Name="Деталь";public string Shape="profile";
+    public string Id=Guid.NewGuid().ToString("N");public string Name="Part";public string Shape="profile";
     public float Length=.2f;public int Sides=32;public bool Caps=true;public string Side="both";public bool Visible=true;
     public float[] Position={0,0,0};public float[] Rotation={0,0,0};
     public List<Section> Sections=new List<Section>{new Section{T=0,Radius=.018f},new Section{T=1,Radius=.018f}};

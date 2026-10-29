@@ -31,13 +31,13 @@ public sealed class WorkshopState
 
     public static void EnsureFolders(){Directory.CreateDirectory(ProjectFolder);Directory.CreateDirectory(TextureFolder);}
     public static IEnumerable<string> SaberFiles(){var root=Path.Combine(GameRoot,"CustomSabers");return Directory.Exists(root)?Directory.EnumerateFiles(root,"*.saber",SearchOption.AllDirectories).OrderBy(Path.GetFileName):Enumerable.Empty<string>();}
-    public static string SafePath(string root,string relative){var full=Path.GetFullPath(Path.Combine(root,relative));var prefix=Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar)+Path.DirectorySeparatorChar;if(!full.StartsWith(prefix,StringComparison.OrdinalIgnoreCase))throw new InvalidDataException("Файл находится вне папки редактора");return full;}
+    public static string SafePath(string root,string relative){var full=Path.GetFullPath(Path.Combine(root,relative));var prefix=Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar)+Path.DirectorySeparatorChar;if(!full.StartsWith(prefix,StringComparison.OrdinalIgnoreCase))throw new InvalidDataException("File is outside the Workshop folder");return full;}
     public void New(){Project=new WorkshopProject();template=null;PlayEnabled=false;}
     public void CreateStarter(){
         New();Project.Name="Flux";
-        var handle=AddPart("Рукоять",false);handle.Length=.23f;handle.Position[2]=-.18f;handle.Sections=new List<Section>{new Section{T=0,Radius=.012f},new Section{T=.08f,Radius=.018f},new Section{T=.9f,Radius=.017f},new Section{T=1,Radius=.012f}};
-        for(int i=0;i<3;i++){var p=AddPart("Сегмент "+(i+1),true);p.Position[2]=.08f+i*.34f;p.Length=.325f;p.Sections=new List<Section>{new Section{T=0,Radius=.001f},new Section{T=.02f,Radius=.007f},new Section{T=.94f,Radius=.006f},new Section{T=1,Radius=.0002f}};}
-        var ring=AddPart("Световой обод",true);ring.Shape="ring";ring.Position[2]=.045f;ring.Sections[0].Radius=.043f;ring.Sections[1].Radius=.002f;
+        var handle=AddPart("Handle",false);handle.Length=.23f;handle.Position[2]=-.18f;handle.Sections=new List<Section>{new Section{T=0,Radius=.012f},new Section{T=.08f,Radius=.018f},new Section{T=.9f,Radius=.017f},new Section{T=1,Radius=.012f}};
+        for(int i=0;i<3;i++){var p=AddPart("Segment "+(i+1),true);p.Position[2]=.08f+i*.34f;p.Length=.325f;p.Sections=new List<Section>{new Section{T=0,Radius=.001f},new Section{T=.02f,Radius=.007f},new Section{T=.94f,Radius=.006f},new Section{T=1,Radius=.0002f}};}
+        var ring=AddPart("Light ring",true);ring.Shape="ring";ring.Position[2]=.045f;ring.Sections[0].Radius=.043f;ring.Sections[1].Radius=.002f;
     }
     public ProfilePart AddPart(string name,bool glow){
         var p=new ProfilePart{Name=name};
@@ -45,14 +45,14 @@ public sealed class WorkshopState
     }
     public async Task OpenSaber(string file){
         var root=Path.Combine(GameRoot,"CustomSabers");file=SafePath(root,file);
-        if(!File.Exists(file)||new FileInfo(file).Length>256L*1024*1024)throw new InvalidDataException("Файл не найден или больше 256 МБ");
+        if(!File.Exists(file)||new FileInfo(file).Length>256L*1024*1024)throw new InvalidDataException("File missing or larger than 256 MB");
         GameObject loaded;
         if(!sourceCache.TryGetValue(file,out loaded!)){
             AssetBundle? bundle=await AssetBundleExtensions.LoadFromFileAsync(file);
-            if(!bundle)throw new InvalidDataException("Unity не загрузил AssetBundle. Если файл сейчас загружает другой мод, повторите после окончания загрузки.");
+            if(!bundle)throw new InvalidDataException("Unable to load bundle. Wait for other loaders and retry.");
             try{
                 var asset=await AssetBundleExtensions.LoadAssetAsync<GameObject>(bundle!,"_CustomSaber");
-                if(!asset)throw new InvalidDataException("В .saber отсутствует _CustomSaber");
+                if(!asset)throw new InvalidDataException("This bundle has no _CustomSaber prefab");
                 loaded=Object.Instantiate(asset!);loaded.name=Path.GetFileNameWithoutExtension(file);loaded.SetActive(false);if(Application.isPlaying)Object.DontDestroyOnLoad(loaded);
                 var owner=loaded.AddComponent<OwnedAssets>();CloneMaterials(loaded,owner);
                 await ShaderRepair.FixShadersOnGameObjectAsync(loaded);
@@ -112,7 +112,7 @@ public sealed class WorkshopState
         var candidates=Resources.FindObjectsOfTypeAll<Material>().Where(m=>m&&m.shader&&m.shader.isSupported&&m.HasProperty("_Color")).ToList();
         var found=candidates.FirstOrDefault(m=>m.shader.name=="BeatSaber/Unlit Glow")??candidates.FirstOrDefault(m=>m.shader.name.IndexOf("Saber",StringComparison.OrdinalIgnoreCase)>=0)??candidates.FirstOrDefault(m=>m.shader.name=="Custom/SimpleLit");
         Material result;
-        if(found)result=new Material(found!);else {var shader=Shader.Find("Unlit/Color");if(!shader)throw new InvalidOperationException("Не найден базовый шейдер. Откройте .saber и выберите его материал.");result=new Material(shader);}
+        if(found)result=new Material(found!);else {var shader=Shader.Find("Unlit/Color");if(!shader)throw new InvalidOperationException("Open a saber to load a compatible material.");result=new Material(shader);}
         result.name="Workshop Material";result.color=glow?new Color(.5f,0,1,1):new Color(.09f,.1f,.13f,1);if(result.HasProperty("_Glow"))result.SetFloat("_Glow",glow?1:0);if(result.HasProperty("_CustomColors"))result.SetFloat("_CustomColors",glow?1:0);return result;
     }
     public static SurfaceEdit CaptureMaterial(Material material){
@@ -132,7 +132,7 @@ public sealed class WorkshopState
         foreach(var x in surface.Vectors)if(material.HasProperty(x.Key))material.SetVector(x.Key,new Vector4(x.Value[0],x.Value[1],x.Value[2],x.Value[3]));
         foreach(var x in surface.Textures)if(material.HasProperty(x.Key)){
             if(!string.IsNullOrEmpty(x.Value.Png)){
-                var key=x.Value.Png;if(!textureCache.TryGetValue(key,out var tex)){var bytes=Convert.FromBase64String(key);if(bytes.Length>12*1024*1024)throw new InvalidDataException("Текстура больше 12 МБ");tex=new Texture2D(2,2,TextureFormat.RGBA32,false);if(!ImageConversion.LoadImage(tex,bytes)){Object.Destroy(tex);throw new InvalidDataException("Unity не прочитал PNG/JPG");}if(tex.width>4096||tex.height>4096){Object.Destroy(tex);throw new InvalidDataException("Максимальная текстура 4096 × 4096");}textureCache.Add(key,tex);}material.SetTexture(x.Key,tex);
+                var key=x.Value.Png;if(!textureCache.TryGetValue(key,out var tex)){var bytes=Convert.FromBase64String(key);if(bytes.Length>12*1024*1024)throw new InvalidDataException("Texture exceeds 12 MB");tex=new Texture2D(2,2,TextureFormat.RGBA32,false);if(!ImageConversion.LoadImage(tex,bytes)){Object.Destroy(tex);throw new InvalidDataException("Invalid PNG or JPG");}if(tex.width>4096||tex.height>4096){Object.Destroy(tex);throw new InvalidDataException("Maximum texture size: 4096 x 4096");}textureCache.Add(key,tex);}material.SetTexture(x.Key,tex);
             }
             material.SetTextureScale(x.Key,new Vector2(x.Value.Scale[0],x.Value.Scale[1]));material.SetTextureOffset(x.Key,new Vector2(x.Value.Offset[0],x.Value.Offset[1]));
         }
@@ -145,22 +145,22 @@ public sealed class WorkshopState
         Validate(Project);EnsureFolders();string name=string.Concat(Project.Name.Where(c=>!Path.GetInvalidFileNameChars().Contains(c))).Trim();if(name.Length==0)name="Workshop Saber";name=name.Substring(0,Math.Min(80,name.Length));var path=SafePath(ProjectFolder,name+".workshop.json");var json=JsonConvert.SerializeObject(Project,Formatting.Indented);var temporary=path+".tmp";File.WriteAllText(temporary,json,Encoding.UTF8);if(File.Exists(path))File.Replace(temporary,path,path+".bak");else File.Move(temporary,path);return path;
     }
     public async Task LoadProject(string path){
-        path=SafePath(ProjectFolder,path);if(new FileInfo(path).Length>64L*1024*1024)throw new InvalidDataException("Проект больше 64 МБ");
+        path=SafePath(ProjectFolder,path);if(new FileInfo(path).Length>64L*1024*1024)throw new InvalidDataException("Project exceeds 64 MB");
         var p=JsonConvert.DeserializeObject<WorkshopProject>(File.ReadAllText(path),new JsonSerializerSettings{TypeNameHandling=TypeNameHandling.None,MaxDepth=64});Validate(p!);
         var previousProject=Project;var previousTemplate=template;bool previousEnabled=PlayEnabled;
         try{
             GameObject? desired=null;
-            if(!string.IsNullOrEmpty(p!.SourceFile)){await OpenSaber(p.SourceFile);if(Project.SourceHash!=p.SourceHash)throw new InvalidDataException("Исходный .saber изменился. Откройте его заново, чтобы не применить правки к другой геометрии.");desired=template;}
-            foreach(var file in p.ShaderFiles){await OpenSaber(file.Key);if(Project.SourceHash!=file.Value)throw new InvalidDataException("Изменился источник шейдера: "+file.Key);}
+            if(!string.IsNullOrEmpty(p!.SourceFile)){await OpenSaber(p.SourceFile);if(Project.SourceHash!=p.SourceHash)throw new InvalidDataException("Source saber changed. Reopen the source file.");desired=template;}
+            foreach(var file in p.ShaderFiles){await OpenSaber(file.Key);if(Project.SourceHash!=file.Value)throw new InvalidDataException("Shader source changed: "+file.Key);}
             template=desired;Project=p;PlayEnabled=false;
         }catch{Project=previousProject;template=previousTemplate;PlayEnabled=previousEnabled;throw;}
     }
     public static void Validate(WorkshopProject p){
         bool Vec(float[] v,int n)=>v!=null&&v.Length==n&&v.All(x=>!float.IsNaN(x)&&!float.IsInfinity(x)&&Math.Abs(x)<10000);
-        if(p==null||p.Version!=1||p.Name==null||p.Name.Length>200||p.Parts==null||p.Parts.Count>400||p.Surfaces==null||p.Transforms==null||p.ShaderFiles==null||p.ShaderFiles.Count>100||p.Surfaces.Count>10000||p.Transforms.Count>10000)throw new InvalidDataException("Некорректный проект Saber Workshop");
-        foreach(var e in p.Transforms.Values)if(e==null||!Vec(e.Position,3)||!Vec(e.Rotation,3)||!Vec(e.Scale,3))throw new InvalidDataException("Некорректная трансформация");
-        foreach(var x in p.Parts){if(x.Sections==null||x.Sections.Count<2||x.Sections.Count>128||x.Sides<3||x.Sides>128||!(x.Length>.00001f&&x.Length<=5)||!Vec(x.Position,3)||!Vec(x.Rotation,3))throw new InvalidDataException("Повреждён профиль");foreach(var s in x.Sections)if(float.IsNaN(s.T)||float.IsNaN(s.Radius)||float.IsNaN(s.X)||float.IsNaN(s.Y)||s.T<0||s.T>1||s.Radius<0||s.Radius>3||Math.Abs(s.X)>3||Math.Abs(s.Y)>3)throw new InvalidDataException("Повреждено сечение");}
-        foreach(var s in p.Surfaces.Values.Concat(p.Parts.Select(x=>x.Surface))){if(s==null||s.Numbers.Count>2000||s.Textures.Count>100)throw new InvalidDataException("Повреждён материал");foreach(var x in s.Numbers.Values)if(float.IsNaN(x)||float.IsInfinity(x))throw new InvalidDataException("Некорректное значение материала");foreach(var x in s.Colors.Values.Concat(s.Vectors.Values))if(!Vec(x,4))throw new InvalidDataException("Некорректный цвет / вектор");foreach(var t in s.Textures.Values)if(t==null||!Vec(t.Scale,2)||!Vec(t.Offset,2)||t.Png==null||t.Png.Length>17*1024*1024)throw new InvalidDataException("Некорректная текстура");}
+        if(p==null||p.Version!=1||p.Name==null||p.Name.Length>200||p.Parts==null||p.Parts.Count>400||p.Surfaces==null||p.Transforms==null||p.ShaderFiles==null||p.ShaderFiles.Count>100||p.Surfaces.Count>10000||p.Transforms.Count>10000)throw new InvalidDataException("Invalid Workshop project");
+        foreach(var e in p.Transforms.Values)if(e==null||!Vec(e.Position,3)||!Vec(e.Rotation,3)||!Vec(e.Scale,3))throw new InvalidDataException("Invalid transform");
+        foreach(var x in p.Parts){if(x.Sections==null||x.Sections.Count<2||x.Sections.Count>128||x.Sides<3||x.Sides>128||!(x.Length>.00001f&&x.Length<=5)||!Vec(x.Position,3)||!Vec(x.Rotation,3))throw new InvalidDataException("Invalid profile");foreach(var s in x.Sections)if(float.IsNaN(s.T)||float.IsNaN(s.Radius)||float.IsNaN(s.X)||float.IsNaN(s.Y)||s.T<0||s.T>1||s.Radius<0||s.Radius>3||Math.Abs(s.X)>3||Math.Abs(s.Y)>3)throw new InvalidDataException("Invalid section");}
+        foreach(var s in p.Surfaces.Values.Concat(p.Parts.Select(x=>x.Surface))){if(s==null||s.Numbers.Count>2000||s.Textures.Count>100)throw new InvalidDataException("Invalid material");foreach(var x in s.Numbers.Values)if(float.IsNaN(x)||float.IsInfinity(x))throw new InvalidDataException("Invalid material value");foreach(var x in s.Colors.Values.Concat(s.Vectors.Values))if(!Vec(x,4))throw new InvalidDataException("Invalid color / vector");foreach(var t in s.Textures.Values)if(t==null||!Vec(t.Scale,2)||!Vec(t.Offset,2)||t.Png==null||t.Png.Length>17*1024*1024)throw new InvalidDataException("Invalid texture");}
     }
     public static Mesh BuildMesh(ProfilePart p){
         var vertices=new List<Vector3>();var uv=new List<Vector2>();var indices=new List<int>();int sides=Mathf.Clamp(p.Sides,3,128);

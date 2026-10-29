@@ -7,7 +7,7 @@ ROOT=Path(__file__).resolve().parents[1]
 class Contracts(unittest.TestCase):
     def test_menu_tags_and_bindings(self):
         source=(ROOT/'SaberWorkshop/EditorController.cs').read_text(encoding='utf-8')
-        tags={'scrollable-settings-container','text','horizontal','vertical','button','settings-submenu','dropdown-list-setting','bool-setting','increment-setting','slider-setting','color-setting','string-setting'}
+        tags={'scroll-view','text','horizontal','vertical','button','dropdown-list-setting','bool-setting','increment-setting','slider-setting','color-setting','string-setting'}
         tree=ET.parse(ROOT/'SaberWorkshop/Editor.bsml')
         members=set(re.findall(r'public\s+(?:[\w<>?]+)\s+(\w+)\s*(?:\{|=>)',source))
         actions=set(re.findall(r'\[UIAction\("([^"]+)"\)\]',source))
@@ -23,6 +23,25 @@ class Contracts(unittest.TestCase):
                 self.assertNotIn(element.attrib['id'],ids)
                 ids.add(element.attrib['id'])
         for binding in re.findall(r'\[UIComponent\("([^"]+)"\)\]',source):self.assertIn(binding,ids)
+    def test_mods_menu_and_compact_english_layout(self):
+        source=(ROOT/'SaberWorkshop/EditorController.cs').read_text(encoding='utf-8')
+        self.assertIn('menuButtons.RegisterButton(menuButton)',source)
+        self.assertNotIn('AddSettingsMenu',source)
+        tree=ET.parse(ROOT/'SaberWorkshop/Editor.bsml')
+        self.assertEqual(tree.getroot().tag,'vertical')
+        self.assertEqual(tree.find('scroll-view').get('preferred-width'),'108')
+        self.assertLessEqual(int(tree.find('scroll-view').get('preferred-height')),60)
+        self.assertEqual(len(tree.findall('.//text')),1)
+        for e in tree.iter():
+            for key,value in e.attrib.items():
+                if key in {'text','hover-hint'}:self.assertIsNone(re.search('[А-Яа-я]',value))
+        status=tree.find('text')
+        self.assertEqual(status.get('overflow-mode'),'Ellipsis')
+        self.assertEqual(status.get('word-wrapping'),'false')
+        for group in tree.iter('vertical'):
+            self.assertEqual(group.get('child-control-height'),'true')
+        for group in tree.find('scroll-view').iter('vertical'):
+            self.assertEqual(group.get('vertical-fit'),'PreferredSize')
     def test_standalone_dependencies(self):
         manifest=json.loads((ROOT/'SaberWorkshop/manifest.json').read_text())
         self.assertEqual(manifest['gameVersion'],'1.40.8')
