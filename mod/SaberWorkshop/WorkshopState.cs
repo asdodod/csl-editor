@@ -41,7 +41,7 @@ public sealed class WorkshopState
     }
     public ProfilePart AddPart(string name,bool glow){
         var p=new ProfilePart{Name=name};
-        var material=DefaultMaterial(glow);p.Surface=CaptureMaterial(material);OwnedAssets.Release(material);Project.Parts.Add(p);return p;
+        var material=DefaultMaterial(glow);p.Surface=CaptureMaterial(material);p.Surface.UsePlayerColor=glow;OwnedAssets.Release(material);Project.Parts.Add(p);return p;
     }
     public async Task OpenSaber(string file){
         var root=Path.Combine(GameRoot,"CustomSabers");file=SafePath(root,file);
@@ -79,13 +79,13 @@ public sealed class WorkshopState
             if(!hand){hand=new GameObject(side).transform;hand.SetParent(root.transform,false);}
             ApplyEdits(hand,side+"/");
             foreach(var p in Project.Parts.Where(p=>p.Side=="both"||p.Side==(left?"left":"right")))CreatePart(hand,p,owner);
-            hand.localPosition=new Vector3(left?-.18f:.18f,0,0);hand.localRotation=Quaternion.Euler(-90,0,0);
+            hand.localPosition=new Vector3(left?-.18f:.18f,0,0);hand.localRotation=Quaternion.Euler(-90,0,0);hand.localScale=new Vector3(Project.SaberWidth,Project.SaberWidth,Project.SaberLength);
         }
         foreach(var t in root.GetComponentsInChildren<Transform>(true))t.gameObject.layer=12;
         root.SetActive(true);return root;
     }
     public GameObject InstantiateHand(bool left,Transform parent){
-        var pair=InstantiatePair();var name=left?"LeftSaber":"RightSaber";var hand=pair.transform.Find(name);hand.SetParent(parent,false);hand.localPosition=Vector3.zero;hand.localRotation=Quaternion.identity;hand.localScale=Vector3.one;
+        var pair=InstantiatePair();var name=left?"LeftSaber":"RightSaber";var hand=pair.transform.Find(name);hand.SetParent(parent,false);hand.localPosition=Vector3.zero;hand.localRotation=Quaternion.identity;hand.localScale=new Vector3(Project.SaberWidth,Project.SaberWidth,Project.SaberLength);
         // Keep the pair's ownership object alive for materials and meshes.
         pair.transform.SetParent(hand,false);pair.transform.localPosition=Vector3.zero;pair.transform.localRotation=Quaternion.identity;pair.transform.localScale=Vector3.one;
         foreach(Transform child in pair.transform)child.gameObject.SetActive(false);return hand.gameObject;
@@ -101,22 +101,28 @@ public sealed class WorkshopState
         var go=new GameObject(p.Name);go.transform.SetParent(parent,false);go.transform.localPosition=V3(p.Position);go.transform.localEulerAngles=V3(p.Rotation);
         var mesh=BuildMesh(p);go.AddComponent<MeshFilter>().sharedMesh=mesh;owner.Assets.Add(mesh);
         var m=DefaultMaterial(true);ApplyMaterial(m,p.Surface);owner.Assets.Add(m);go.AddComponent<MeshRenderer>().sharedMaterial=m;
-        go.AddComponent<PartIdentity>().Id=p.Id;go.SetActive(p.Visible);return go;
+        var identity=go.AddComponent<PartIdentity>();identity.Id=p.Id;identity.UsePlayerColor=p.Surface.UsePlayerColor;go.SetActive(p.Visible);return go;
     }
     public static string PathOf(Transform node,Transform root){var parts=new List<string>();while(node!=root&&node){parts.Add(node.GetSiblingIndex()+":"+node.name);node=node.parent;}parts.Reverse();return string.Join("/",parts);}
     public static Vector3 V3(float[] a)=>new Vector3(a[0],a[1],a[2]);
     public static float[] A3(Vector3 a)=>new[]{a.x,a.y,a.z};
     public IEnumerable<Shader> Shaders()=>Resources.FindObjectsOfTypeAll<Shader>().Where(s=>s&&s.isSupported&&!s.name.StartsWith("Hidden/")).Concat(shaderCache.Values).GroupBy(s=>s.name).Select(g=>g.First()).OrderBy(s=>s.name);
     private Shader? FindShader(string name)=>shaderCache.TryGetValue(name,out var s)?s:Shaders().FirstOrDefault(x=>x.name==name)??Shader.Find(name);
+    public Material NewMaterial(string shaderName){var shader=FindShader(shaderName);if(!shader||!shader!.isSupported)throw new InvalidOperationException("Select a supported shader.");return new Material(shader){name="New material"};}
+    public static string TexturePng(Texture texture){
+        int width=Mathf.Min(2048,texture.width),height=Mathf.Min(2048,texture.height);var previous=RenderTexture.active;var target=RenderTexture.GetTemporary(width,height,0,RenderTextureFormat.ARGB32);Texture2D? image=null;
+        try{Graphics.Blit(texture,target);RenderTexture.active=target;image=new Texture2D(width,height,TextureFormat.RGBA32,false);image.ReadPixels(new Rect(0,0,width,height),0,0);image.Apply();return Convert.ToBase64String(image.EncodeToPNG());}
+        finally{RenderTexture.active=previous;RenderTexture.ReleaseTemporary(target);if(image)OwnedAssets.Release(image!);}
+    }
     public Material DefaultMaterial(bool glow){
         var candidates=Resources.FindObjectsOfTypeAll<Material>().Where(m=>m&&m.shader&&m.shader.isSupported&&m.HasProperty("_Color")).ToList();
         var found=candidates.FirstOrDefault(m=>m.shader.name=="BeatSaber/Unlit Glow")??candidates.FirstOrDefault(m=>m.shader.name.IndexOf("Saber",StringComparison.OrdinalIgnoreCase)>=0)??candidates.FirstOrDefault(m=>m.shader.name=="Custom/SimpleLit");
         Material result;
         if(found)result=new Material(found!);else {var shader=Shader.Find("Unlit/Color");if(!shader)throw new InvalidOperationException("Open a saber to load a compatible material.");result=new Material(shader);}
-        result.name="Workshop Material";result.color=glow?new Color(.5f,0,1,1):new Color(.09f,.1f,.13f,1);if(result.HasProperty("_Glow"))result.SetFloat("_Glow",glow?1:0);if(result.HasProperty("_CustomColors"))result.SetFloat("_CustomColors",glow?1:0);return result;
+        result.name="Workshop Material";result.color=glow?Color.white:new Color(.09f,.1f,.13f,1);if(result.HasProperty("_Glow"))result.SetFloat("_Glow",glow?1:0);if(result.HasProperty("_CustomColors"))result.SetFloat("_CustomColors",glow?1:0);return result;
     }
     public static SurfaceEdit CaptureMaterial(Material material){
-        var edit=new SurfaceEdit{Shader=material.shader.name};var shader=material.shader;
+        var edit=new SurfaceEdit{Name=material.name,Shader=material.shader.name,Reset=true,RenderQueue=material.renderQueue,Keywords=material.shaderKeywords};var shader=material.shader;
         for(int i=0;i<shader.GetPropertyCount();i++){
             string key=shader.GetPropertyName(i);switch(shader.GetPropertyType(i)){
                 case ShaderPropertyType.Float:case ShaderPropertyType.Range:case ShaderPropertyType.Int:edit.Numbers[key]=material.GetFloat(key);break;
@@ -126,7 +132,9 @@ public sealed class WorkshopState
         }return edit;
     }
     public void ApplyMaterial(Material material,SurfaceEdit surface){
+        if(!string.IsNullOrEmpty(surface.Name))material.name=surface.Name;
         if(!string.IsNullOrEmpty(surface.Shader)){var shader=FindShader(surface.Shader);if(shader&&shader!.isSupported)material.shader=shader;}
+        if(surface.Reset){var defaults=new Material(material.shader);material.CopyPropertiesFromMaterial(defaults);OwnedAssets.Release(defaults);material.shaderKeywords=surface.Keywords??Array.Empty<string>();material.renderQueue=surface.RenderQueue;}
         foreach(var x in surface.Numbers)if(material.HasProperty(x.Key))material.SetFloat(x.Key,x.Value);
         foreach(var x in surface.Colors)if(material.HasProperty(x.Key))material.SetColor(x.Key,new Color(x.Value[0],x.Value[1],x.Value[2],x.Value[3]));
         foreach(var x in surface.Vectors)if(material.HasProperty(x.Key))material.SetVector(x.Key,new Vector4(x.Value[0],x.Value[1],x.Value[2],x.Value[3]));
@@ -137,7 +145,7 @@ public sealed class WorkshopState
             material.SetTextureScale(x.Key,new Vector2(x.Value.Scale[0],x.Value.Scale[1]));material.SetTextureOffset(x.Key,new Vector2(x.Value.Offset[0],x.Value.Offset[1]));
         }
     }
-    public static void ApplyPlayerColor(GameObject root,Color color){foreach(var material in root.GetComponentsInChildren<Renderer>(true).SelectMany(r=>r.sharedMaterials).Where(m=>m&&m.HasProperty("_Color"))){bool custom=material.HasProperty("_CustomColors")?material.GetFloat("_CustomColors")>0:material.HasProperty("_Glow")&&material.GetFloat("_Glow")>0;if(custom)material.SetColor("_Color",color);}}
+    public static void ApplyPlayerColor(GameObject root,Color color){foreach(var renderer in root.GetComponentsInChildren<Renderer>(true)){var identity=renderer.GetComponent<PartIdentity>();foreach(var material in renderer.sharedMaterials.Where(m=>m&&m.HasProperty("_Color"))){bool custom=identity?identity!.UsePlayerColor:material.HasProperty("_CustomColors")?material.GetFloat("_CustomColors")>0:material.HasProperty("_Glow")&&material.GetFloat("_Glow")>0;if(custom)material.SetColor("_Color",color);}}}
     public string Save(){
         foreach(var s in Project.Surfaces.Values.Concat(Project.Parts.Select(x=>x.Surface)))if(shaderFiles.TryGetValue(s.Shader,out var file)){
             string relative=file.Substring(Path.Combine(GameRoot,"CustomSabers").Length+1);using(var sha=SHA256.Create())using(var stream=File.OpenRead(file))Project.ShaderFiles[relative]=BitConverter.ToString(sha.ComputeHash(stream)).Replace("-","").ToLowerInvariant();
@@ -159,6 +167,7 @@ public sealed class WorkshopState
         bool Vec(float[] v,int n)=>v!=null&&v.Length==n&&v.All(x=>!float.IsNaN(x)&&!float.IsInfinity(x)&&Math.Abs(x)<10000);
         if(p==null||p.Version!=1||p.Name==null||p.Name.Length>200||p.Parts==null||p.Parts.Count>400||p.Surfaces==null||p.Transforms==null||p.ShaderFiles==null||p.ShaderFiles.Count>100||p.Surfaces.Count>10000||p.Transforms.Count>10000)throw new InvalidDataException("Invalid Workshop project");
         foreach(var e in p.Transforms.Values)if(e==null||!Vec(e.Position,3)||!Vec(e.Rotation,3)||!Vec(e.Scale,3))throw new InvalidDataException("Invalid transform");
+        if(!(p.SaberLength>=.1f&&p.SaberLength<=3&&p.SaberWidth>=.1f&&p.SaberWidth<=3))throw new InvalidDataException("Invalid saber size");
         foreach(var x in p.Parts){if(x.Sections==null||x.Sections.Count<2||x.Sections.Count>128||x.Sides<3||x.Sides>128||!(x.Length>.00001f&&x.Length<=5)||!Vec(x.Position,3)||!Vec(x.Rotation,3))throw new InvalidDataException("Invalid profile");foreach(var s in x.Sections)if(float.IsNaN(s.T)||float.IsNaN(s.Radius)||float.IsNaN(s.X)||float.IsNaN(s.Y)||s.T<0||s.T>1||s.Radius<0||s.Radius>3||Math.Abs(s.X)>3||Math.Abs(s.Y)>3)throw new InvalidDataException("Invalid section");}
         foreach(var s in p.Surfaces.Values.Concat(p.Parts.Select(x=>x.Surface))){if(s==null||s.Numbers.Count>2000||s.Textures.Count>100)throw new InvalidDataException("Invalid material");foreach(var x in s.Numbers.Values)if(float.IsNaN(x)||float.IsInfinity(x))throw new InvalidDataException("Invalid material value");foreach(var x in s.Colors.Values.Concat(s.Vectors.Values))if(!Vec(x,4))throw new InvalidDataException("Invalid color / vector");foreach(var t in s.Textures.Values)if(t==null||!Vec(t.Scale,2)||!Vec(t.Offset,2)||t.Png==null||t.Png.Length>17*1024*1024)throw new InvalidDataException("Invalid texture");}
     }
@@ -177,4 +186,4 @@ public sealed class WorkshopState
         var mesh=new Mesh{name=p.Name,indexFormat=IndexFormat.UInt32};mesh.SetVertices(vertices);mesh.SetUVs(0,uv);mesh.SetTriangles(indices,0);mesh.RecalculateNormals();mesh.RecalculateBounds();return mesh;
     }
 }
-public sealed class PartIdentity : MonoBehaviour {public string Id="";}
+public sealed class PartIdentity : MonoBehaviour {public string Id="";public bool UsePlayerColor;}

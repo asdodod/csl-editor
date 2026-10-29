@@ -15,10 +15,11 @@ using Object=UnityEngine.Object;
 
 namespace SaberWorkshop;
 
-public sealed class EditorController : NotifiableBase,IInitializable,IDisposable
+public sealed partial class EditorController : NotifiableBase,IInitializable,IDisposable
 {
     private readonly GameplaySetup gameplaySetup;
     private readonly MainFlowCoordinator mainFlow;
+    private readonly ColorSchemesSettings colorSchemes;
     private HMUI.FlowCoordinator? presenter;
     private WorkshopFlow? flow;
     private string page="project";
@@ -29,13 +30,11 @@ public sealed class EditorController : NotifiableBase,IInitializable,IDisposable
     private int partIndex,materialIndex,propertyIndex,slotIndex,sectionIndex;
     private bool refreshing,advanced,visible=true,busy;
     private float previewScale=.65f;
-    private Color left=new Color(.5f,0,1),right=new Color(.5f,0,1);
+    private Color left=new Color32(0xC8,0x14,0x14,0xFF),right=new Color32(0x28,0x8E,0xD2,0xFF);
     [UIComponent("source-list")] private DropDownListSetting sourceList=null!;
     [UIComponent("project-list")] private DropDownListSetting projectList=null!;
     [UIComponent("gameplay-project-list")] private DropDownListSetting gameplayProjectList=null!;
-    [UIComponent("part-list")] private DropDownListSetting partList=null!;
-    [UIComponent("material-part-list")] private DropDownListSetting materialPartList=null!;
-    [UIComponent("texture-part-list")] private DropDownListSetting texturePartList=null!;
+    [UIComponent("part-tree")] private CustomListTableData partTree=null!;
     [UIComponent("material-list")] private DropDownListSetting materialList=null!;
     [UIComponent("texture-material-list")] private DropDownListSetting textureMaterialList=null!;
     [UIComponent("shader-list")] private DropDownListSetting shaderList=null!;
@@ -43,7 +42,7 @@ public sealed class EditorController : NotifiableBase,IInitializable,IDisposable
     [UIComponent("texture-slot-list")] private DropDownListSetting textureSlotList=null!;
     [UIComponent("texture-file-list")] private DropDownListSetting textureFileList=null!;
     [UIComponent("section-list")] private DropDownListSetting sectionList=null!;
-    public EditorController(GameplaySetup gameplaySetup,MainFlowCoordinator mainFlow){this.gameplaySetup=gameplaySetup;this.mainFlow=mainFlow;}
+    public EditorController(GameplaySetup gameplaySetup,MainFlowCoordinator mainFlow,ColorSchemesSettings colorSchemes){this.gameplaySetup=gameplaySetup;this.mainFlow=mainFlow;this.colorSchemes=colorSchemes;}
     public void Initialize(){gameplaySetup.AddTab("Saber Workshop","SaberWorkshop.Gameplay.bsml",this,MenuType.Solo);RefreshFiles();}
     public void Dispose(){gameplaySetup.RemoveTab("Saber Workshop");if(preview)Object.Destroy(preview);if(flow)Object.Destroy(flow!.gameObject);}
     [UIAction("OpenEditor")] public void OpenEditor(){
@@ -51,7 +50,7 @@ public sealed class EditorController : NotifiableBase,IInitializable,IDisposable
         presenter=mainFlow.YoungestChildFlowCoordinatorOrSelf();
         BeatSaberUI.PresentFlowCoordinator(presenter,flow);
     }
-    public void EditorOpened(){RefreshFiles();if(preview)preview!.SetActive(visible);}
+    public void EditorOpened(){var scheme=colorSchemes.GetOverrideColorScheme();if(scheme!=null){left=scheme.saberAColor;right=scheme.saberBColor;}RefreshFiles();if(preview){preview!.SetActive(visible);PlacePreview();ApplyColors();}}
     public void EditorClosed(){if(preview)preview!.SetActive(false);}
     public bool ProjectPage=>page=="project";
     public bool ShapePage=>page=="shape";
@@ -113,47 +112,66 @@ public sealed class EditorController : NotifiableBase,IInitializable,IDisposable
         if(!SourceOptions.Contains(SourceChoice))SourceChoice=Choice(SourceOptions,0);if(!ProjectOptions.Contains(ProjectChoice))ProjectChoice=Choice(ProjectOptions,0);if(!TextureFileOptions.Contains(TextureFileChoice))TextureFileChoice=Choice(TextureFileOptions,0);
         UpdateList(sourceList,SourceOptions,SourceChoice);UpdateList(projectList,ProjectOptions,ProjectChoice);UpdateList(gameplayProjectList,ProjectOptions,ProjectChoice);UpdateList(textureFileList,TextureFileOptions,TextureFileChoice);
     });}
-    [UIAction("OpenSource")] public async void OpenSource(){await Run(async()=>{if(SourceChoice=="")throw new InvalidOperationException("Add a .saber to CustomSabers, then refresh files.");SetStatus("Loading saber...");await state.OpenSaber(SourceChoice);BuildPreview();SetStatus("Opened "+state.Project.Name+"");});}
+    [UIAction("OpenSource")] public async void OpenSource(){await Run(async()=>{if(SourceChoice=="")throw new InvalidOperationException("Add a .saber to CustomSabers, then refresh files.");SetStatus("Loading saber...");await state.OpenSaber(SourceChoice);partIndex=-1;BuildPreview();SetStatus("Opened "+state.Project.Name+"");});}
     [UIAction("OpenProject")] public async void OpenProject(){await Run(async()=>{if(ProjectChoice=="")throw new InvalidOperationException("No saved projects.");await state.LoadProject(ProjectChoice);BuildPreview();SetStatus("Project opened.");});}
     [UIAction("New")] public void New(){Guard(()=>{state.CreateStarter();partIndex=0;BuildPreview();SetPage("shape");SetStatus("Flux created.");});}
     [UIAction("Save")] public void Save(){Guard(()=>{var path=state.Save();RefreshFiles();SetStatus("Saved: "+Path.GetFileName(path));});}
     [UIAction("ShowPreview")] public void ShowPreview(){Guard(()=>{if(!state.Ready)throw new InvalidOperationException("Create or open a saber first.");if(!preview)BuildPreview();visible=true;PlacePreview();preview!.SetActive(true);NotifyPropertyChanged(nameof(PreviewVisible));});}
-    private void PlacePreview(){var camera=Camera.main??Resources.FindObjectsOfTypeAll<Camera>().FirstOrDefault(c=>c.isActiveAndEnabled&&c.stereoEnabled);if(!camera||!preview)return;var yaw=Quaternion.Euler(0,camera.transform.eulerAngles.y,0);preview!.transform.position=camera.transform.position+yaw*new Vector3(.8f,-.48f,1.6f);preview.transform.rotation=yaw;preview.transform.localScale=Vector3.one*previewScale;}
+    private void PlacePreview(){
+        var camera=Resources.FindObjectsOfTypeAll<Camera>().FirstOrDefault(c=>c.isActiveAndEnabled&&c.stereoEnabled)??Camera.main;if(!camera||!preview)return;
+        var yaw=Quaternion.Euler(0,camera.transform.eulerAngles.y,0);preview!.transform.SetPositionAndRotation(Vector3.zero,yaw);preview.transform.localScale=Vector3.one*previewScale;
+        var target=camera.transform.position+yaw*new Vector3(.82f,0,1.65f);target.y=Mathf.Max(1.2f,camera.transform.position.y-.08f);
+        var meshes=preview.GetComponentsInChildren<MeshRenderer>(true).Where(r=>r.enabled&&r.gameObject.activeSelf).ToArray();var bounds=new Bounds(Vector3.zero,Vector3.zero);
+        if(meshes.Length>0){bounds=meshes[0].bounds;foreach(var mesh in meshes.Skip(1))bounds.Encapsulate(mesh.bounds);}preview.transform.position=target-bounds.center;
+        Plugin.Log.Info("Preview centered at "+target+" from camera "+camera.name+" at "+camera.transform.position);
+    }
     private void BuildPreview(){if(preview)Object.Destroy(preview);preview=state.InstantiatePair();preview.SetActive(visible);PlacePreview();RefreshSelection();ApplyColors();NotifyPropertyChanged(nameof(ProjectName));NotifyPropertyChanged(nameof(PlayEnabled));}
     public bool PreviewVisible {get=>visible;set{visible=value;if(preview)preview!.SetActive(value);NotifyPropertyChanged();}}
-    public float PreviewScale {get=>previewScale;set{previewScale=Mathf.Clamp(value,.2f,2);if(preview)preview!.transform.localScale=Vector3.one*previewScale;}}
+    public float PreviewScale {get=>previewScale;set{previewScale=Mathf.Clamp(value,.2f,2);if(preview)PlacePreview();}}
     public Color LeftColor {get=>left;set{left=value;ApplyColors();}}
     public Color RightColor {get=>right;set{right=value;ApplyColors();}}
     private void ApplyColors(){if(!preview)return;var l=preview!.transform.Find("LeftSaber");var r=preview.transform.Find("RightSaber");if(l)WorkshopState.ApplyPlayerColor(l.gameObject,left);if(r)WorkshopState.ApplyPlayerColor(r.gameObject,right);}
     private void RefreshSelection(){
         if(refreshing)return;refreshing=true;try{
             if(preview){var hand=preview!.transform.Find("LeftSaber");renderers=hand?hand.GetComponentsInChildren<Renderer>(true).ToList():new List<Renderer>();}else renderers.Clear();
-            PartOptions=renderers.Select((r,i)=>(object)$"{i+1}. {r.name}").ToList();partIndex=Mathf.Clamp(partIndex,0,Math.Max(0,renderers.Count-1));
+            PartOptions=renderers.Select((r,i)=>(object)$"{i+1}. {(r.gameObject.activeInHierarchy&&r.enabled?"":"[hidden] ")}{r.name}").ToList();if(partIndex<0)partIndex=Math.Max(0,renderers.FindIndex(r=>r.enabled&&r.gameObject.activeInHierarchy));partIndex=Mathf.Clamp(partIndex,0,Math.Max(0,renderers.Count-1));
             MaterialOptions=Selected?Selected!.sharedMaterials.Select((m,i)=>(object)$"{i+1}. {(m?m.name:"Empty layer")}").ToList():new List<object>();materialIndex=Mathf.Clamp(materialIndex,0,Math.Max(0,MaterialOptions.Count-1));
             properties.Clear();textureSlots.Clear();PropertyOptions=new List<object>();TextureSlotOptions=new List<object>();
             if(Material){var shader=Material!.shader;for(int i=0;i<shader.GetPropertyCount();i++){string key=shader.GetPropertyName(i),label=Label(key,shader.GetPropertyDescription(i));var type=shader.GetPropertyType(i);if(type==ShaderPropertyType.Texture){textureSlots.Add(key);TextureSlotOptions.Add(label+" · "+key);}else if(advanced||Common(key)){properties.Add(key);PropertyOptions.Add(label+(advanced?" · "+key:""));}}}
             propertyIndex=Mathf.Clamp(propertyIndex,0,Math.Max(0,properties.Count-1));slotIndex=Mathf.Clamp(slotIndex,0,Math.Max(0,textureSlots.Count-1));
             ShaderOptions=state.Shaders().Select(s=>(object)s.name).ToList();ShaderChoice=Material?Material!.shader.name:Choice(ShaderOptions,0);
             SectionOptions=Part!=null?Part.Sections.Select((s,i)=>(object)$"{i+1} · {Math.Round(s.T*100)}%").ToList():new List<object>();sectionIndex=Mathf.Clamp(sectionIndex,0,Math.Max(0,SectionOptions.Count-1));
-            foreach(var list in new[]{partList,materialPartList,texturePartList})UpdateList(list,PartOptions,PartChoice);
+            RefreshTree();
             foreach(var list in new[]{materialList,textureMaterialList})UpdateList(list,MaterialOptions,MaterialChoice);
             UpdateList(shaderList,ShaderOptions,ShaderChoice);UpdateList(propertyList,PropertyOptions,PropertyChoice);UpdateList(textureSlotList,TextureSlotOptions,TextureSlotChoice);UpdateList(sectionList,SectionOptions,SectionChoice);
         }finally{refreshing=false;}NotifyValues();
     }
     private void UpdateList(DropDownListSetting list,List<object> options,string value){if(!list)return;bool old=refreshing;refreshing=true;try{list.Values=options;list.UpdateChoices();if(options.Count>0)list.Value=value;}finally{refreshing=old;}}
-    private void NotifyValues(){foreach(string name in new[]{nameof(IsNumber),nameof(IsColor),nameof(IsVector),nameof(IsProfile),nameof(MaterialInfo),nameof(PropertyHelp),nameof(TextureInfo),nameof(NumberValue),nameof(ColorValue),nameof(ColorIntensity),nameof(AlphaValue),nameof(VectorX),nameof(VectorY),nameof(VectorZ),nameof(VectorW),nameof(TileX),nameof(TileY),nameof(OffsetX),nameof(OffsetY),nameof(PartLength),nameof(SectionRadius),nameof(SectionPosition),nameof(SectionX),nameof(SectionY),nameof(Sides),nameof(PositionX),nameof(PositionY),nameof(PositionZ),nameof(RotationX),nameof(RotationY),nameof(RotationZ),nameof(PartVisible)})NotifyPropertyChanged(name);}
+    private void NotifyValues(){foreach(string name in new[]{nameof(IsNumber),nameof(IsColor),nameof(IsVector),nameof(IsProfile),nameof(MaterialInfo),nameof(PropertyHelp),nameof(TextureInfo),nameof(NumberValue),nameof(ColorValue),nameof(ColorIntensity),nameof(AlphaValue),nameof(VectorX),nameof(VectorY),nameof(VectorZ),nameof(VectorW),nameof(TileX),nameof(TileY),nameof(OffsetX),nameof(OffsetY),nameof(PartLength),nameof(SectionRadius),nameof(SectionPosition),nameof(SectionX),nameof(SectionY),nameof(Sides),nameof(PositionX),nameof(PositionY),nameof(PositionZ),nameof(RotationX),nameof(RotationY),nameof(RotationZ),nameof(PartVisible),nameof(PartName),nameof(MaterialName),nameof(PlayerColor),nameof(TintColor),nameof(Glow),nameof(HasTint),nameof(HasGlow),nameof(SaberLength),nameof(SaberWidth),nameof(LinkHands)})NotifyPropertyChanged(name);}
     private static bool Common(string key)=>new[]{"_Color","_TintColor","_StarNestMainColor","_Glow","_BSGlow","_ALTGlow","_Bloom","_CustomColors","_Opacity","_Intensity","_Brightness","_Metallic","_Glossiness"}.Contains(key);
     private static string Label(string key,string fallback){return new Dictionary<string,string>{{"_Color","Color"},{"_TintColor","Tint"},{"_StarNestMainColor","Plasma color"},{"_Glow","Glow"},{"_BSGlow","Glow"},{"_CustomColors","Player color: 0 off, 1 on"},{"_Opacity","Opacity"},{"_Intensity","Brightness"},{"_Brightness","Texture brightness"},{"_AlphaTexture","Pattern / mask"},{"_AlphaTex","Pattern / mask"},{"_MainTex","Main texture"},{"_Displacement","Distortion / fire"},{"_DisplaceTex","Distortion / fire"},{"_FadeMask","Fade mask"},{"_MaskTex","Mask"},{"_textureScroll","Texture speed X / Y"},{"_fademaskScroll","Mask speed X / Y"},{"_Metallic","Metallic"},{"_Glossiness","Smoothness"},{"_Markiplier","Edge sharpness"}}.TryGetValue(key,out var label)?label:string.IsNullOrEmpty(fallback)?key:fallback;}
     private SurfaceEdit? Edit {get{if(!Material||!Selected)return null;if(Part!=null)return Part.Surface;var hand=preview!.transform.Find("LeftSaber");var key="LeftSaber/"+WorkshopState.PathOf(Selected!.transform,hand)+"#"+materialIndex;if(!state.Project.Surfaces.TryGetValue(key,out var edit)){edit=new SurfaceEdit();state.Project.Surfaces[key]=edit;}return edit;}}
-    private void ChangedMaterial(){if(!Material||Edit==null)return;Guard(()=>{state.ApplyMaterial(Material!,Edit!);if(state.Project.LinkHands&&Part==null){var hand=preview!.transform.Find("LeftSaber");var path=WorkshopState.PathOf(Selected!.transform,hand);state.Project.Surfaces["RightSaber/"+path+"#"+materialIndex]=Edit!;var rightHand=preview.transform.Find("RightSaber");var partner=rightHand.GetComponentsInChildren<Renderer>(true).FirstOrDefault(r=>WorkshopState.PathOf(r.transform,rightHand)==path);if(partner&&partner!.sharedMaterials.Length>materialIndex)state.ApplyMaterial(partner.sharedMaterials[materialIndex],Edit!);}else if(Part!=null){var partner=preview!.transform.Find("RightSaber").GetComponentsInChildren<PartIdentity>(true).FirstOrDefault(x=>x.Id==Part.Id);if(partner){var renderer=partner!.GetComponent<Renderer>();if(renderer)state.ApplyMaterial(renderer.sharedMaterial,Edit!);}}NotifyValues();});}
-    [UIAction("ApplyShader")] public void ApplyShader(){if(Edit==null)return;Edit!.Shader=ShaderChoice;ChangedMaterial();RefreshSelection();}
-    public float NumberValue {get=>Material&&IsNumber?Material!.GetFloat(Property):0;set{if(refreshing||!IsNumber||Edit==null||float.IsNaN(value)||float.IsInfinity(value))return;Edit!.Numbers[Property]=Mathf.Clamp(value,-100000,100000);ChangedMaterial();}}
+    private void ChangedMaterial(){if(!Material||Edit==null)return;Guard(()=>{state.ApplyMaterial(Material!,Edit!);if(state.Project.LinkHands&&Part==null){var hand=preview!.transform.Find("LeftSaber");var path=WorkshopState.PathOf(Selected!.transform,hand);state.Project.Surfaces["RightSaber/"+path+"#"+materialIndex]=Edit!;var rightHand=preview.transform.Find("RightSaber");var partner=rightHand.GetComponentsInChildren<Renderer>(true).FirstOrDefault(r=>WorkshopState.PathOf(r.transform,rightHand)==path);if(partner&&partner!.sharedMaterials.Length>materialIndex)state.ApplyMaterial(partner.sharedMaterials[materialIndex],Edit!);}else if(Part!=null){foreach(var identity in preview!.GetComponentsInChildren<PartIdentity>(true).Where(i=>i.Id==Part.Id))identity.UsePlayerColor=Part.Surface.UsePlayerColor;var partner=preview!.transform.Find("RightSaber").GetComponentsInChildren<PartIdentity>(true).FirstOrDefault(x=>x.Id==Part.Id);if(partner){var renderer=partner!.GetComponent<Renderer>();if(renderer)state.ApplyMaterial(renderer.sharedMaterial,Edit!);}}NotifyValues();});}
+    [UIAction("ApplyShader")] public void ApplyShader(){if(Edit==null)return;Checkpoint("shader");Edit!.Shader=ShaderChoice;ChangedMaterial();RefreshSelection();}
+    public string MaterialName {get=>Material?Material!.name:"";set{if(refreshing||Edit==null)return;Edit!.Name=value;ChangedMaterial();RefreshSelection();}}
+    public bool PlayerColor {get=>Part!=null?Part.Surface.UsePlayerColor:Material&&Material!.HasProperty("_CustomColors")&&Material.GetFloat("_CustomColors")>0;set{if(Edit==null||refreshing)return;Edit!.UsePlayerColor=value;if(Material!.HasProperty("_CustomColors"))Edit.Numbers["_CustomColors"]=value?1:0;if(Part!=null){Part.Surface.UsePlayerColor=value;foreach(var id in preview!.GetComponentsInChildren<PartIdentity>(true).Where(i=>i.Id==Part.Id))id.UsePlayerColor=value;}ChangedMaterial();if(value)ApplyColors();}}
+    [UIAction("CreateMaterial")] public void CreateMaterial()=>MakeMaterial(false);
+    [UIAction("DuplicateMaterial")] public void DuplicateMaterial()=>MakeMaterial(true);
+    private void MakeMaterial(bool duplicate){Guard(()=>{
+        if(!Material||!Selected)throw new InvalidOperationException("Select a visible part and layer first.");
+        Checkpoint("material-create");var material=duplicate?new Material(Material!):state.NewMaterial(ShaderChoice);material.name=duplicate?Material!.name+" copy":"New material";
+        var surface=WorkshopState.CaptureMaterial(material);surface.UsePlayerColor=false;if(material.HasProperty("_CustomColors"))surface.Numbers["_CustomColors"]=0;
+        if(duplicate){var shader=material.shader;for(int i=0;i<shader.GetPropertyCount();i++)if(shader.GetPropertyType(i)==ShaderPropertyType.Texture&&shader.GetPropertyTextureDimension(i)==TextureDimension.Tex2D){string key=shader.GetPropertyName(i);var tex=material.GetTexture(key);if(tex){var scale=material.GetTextureScale(key);var offset=material.GetTextureOffset(key);surface.Textures[key]=new TextureEdit{Png=WorkshopState.TexturePng(tex!),Scale=new[]{scale.x,scale.y},Offset=new[]{offset.x,offset.y}};}}}
+        if(Part!=null)Part.Surface=surface;else{var hand=preview!.transform.Find("LeftSaber");state.Project.Surfaces["LeftSaber/"+WorkshopState.PathOf(Selected!.transform,hand)+"#"+materialIndex]=surface;}
+        var mats=Selected!.sharedMaterials;mats[materialIndex]=material;Selected.sharedMaterials=mats;preview!.GetComponent<OwnedAssets>().Assets.Add(material);ChangedMaterial();RefreshSelection();SetStatus(duplicate?"Material duplicated.":"Material created.");
+    });}
+    public float NumberValue {get=>Material&&IsNumber?Material!.GetFloat(Property):0;set{if(refreshing||!IsNumber||Edit==null||float.IsNaN(value)||float.IsInfinity(value))return;Checkpoint("number:"+Property);Edit!.Numbers[Property]=Mathf.Clamp(value,-100000,100000);ChangedMaterial();}}
     private Color RawColor=>Material&&IsColor?Material!.GetColor(Property):Color.white;
-    public Color ColorValue {get{var c=RawColor;float max=Mathf.Max(1,Mathf.Max(c.r,Mathf.Max(c.g,c.b)));return new Color(c.r/max,c.g/max,c.b/max,c.a);}set{if(refreshing||!IsColor||Edit==null)return;float intensity=ColorIntensity;Edit!.Colors[Property]=new[]{value.r*intensity,value.g*intensity,value.b*intensity,RawColor.a};ChangedMaterial();}}
-    public float ColorIntensity {get{var c=RawColor;return Mathf.Max(1,Mathf.Max(c.r,Mathf.Max(c.g,c.b)));}set{if(refreshing||!IsColor||Edit==null)return;var c=ColorValue;Edit!.Colors[Property]=new[]{c.r*value,c.g*value,c.b*value,c.a};ChangedMaterial();}}
-    public float AlphaValue {get=>RawColor.a;set{if(refreshing||!IsColor||Edit==null)return;var c=RawColor;Edit!.Colors[Property]=new[]{c.r,c.g,c.b,Mathf.Clamp01(value)};ChangedMaterial();}}
+    public Color ColorValue {get{var c=RawColor;float max=Mathf.Max(1,Mathf.Max(c.r,Mathf.Max(c.g,c.b)));return new Color(c.r/max,c.g/max,c.b/max,c.a);}set{if(refreshing||!IsColor||Edit==null)return;Checkpoint("color:"+Property);float intensity=ColorIntensity;Edit!.Colors[Property]=new[]{value.r*intensity,value.g*intensity,value.b*intensity,RawColor.a};ChangedMaterial();}}
+    public float ColorIntensity {get{var c=RawColor;return Mathf.Max(1,Mathf.Max(c.r,Mathf.Max(c.g,c.b)));}set{if(refreshing||!IsColor||Edit==null)return;Checkpoint("intensity:"+Property);var c=ColorValue;Edit!.Colors[Property]=new[]{c.r*value,c.g*value,c.b*value,c.a};ChangedMaterial();}}
+    public float AlphaValue {get=>RawColor.a;set{if(refreshing||!IsColor||Edit==null)return;Checkpoint("alpha:"+Property);var c=RawColor;Edit!.Colors[Property]=new[]{c.r,c.g,c.b,Mathf.Clamp01(value)};ChangedMaterial();}}
     private float Vector(int axis)=>Material&&IsVector?Material!.GetVector(Property)[axis]:0;
-    private void SetVector(int axis,float value){if(refreshing||!IsVector||Edit==null)return;var v=Material!.GetVector(Property);v[axis]=value;Edit!.Vectors[Property]=new[]{v.x,v.y,v.z,v.w};ChangedMaterial();}
+    private void SetVector(int axis,float value){if(refreshing||!IsVector||Edit==null)return;Checkpoint("vector:"+Property+axis);var v=Material!.GetVector(Property);v[axis]=value;Edit!.Vectors[Property]=new[]{v.x,v.y,v.z,v.w};ChangedMaterial();}
     public float VectorX {get=>Vector(0);set=>SetVector(0,value);}public float VectorY {get=>Vector(1);set=>SetVector(1,value);}public float VectorZ {get=>Vector(2);set=>SetVector(2,value);}public float VectorW {get=>Vector(3);set=>SetVector(3,value);}
     private TextureEdit? TexEdit {get{if(Edit==null||TextureSlot=="")return null;if(!Edit!.Textures.TryGetValue(TextureSlot,out var t)){var scale=Material!.GetTextureScale(TextureSlot);var offset=Material.GetTextureOffset(TextureSlot);t=new TextureEdit{Scale=new[]{scale.x,scale.y},Offset=new[]{offset.x,offset.y}};Edit.Textures[TextureSlot]=t;}return t;}}
     [UIAction("ApplyTexture")] public void ApplyTexture(){Guard(()=>{if(TexEdit==null)throw new InvalidOperationException("Select a texture slot.");var file=WorkshopState.SafePath(WorkshopState.TextureFolder,TextureFileChoice);if(!File.Exists(file)||new FileInfo(file).Length>12*1024*1024)throw new InvalidDataException("Image missing or larger than 12 MB");TexEdit!.Png=Convert.ToBase64String(File.ReadAllBytes(file));ChangedMaterial();SetStatus("Texture applied.");});}
@@ -173,26 +191,26 @@ public sealed class EditorController : NotifiableBase,IInitializable,IDisposable
     public float OffsetX {get=>Material&&TextureSlot!=""?Material!.GetTextureOffset(TextureSlot).x:0;set{if(TexEdit==null)return;TexEdit!.Offset[0]=value;ChangedMaterial();}}
     public float OffsetY {get=>Material&&TextureSlot!=""?Material!.GetTextureOffset(TextureSlot).y:0;set{if(TexEdit==null)return;TexEdit!.Offset[1]=value;ChangedMaterial();}}
 
-    [UIAction("AddProfile")] public void AddProfile(){Guard(()=>{if(state.Project.Parts.Count>=400)throw new InvalidOperationException("Maximum 400 parts.");state.AddPart("Profile "+(state.Project.Parts.Count+1),true);BuildPreview();partIndex=renderers.Count-1;RefreshSelection();});}
-    [UIAction("AddRing")] public void AddRing(){Guard(()=>{var p=state.AddPart("Ring",true);p.Shape="ring";p.Sections[0].Radius=.045f;p.Sections[1].Radius=.002f;p.Position[2]=.04f;BuildPreview();partIndex=renderers.Count-1;RefreshSelection();});}
+    [UIAction("AddProfile")] public void AddProfile(){Guard(()=>{if(state.Project.Parts.Count>=400)throw new InvalidOperationException("Maximum 400 parts.");Checkpoint("add-profile");state.AddPart("Profile "+(state.Project.Parts.Count+1),true);BuildPreview();partIndex=renderers.Count-1;RefreshSelection();});}
+    [UIAction("AddRing")] public void AddRing(){Guard(()=>{Checkpoint("add-ring");var p=state.AddPart("Ring",true);p.Shape="ring";p.Sections[0].Radius=.045f;p.Sections[1].Radius=.002f;p.Position[2]=.04f;BuildPreview();partIndex=renderers.Count-1;RefreshSelection();});}
     [UIAction("AddInner")] public void AddInner(){Guard(()=>{
-        if(!Selected)throw new InvalidOperationException("Select a part first.");var original=Part;
+        if(!Selected)throw new InvalidOperationException("Select a part first.");Checkpoint("add-inner");var original=Part;
         if(original==null)throw new InvalidOperationException("Select an existing inner layer in Materials. New inner profiles require a created part.");
         var copy=Newtonsoft.Json.JsonConvert.DeserializeObject<ProfilePart>(Newtonsoft.Json.JsonConvert.SerializeObject(original))!;copy.Id=Guid.NewGuid().ToString("N");copy.Name=original.Name+" · plasma";foreach(var s in copy.Sections)s.Radius*=.85f;state.Project.Parts.Add(copy);BuildPreview();partIndex=renderers.Count-1;RefreshSelection();SetStatus("Inner layer added.");
     });}
-    [UIAction("DeletePart")] public void DeletePart(){if(Part==null)return;var id=Part.Id;state.Project.Parts.RemoveAll(p=>p.Id==id);BuildPreview();}
+    [UIAction("DeletePart")] public void DeletePart(){if(!Selected)return;Checkpoint("delete");if(Part==null){PartVisible=false;RefreshTree();SetStatus("Source part hidden. Undo restores it.");return;}var id=Part.Id;state.Project.Parts.RemoveAll(p=>p.Id==id);BuildPreview();}
     private Section? Section=>Part?.Sections[Mathf.Clamp(sectionIndex,0,Part.Sections.Count-1)];
-    [UIAction("AddSection")] public void AddSection(){if(Part==null||Part.Shape=="ring"||Part.Sections.Count>=128)return;var list=Part.Sections;int index=0;float gap=-1;for(int i=0;i<list.Count-1;i++)if(list[i+1].T-list[i].T>gap){gap=list[i+1].T-list[i].T;index=i;}var a=list[index];var b=list[index+1];list.Insert(index+1,new Section{T=(a.T+b.T)/2,Radius=(a.Radius+b.Radius)/2,X=(a.X+b.X)/2,Y=(a.Y+b.Y)/2});sectionIndex=index+1;RebuildShape();}
-    [UIAction("DeleteSection")] public void DeleteSection(){if(Part==null||Part.Shape=="ring"||Part.Sections.Count<=2)return;Part.Sections.RemoveAt(sectionIndex);sectionIndex=Math.Min(sectionIndex,Part.Sections.Count-1);RebuildShape();}
+    [UIAction("AddSection")] public void AddSection(){if(Part==null||Part.Shape=="ring"||Part.Sections.Count>=128)return;Checkpoint("add-section");var list=Part.Sections;int index=0;float gap=-1;for(int i=0;i<list.Count-1;i++)if(list[i+1].T-list[i].T>gap){gap=list[i+1].T-list[i].T;index=i;}var a=list[index];var b=list[index+1];list.Insert(index+1,new Section{T=(a.T+b.T)/2,Radius=(a.Radius+b.Radius)/2,X=(a.X+b.X)/2,Y=(a.Y+b.Y)/2});sectionIndex=index+1;RebuildShape();}
+    [UIAction("DeleteSection")] public void DeleteSection(){if(Part==null||Part.Shape=="ring"||Part.Sections.Count<=2)return;Checkpoint("remove-section");Part.Sections.RemoveAt(sectionIndex);sectionIndex=Math.Min(sectionIndex,Part.Sections.Count-1);RebuildShape();}
     private void RebuildShape(){if(refreshing)return;Guard(()=>{BuildPreview();});}
-    public float PartLength {get=>Part?.Length*1000??0;set{if(Part==null||refreshing)return;Part.Length=Mathf.Clamp(value/1000,.001f,2);RebuildShape();}}
-    public float SectionPosition {get=>(Section?.T??0)*100;set{if(Section==null||Part==null||Part.Shape=="ring"||refreshing)return;Section.T=Mathf.Clamp(value/100,sectionIndex>0?Part.Sections[sectionIndex-1].T:0,sectionIndex+1<Part.Sections.Count?Part.Sections[sectionIndex+1].T:1);RebuildShape();}}
-    public float SectionRadius {get=>(Section?.Radius??0)*1000;set{if(Section==null||refreshing)return;Section.Radius=Mathf.Clamp(value/1000,0,.3f);RebuildShape();}}
-    public float SectionX {get=>(Section?.X??0)*1000;set{if(Section==null||refreshing)return;Section.X=Mathf.Clamp(value/1000,-.3f,.3f);RebuildShape();}}
-    public float SectionY {get=>(Section?.Y??0)*1000;set{if(Section==null||refreshing)return;Section.Y=Mathf.Clamp(value/1000,-.3f,.3f);RebuildShape();}}
-    public float Sides {get=>Part?.Sides??32;set{if(Part==null||refreshing)return;Part.Sides=Mathf.Clamp(Mathf.RoundToInt(value),3,128);RebuildShape();}}
+    public float PartLength {get=>Part?.Length*1000??0;set{if(Part==null||refreshing)return;Checkpoint("length");Part.Length=Mathf.Clamp(value/1000,.001f,2);RebuildShape();}}
+    public float SectionPosition {get=>(Section?.T??0)*100;set{if(Section==null||Part==null||Part.Shape=="ring"||refreshing)return;Checkpoint("section:"+sectionIndex);Section.T=Mathf.Clamp(value/100,sectionIndex>0?Part.Sections[sectionIndex-1].T:0,sectionIndex+1<Part.Sections.Count?Part.Sections[sectionIndex+1].T:1);RebuildShape();}}
+    public float SectionRadius {get=>(Section?.Radius??0)*1000;set{if(Section==null||refreshing)return;Checkpoint("radius:"+sectionIndex);Section.Radius=Mathf.Clamp(value/1000,0,.3f);RebuildShape();}}
+    public float SectionX {get=>(Section?.X??0)*1000;set{if(Section==null||refreshing)return;Checkpoint("section-x:"+sectionIndex);Section.X=Mathf.Clamp(value/1000,-.3f,.3f);RebuildShape();}}
+    public float SectionY {get=>(Section?.Y??0)*1000;set{if(Section==null||refreshing)return;Checkpoint("section-y:"+sectionIndex);Section.Y=Mathf.Clamp(value/1000,-.3f,.3f);RebuildShape();}}
+    public float Sides {get=>Part?.Sides??32;set{if(Part==null||refreshing)return;Checkpoint("sides");Part.Sides=Mathf.Clamp(Mathf.RoundToInt(value),3,128);RebuildShape();}}
     private float Coordinate(int axis,bool rotation)=>Part!=null?(rotation?Part.Rotation:Part.Position)[axis]*(rotation?1:1000):Selected?(rotation?Selected!.transform.localEulerAngles[axis]:Selected!.transform.localPosition[axis]*1000):0;
-    private void SetCoordinate(int axis,float value,bool rotation){if(refreshing||!Selected)return;if(Part!=null){(rotation?Part.Rotation:Part.Position)[axis]=value*(rotation?1:.001f);RebuildShape();return;}var transform=Selected!.transform;var v=rotation?transform.localEulerAngles:transform.localPosition;v[axis]=value*(rotation?1:.001f);if(rotation)transform.localEulerAngles=v;else transform.localPosition=v;StoreTransform();}
+    private void SetCoordinate(int axis,float value,bool rotation){if(refreshing||!Selected)return;Checkpoint("transform:"+axis+rotation);if(Part!=null){(rotation?Part.Rotation:Part.Position)[axis]=value*(rotation?1:.001f);RebuildShape();return;}var transform=Selected!.transform;var v=rotation?transform.localEulerAngles:transform.localPosition;v[axis]=value*(rotation?1:.001f);if(rotation)transform.localEulerAngles=v;else transform.localPosition=v;StoreTransform();}
     private void StoreTransform(){var renderer=Selected;if(!renderer)return;var hand=preview!.transform.Find("LeftSaber");string path=WorkshopState.PathOf(renderer!.transform,hand);var e=new PartEdit{Position=WorkshopState.A3(renderer.transform.localPosition),Rotation=WorkshopState.A3(renderer.transform.localEulerAngles),Scale=WorkshopState.A3(renderer.transform.localScale),Visible=renderer.gameObject.activeSelf};state.Project.Transforms["LeftSaber/"+path]=e;if(state.Project.LinkHands){state.Project.Transforms["RightSaber/"+path]=e;var otherHand=preview.transform.Find("RightSaber");var other=otherHand.GetComponentsInChildren<Renderer>(true).FirstOrDefault(r=>WorkshopState.PathOf(r.transform,otherHand)==path);if(other){other!.transform.localPosition=renderer.transform.localPosition;other.transform.localEulerAngles=renderer.transform.localEulerAngles;other.transform.localScale=renderer.transform.localScale;other.gameObject.SetActive(e.Visible);}}}
     public float PositionX {get=>Coordinate(0,false);set=>SetCoordinate(0,value,false);}public float PositionY {get=>Coordinate(1,false);set=>SetCoordinate(1,value,false);}public float PositionZ {get=>Coordinate(2,false);set=>SetCoordinate(2,value,false);}
     public float RotationX {get=>Coordinate(0,true);set=>SetCoordinate(0,value,true);}public float RotationY {get=>Coordinate(1,true);set=>SetCoordinate(1,value,true);}public float RotationZ {get=>Coordinate(2,true);set=>SetCoordinate(2,value,true);}

@@ -12,8 +12,10 @@ public class WorkshopProject
     public string SourceHash="";
     public Dictionary<string,string> ShaderFiles=new Dictionary<string,string>();
     public bool LinkHands=true;
+    public float SaberLength=1;public float SaberWidth=1;
     public Dictionary<string,SurfaceEdit> Surfaces=new Dictionary<string,SurfaceEdit>();
     public Dictionary<string,PartEdit> Transforms=new Dictionary<string,PartEdit>();
+    public Dictionary<string,string> Labels=new Dictionary<string,string>();
     public List<ProfilePart> Parts=new List<ProfilePart>();
 }
 public class PartEdit
@@ -22,6 +24,11 @@ public class PartEdit
 }
 public class SurfaceEdit
 {
+    public string Name="";
+    public bool Reset;
+    public int RenderQueue=-1;
+    public string[] Keywords=Array.Empty<string>();
+    public bool UsePlayerColor;
     public string Shader="";
     public Dictionary<string,float> Numbers=new Dictionary<string,float>();
     public Dictionary<string,float[]> Colors=new Dictionary<string,float[]>();

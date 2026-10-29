@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEditor;
 using SaberWorkshop;
@@ -31,10 +32,18 @@ public static class VerifyWorkshop
             var restored=state.InstantiatePair();var m=restored.transform.Find("LeftSaber").GetComponentsInChildren<Renderer>(true).First(x=>WorkshopState.PathOf(x.transform,restored.transform.Find("LeftSaber"))==WorkshopState.PathOf(surface.transform,l)).sharedMaterials[slot];
             Check(Math.Abs(m.GetColor("_Color").b-.9f)<.0001,"material colour restored");Check(m!=original,"material edits isolated from original clone");
             if(texSlot!=null){Check(m.GetTexture(texSlot).width==2,"embedded texture restored");Check(Math.Abs(m.GetTextureScale(texSlot).x-3)<.0001,"texture tiling restored");}
+            var fresh=state.NewMaterial(m.shader.name);var newSurface=WorkshopState.CaptureMaterial(fresh);state.ApplyMaterial(m,newSurface);
+            Check(!m.HasProperty("_MainTex")||m.GetTexture("_MainTex")==fresh.GetTexture("_MainTex"),"new material clears previous main texture");
+            Object.DestroyImmediate(fresh);
             Object.DestroyImmediate(pair);Object.DestroyImmediate(restored);
         }
         state.CreateStarter();WorkshopState.Validate(state.Project);var profilePair=state.InstantiatePair();Check(profilePair.GetComponentsInChildren<MeshFilter>(true).Length==10,"starter contains five parts per hand");
+        WorkshopState.ApplyPlayerColor(profilePair.transform.Find("LeftSaber").gameObject,Color.red);WorkshopState.ApplyPlayerColor(profilePair.transform.Find("RightSaber").gameObject,Color.blue);
+        foreach(var identity in profilePair.transform.Find("LeftSaber").GetComponentsInChildren<PartIdentity>().Where(p=>p.UsePlayerColor))Check(identity.GetComponent<Renderer>().sharedMaterial.color.r>.99f&&identity.GetComponent<Renderer>().sharedMaterial.color.b<.01f,"left profile uses note colour");
+        foreach(var identity in profilePair.transform.Find("RightSaber").GetComponentsInChildren<PartIdentity>().Where(p=>p.UsePlayerColor))Check(identity.GetComponent<Renderer>().sharedMaterial.color.b>.99f&&identity.GetComponent<Renderer>().sharedMaterial.color.r<.01f,"right profile uses note colour");
         string starter=state.Save();await state.LoadProject(starter);Check(state.Project.SourceFile==""&&state.Project.Parts.Count==5,"new construction round-trips with shader dependencies");
+        var exportParts=state.Project.Parts.Select(p=>{var mesh=WorkshopState.BuildMesh(p);try{return new{Part=p,Mesh=new{Positions=mesh.vertices.SelectMany(v=>new[]{v.x,v.y,v.z}),Normals=mesh.normals.SelectMany(v=>new[]{v.x,v.y,v.z}),UV=mesh.uv.SelectMany(v=>new[]{v.x,v.y}),Indices=mesh.triangles}};}finally{}}).ToArray();
+        File.WriteAllText(Path.Combine(WorkshopState.DataRoot,"export-test.json"),JsonConvert.SerializeObject(new{Project=state.Project,Parts=exportParts}));
         foreach(var filter in profilePair.GetComponentsInChildren<MeshFilter>(true)){var mesh=filter.sharedMesh;Check(mesh.vertexCount>0&&mesh.triangles.All(i=>i>=0&&i<mesh.vertexCount),"profile / ring indices valid");}
         var gameplay=state.InstantiateHand(true,new GameObject("Gameplay parent").transform);Check(gameplay.transform.localPosition==Vector3.zero,"gameplay hand local position");Check(gameplay.transform.localRotation==Quaternion.identity,"gameplay hand orientation");
         Object.DestroyImmediate(gameplay.transform.parent.gameObject);Object.DestroyImmediate(profilePair);

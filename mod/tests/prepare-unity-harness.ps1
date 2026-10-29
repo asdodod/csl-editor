@@ -1,4 +1,4 @@
-param([string]$UnityProject,[string]$GameDir)
+param([Parameter(Mandatory=$true)][string]$UnityProject,[Parameter(Mandatory=$true)][string]$GameDir)
 $ErrorActionPreference='Stop'
 $repoRoot=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $target=Join-Path $UnityProject 'Assets/WorkshopVerification'
@@ -31,4 +31,5 @@ namespace AssetBundleLoadingTools.Utilities {
 '@
 [IO.File]::WriteAllText((Join-Path $target 'GameAdapters.cs'),$adapter)
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'VerifyWorkshop.cs') -Destination (Join-Path $UnityProject 'Assets/Editor/VerifyWorkshop.cs')
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'VerifyCSLExport.cs') -Destination (Join-Path $UnityProject 'Assets/Editor/VerifyCSLExport.cs')
 Write-Output "Prepared Unity verification harness at $target"
