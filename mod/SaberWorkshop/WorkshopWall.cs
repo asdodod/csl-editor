@@ -23,10 +23,12 @@ public sealed class WorkshopWall : IDisposable
     public WorkshopWall(EditorController editor){this.editor=editor;SceneManager.sceneLoaded+=SceneLoaded;}
     public void Show(){
         if(!screen){
-            var created=FloatingScreen.CreateFloatingScreen(new Vector2(330,126),true,Vector3.zero,Quaternion.identity,0,true);
+            var created=FloatingScreen.CreateFloatingScreen(WorkbenchLayout.Size,false,WorkbenchLayout.Position,Quaternion.identity,WorkbenchLayout.Radius,true);
             try{
-                created.name="Saber Workshop Wall";created.transform.localScale=Vector3.one*.012f;
-                created.HandleSide=FloatingScreen.Side.Top;
+                created.name="Saber Workshop Wall";created.transform.localScale=Vector3.one*WorkbenchLayout.Scale;
+                created.GetComponent<Canvas>().sortingOrder=10;
+                // Only individual scroll views clip their contents. The curved wall is not a flat mask.
+                created.GetComponent<RectMask2D>().enabled=false;
                 using(var stream=Assembly.GetExecutingAssembly().GetManifestResourceStream("SaberWorkshop.Editor.bsml"))
                 using(var reader=new StreamReader(stream!))BSMLParser.Instance.Parse(reader.ReadToEnd(),created.gameObject,editor);
                 CompactFields(created.gameObject);
@@ -39,30 +41,27 @@ public sealed class WorkshopWall : IDisposable
     }
     public void Recenter(){
         if(!screen)return;
-        var camera=Resources.FindObjectsOfTypeAll<Camera>().FirstOrDefault(c=>c.isActiveAndEnabled&&c.stereoEnabled)??Camera.main;
-        if(!camera)return;
-        var yaw=Quaternion.Euler(0,camera.transform.eulerAngles.y,0);
-        var position=camera.transform.position+yaw*new Vector3(0,-.1f,2.25f);position.y=Mathf.Max(1.35f,position.y);
-        screen!.transform.SetPositionAndRotation(position,yaw);
+        WorkbenchLayout.Place(screen!.transform);
     }
     public void Hide(){if(screen)screen!.gameObject.SetActive(false);}
     private static void CompactFields(GameObject root){
         foreach(var text in root.GetComponentsInChildren<TextMeshProUGUI>(true)){
-            text.fontSize=Mathf.Min(text.fontSize,3);text.fontSizeMax=Mathf.Min(text.fontSizeMax,3);
+            text.fontSize=3;text.fontSizeMin=2.6f;text.fontSizeMax=3;
             text.enableWordWrapping=false;text.overflowMode=TextOverflowModes.Ellipsis;
         }
         foreach(var setting in root.GetComponentsInChildren<IncDecSetting>(true)){
             var picker=setting.transform.Find("ValuePicker") as RectTransform;
-            if(picker)picker!.sizeDelta=new Vector2(32,picker.sizeDelta.y);
-            LabelWidth(setting.transform.Find("NameText") as RectTransform,34);
+            if(picker)picker!.sizeDelta=new Vector2(24,picker.sizeDelta.y);
+            setting.TextMesh.fontSize=2.6f;setting.TextMesh.fontSizeMax=2.6f;setting.TextMesh.fontSizeMin=2.3f;
+            LabelWidth(setting.transform.Find("NameText") as RectTransform,26);
         }
         foreach(var setting in root.GetComponentsInChildren<StringSetting>(true)){
-            if(setting.BoundingBox)setting.BoundingBox.sizeDelta=new Vector2(36,setting.BoundingBox.sizeDelta.y);
-            LabelWidth(setting.transform.Find("NameText") as RectTransform,38);
+            if(setting.BoundingBox)setting.BoundingBox.sizeDelta=new Vector2(28,setting.BoundingBox.sizeDelta.y);
+            LabelWidth(setting.transform.Find("NameText") as RectTransform,30);
         }
         foreach(var setting in root.GetComponentsInChildren<GenericSliderSetting>(true)){
-            var slider=setting.Slider.transform as RectTransform;if(slider)slider!.sizeDelta=new Vector2(32,0);
-            LabelWidth(setting.transform.Find("Title") as RectTransform,34);
+            var slider=setting.Slider.transform as RectTransform;if(slider)slider!.sizeDelta=new Vector2(25,0);
+            LabelWidth(setting.transform.Find("Title") as RectTransform,27);
         }
         foreach(var setting in root.GetComponentsInChildren<DropDownListSetting>(true)){
             var parent=setting.transform.parent;var label=parent.Find("Label") as RectTransform;if(!label)continue;

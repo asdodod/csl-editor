@@ -106,15 +106,15 @@ public sealed partial class EditorController : NotifiableBase,IInitializable,IDi
     [UIAction("Save")] public void Save(){Guard(()=>{var path=state.Save();RefreshFiles();SetStatus("Saved: "+Path.GetFileName(path));});}
     [UIAction("ShowPreview")] public void ShowPreview(){Guard(()=>{if(!state.Ready)throw new InvalidOperationException("Create or open a saber first.");if(!preview)BuildPreview();visible=true;PlacePreview();preview!.SetActive(true);NotifyPropertyChanged(nameof(PreviewVisible));});}
     private void PlacePreview(){
-        var camera=Resources.FindObjectsOfTypeAll<Camera>().FirstOrDefault(c=>c.isActiveAndEnabled&&c.stereoEnabled)??Camera.main;if(!camera||!preview)return;
+        if(!preview)return;
         var wall=workspace?.Transform;
-        var yaw=wall?wall!.rotation:Quaternion.Euler(0,camera.transform.eulerAngles.y,0);
+        var yaw=wall?wall!.rotation:Quaternion.identity;
         preview!.transform.SetParent(wall,true);preview.transform.SetPositionAndRotation(Vector3.zero,yaw);
         preview.transform.localScale=Vector3.one*(previewScale/(wall?wall!.lossyScale.x:1));
-        var target=wall?wall!.TransformPoint(new Vector3(1,-2,-35)):camera.transform.position+yaw*new Vector3(0,-.08f,1.65f);target.y=Mathf.Max(1.0f,target.y);
+        var target=WorkbenchLayout.PreviewCenter(wall);
         var meshes=preview.GetComponentsInChildren<Renderer>(true).Where(r=>(r is MeshRenderer||r is SkinnedMeshRenderer)&&r.enabled&&VisibleParents(r.transform,preview.transform)).ToArray();var bounds=new Bounds(Vector3.zero,Vector3.zero);
         if(meshes.Length>0){bounds=meshes[0].bounds;foreach(var mesh in meshes.Skip(1))bounds.Encapsulate(mesh.bounds);}preview.transform.position=target-bounds.center;
-        Plugin.Log.Info("Preview centered at "+target+" from camera "+camera.name+" at "+camera.transform.position);
+        Plugin.Log.Info("Preview centered at "+target+" in static menu space");
     }
     private static bool VisibleParents(Transform node,Transform root){while(node!=root&&node){if(!node.gameObject.activeSelf)return false;node=node.parent;}return true;}
     private void BuildPreview(){if(preview)Object.Destroy(preview);preview=state.InstantiatePair();preview.SetActive(visible);PlacePreview();RefreshSelection();ApplyColors();NotifyPropertyChanged(nameof(ProjectName));NotifyPropertyChanged(nameof(PlayEnabled));}
