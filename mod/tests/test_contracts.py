@@ -24,17 +24,26 @@ class Contracts(unittest.TestCase):
                 self.assertNotIn(element.attrib['id'],ids)
                 ids.add(element.attrib['id'])
         for binding in re.findall(r'\[UIComponent\("([^"]+)"\)\]',source):self.assertIn(binding,ids)
-    def test_mods_menu_and_compact_english_layout(self):
+    def test_world_space_workbench_layout(self):
         source=(ROOT/'SaberWorkshop/EditorController.cs').read_text(encoding='utf-8')
         self.assertIn('gameplaySetup.AddTab("Saber Workshop"',source)
         self.assertIn('MenuType.Solo',source)
         self.assertNotIn('RegisterButton',source)
         self.assertNotIn('AddSettingsMenu',source)
+        self.assertNotIn('PresentFlowCoordinator',source)
+        wall=(ROOT/'SaberWorkshop/WorkshopWall.cs').read_text(encoding='utf-8')
+        self.assertIn('FloatingScreen.CreateFloatingScreen',wall)
+        self.assertIn('FloatingScreen.Side.Top',wall)
+        self.assertIn('SceneManager.sceneLoaded-=SceneLoaded',wall)
         tree=ET.parse(ROOT/'SaberWorkshop/Editor.bsml')
         self.assertEqual(tree.getroot().tag,'vertical')
-        self.assertEqual(tree.find('.//scroll-view').get('preferred-width'),'108')
-        self.assertLessEqual(int(tree.find('.//scroll-view').get('preferred-height')),60)
-        self.assertEqual(len(tree.findall('.//text')),1)
+        columns=tree.getroot().findall('horizontal')[1]
+        self.assertEqual(len(columns),5)
+        width=sum(float(c.get('preferred-width')) for c in columns)+float(columns.get('spacing'))*4
+        self.assertLessEqual(width,330)
+        self.assertEqual(len(tree.findall('.//scroll-view')),4)
+        for scroll in tree.findall('.//scroll-view'):self.assertLessEqual(float(scroll.get('preferred-height')),100)
+        for e in tree.iter():self.assertNotIn('Page',e.get('active',''))
         for e in tree.iter():
             for key,value in e.attrib.items():
                 if key in {'text','hover-hint'}:self.assertIsNone(re.search('[А-Яа-я]',value))

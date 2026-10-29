@@ -1,137 +1,144 @@
-<vertical anchor-min="0 0" anchor-max="1 1" size-delta="0 0" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" pad-top="1" pad-bottom="1">
-  <horizontal preferred-height="8" preferred-width="156" child-control-height="true" child-control-width="true" child-expand-width="false" spacing="1">
-    <string-setting text="Name" value="ProjectName" apply-on-change="true" bind-value="true" preferred-width="56" preferred-height="8" />
-    <button text="Save" on-click="Save" preferred-width="21" preferred-height="8" />
-    <button text="Export CSL" on-click="ExportCSL" preferred-width="31" preferred-height="8" />
-    <button text="Undo" on-click="Undo" preferred-width="20" preferred-height="8" />
-    <button text="Redo" on-click="Redo" preferred-width="20" preferred-height="8" />
+<vertical preferred-width="330" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" anchor-min="0 0" anchor-max="1 1" size-delta="0 0" horizontal-fit="Unconstrained" pad-top="1" pad-bottom="1">
+  <horizontal preferred-width="330" preferred-height="10" spacing="2" child-control-width="true" child-control-height="true" child-expand-width="false">
+    <text text="SABER WORKSHOP" font-size="3.2" align="Center" preferred-width="68" preferred-height="5" word-wrapping="false" />
+    <button text="Save" on-click="Save" preferred-width="28" preferred-height="9" />
+    <button text="Export CSL" on-click="ExportCSL" preferred-width="38" preferred-height="9" />
+    <button text="Undo" on-click="Undo" preferred-width="24" preferred-height="9" />
+    <button text="Redo" on-click="Redo" preferred-width="24" preferred-height="9" />
+    <button text="Recenter" on-click="RecenterWall" preferred-width="42" preferred-height="9" />
+    <button text="Close" on-click="CloseEditor" preferred-width="28" preferred-height="9" />
+    <bool-setting text="Use in game" value="PlayEnabled" apply-on-change="true" bind-value="true" preferred-width="60" preferred-height="9" />
   </horizontal>
-  <horizontal preferred-width="156" preferred-height="64" child-control-height="true" child-control-width="true" child-expand-width="false" spacing="4">
-    <vertical preferred-width="44" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1">
-      <string-setting text="Part" value="PartName" apply-on-change="true" bind-value="true" preferred-width="44" preferred-height="7" />
-      <list id="part-tree" list-style="Simple" select-cell="SelectTreePart" list-width="44" visible-cells="7" cell-size="5" show-scrollbar="true" preferred-height="35" />
-      <horizontal preferred-height="6" spacing="2" child-control-height="true" child-control-width="true" child-expand-width="false">
-        <button text="Show / hide" on-click="TogglePart" preferred-width="21" preferred-height="6" />
-        <button text="Copy" on-click="DuplicatePart" preferred-width="21" preferred-height="6" />
+  <horizontal preferred-width="330" preferred-height="106" spacing="3" child-control-width="true" child-control-height="true" child-expand-width="false">
+    <vertical preferred-width="72" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" preferred-height="106">
+      <text text="PROJECT / PARTS" font-size="3.2" align="Center" preferred-width="72" preferred-height="5" word-wrapping="false" />
+      <scroll-view preferred-width="72" preferred-height="32">
+        <vertical preferred-width="68" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" vertical-fit="PreferredSize" horizontal-fit="Unconstrained">
+          <string-setting text="Name" value="ProjectName" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="64" />
+          <horizontal preferred-height="7" preferred-width="64" spacing="2" child-control-height="true" child-control-width="true" child-expand-width="false">
+            <button text="New saber" on-click="New" preferred-width="31.0" preferred-height="7" />
+            <button text="Refresh" on-click="RefreshFiles" preferred-width="31.0" preferred-height="7" />
+          </horizontal>
+          <dropdown-list-setting text="Saber file" id="source-list" choices="SourceOptions" value="SourceChoice" apply-on-change="true" preferred-height="7" preferred-width="64" />
+          <button text="Open saber" on-click="OpenSource" preferred-height="7" preferred-width="64" />
+          <dropdown-list-setting text="Saved project" id="project-list" choices="ProjectOptions" value="ProjectChoice" apply-on-change="true" preferred-height="7" preferred-width="64" />
+          <button text="Open project" on-click="OpenProject" preferred-height="7" preferred-width="64" />
+        </vertical>
+      </scroll-view>
+      <string-setting text="Part" value="PartName" apply-on-change="true" bind-value="true" preferred-width="72" preferred-height="6" />
+      <list id="part-tree" list-style="Simple" select-cell="SelectTreePart" list-width="72" visible-cells="6" cell-size="5" show-scrollbar="true" preferred-height="30" />
+      <horizontal preferred-height="6" preferred-width="72" spacing="2" child-control-height="true" child-control-width="true" child-expand-width="false">
+        <button text="Show / hide" on-click="TogglePart" preferred-width="35.0" preferred-height="6" />
+        <button text="Copy" on-click="DuplicatePart" preferred-width="35.0" preferred-height="6" />
       </horizontal>
-      <horizontal preferred-height="6" spacing="2" child-control-height="true" child-control-width="true" child-expand-width="false">
-        <button text="+ Profile" on-click="AddProfile" preferred-width="21" preferred-height="6" />
-        <button text="+ Ring" on-click="AddRing" preferred-width="21" preferred-height="6" />
+      <horizontal preferred-height="6" preferred-width="72" spacing="2" child-control-height="true" child-control-width="true" child-expand-width="false">
+        <button text="+ Blade" on-click="AddBlade" preferred-width="35.0" preferred-height="6" />
+        <button text="+ Handle" on-click="AddHandle" preferred-width="35.0" preferred-height="6" />
       </horizontal>
-      <horizontal preferred-height="6" spacing="2" child-control-height="true" child-control-width="true" child-expand-width="false">
-        <button text="+ Inner" on-click="AddInner" preferred-width="21" preferred-height="6" />
-        <button text="Delete" on-click="DeletePart" preferred-width="21" preferred-height="6" />
+      <horizontal preferred-height="6" preferred-width="72" spacing="2" child-control-height="true" child-control-width="true" child-expand-width="false">
+        <button text="+ Ring" on-click="AddRing" preferred-width="35.0" preferred-height="6" />
+        <button text="+ Inner" on-click="AddInner" preferred-width="35.0" preferred-height="6" />
+      </horizontal>
+      <horizontal preferred-height="6" preferred-width="72" spacing="2" child-control-height="true" child-control-width="true" child-expand-width="false">
+        <button text="+ Profile" on-click="AddProfile" preferred-width="35.0" preferred-height="6" />
+        <button text="Delete" on-click="DeletePart" preferred-width="35.0" preferred-height="6" />
       </horizontal>
     </vertical>
-    <vertical preferred-width="108" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1">
-      <horizontal preferred-height="7" preferred-width="108" spacing="1" child-control-height="true" child-control-width="true" child-expand-width="false">
-        <button text="Project" on-click="ProjectTab" preferred-width="20" preferred-height="7" />
-        <button text="Parts" on-click="ShapeTab" preferred-width="20" preferred-height="7" />
-        <button text="Materials" on-click="MaterialTab" preferred-width="20" preferred-height="7" />
-        <button text="Textures" on-click="TextureTab" preferred-width="20" preferred-height="7" />
-        <button text="Scene" on-click="SceneTab" preferred-width="20" preferred-height="7" />
-      </horizontal>
-      <scroll-view preferred-height="56" preferred-width="108">
-        <vertical preferred-width="98" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" vertical-fit="PreferredSize" horizontal-fit="Unconstrained">
-          <vertical active="~ProjectPage" preferred-width="98" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" vertical-fit="PreferredSize" horizontal-fit="Unconstrained">
-            <horizontal preferred-height="8" spacing="2" child-control-width="true" child-control-height="true" child-expand-width="false">
-              <button text="New saber" on-click="New" preferred-width="46" preferred-height="8" />
-              <button text="Preview" on-click="ShowPreview" preferred-width="46" preferred-height="8" />
+    <vertical preferred-width="70" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" preferred-height="106">
+      <text text="SHAPE" font-size="3.2" align="Center" preferred-width="70" preferred-height="5" word-wrapping="false" />
+      <scroll-view preferred-width="70" preferred-height="99">
+        <vertical preferred-width="66" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" vertical-fit="PreferredSize" horizontal-fit="Unconstrained">
+          <bool-setting text="Link hands" value="LinkHands" apply-on-change="true" preferred-height="7" preferred-width="62" />
+          <bool-setting text="Visible" value="PartVisible" apply-on-change="true" preferred-height="7" preferred-width="62" />
+          <increment-setting text="Position X · mm" value="PositionX" min="-1000" max="1000" increment="1" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+          <increment-setting text="Position Y · mm" value="PositionY" min="-1000" max="1000" increment="1" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+          <increment-setting text="Position Z · mm" value="PositionZ" min="-1000" max="2000" increment="1" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+          <increment-setting text="Rotation X" value="RotationX" min="-360" max="360" increment="1" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+          <increment-setting text="Rotation Y" value="RotationY" min="-360" max="360" increment="1" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+          <increment-setting text="Rotation Z" value="RotationZ" min="-360" max="360" increment="1" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+          <vertical active="~IsProfile" preferred-width="62" child-control-height="true" child-control-width="true" spacing="1" child-expand-height="false" vertical-fit="PreferredSize" horizontal-fit="Unconstrained">
+            <increment-setting text="Length · mm" value="PartLength" min="1" max="2000" increment="1" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+            <dropdown-list-setting text="Section" id="section-list" choices="SectionOptions" value="SectionChoice" apply-on-change="true" preferred-height="7" preferred-width="62" />
+            <horizontal preferred-height="7" spacing="2" child-control-width="true" child-control-height="true" child-expand-width="false">
+              <button text="Add section" on-click="AddSection" preferred-width="30.0" preferred-height="7" />
+              <button text="Remove section" on-click="DeleteSection" preferred-width="30.0" preferred-height="7" />
             </horizontal>
-            <bool-setting text="Use in game" value="PlayEnabled" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-            <button text="Refresh files" on-click="RefreshFiles" preferred-height="8" preferred-width="94" />
-            <dropdown-list-setting text="Saber file" id="source-list" choices="SourceOptions" value="SourceChoice" apply-on-change="true" preferred-height="8" preferred-width="96" />
-            <button text="Open saber" on-click="OpenSource" preferred-height="8" preferred-width="94" />
-            <dropdown-list-setting text="Saved project" id="project-list" choices="ProjectOptions" value="ProjectChoice" apply-on-change="true" preferred-height="8" preferred-width="96" />
-            <button text="Open project" on-click="OpenProject" preferred-height="8" preferred-width="94" />
-            <horizontal preferred-height="8" spacing="2" child-control-height="true" child-control-width="true" child-expand-width="false">
-              <button text="+ Blade" on-click="AddBlade" preferred-width="46" preferred-height="8" />
-              <button text="+ Handle" on-click="AddHandle" preferred-width="46" preferred-height="8" />
-            </horizontal>
-          </vertical>
-          <vertical active="~ShapePage" preferred-width="98" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" vertical-fit="PreferredSize" horizontal-fit="Unconstrained">
-            <bool-setting text="Link hands" value="LinkHands" apply-on-change="true" preferred-height="8" preferred-width="96" />
-            <bool-setting text="Visible" value="PartVisible" apply-on-change="true" preferred-height="8" preferred-width="96" />
-            <increment-setting text="Position X · mm" value="PositionX" min="-1000" max="1000" increment="1" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-            <increment-setting text="Position Y · mm" value="PositionY" min="-1000" max="1000" increment="1" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-            <increment-setting text="Position Z · mm" value="PositionZ" min="-1000" max="2000" increment="1" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-            <increment-setting text="Rotation X" value="RotationX" min="-360" max="360" increment="1" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-            <increment-setting text="Rotation Y" value="RotationY" min="-360" max="360" increment="1" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-            <increment-setting text="Rotation Z" value="RotationZ" min="-360" max="360" increment="1" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-            <vertical active="~IsProfile" preferred-width="98" child-control-height="true" child-control-width="true" spacing="1" child-expand-height="false" vertical-fit="PreferredSize" horizontal-fit="Unconstrained">
-              <increment-setting text="Length · mm" value="PartLength" min="1" max="2000" increment="1" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-              <dropdown-list-setting text="Section" id="section-list" choices="SectionOptions" value="SectionChoice" apply-on-change="true" preferred-height="8" preferred-width="96" />
-              <horizontal preferred-height="8" spacing="2" child-control-width="true" child-control-height="true" child-expand-width="false">
-                <button text="Add section" on-click="AddSection" preferred-width="46" preferred-height="8" />
-                <button text="Remove section" on-click="DeleteSection" preferred-width="46" preferred-height="8" />
-              </horizontal>
-              <slider-setting text="Along part · %" value="SectionPosition" min="0" max="100" increment="1" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-              <increment-setting text="Radius · mm" value="SectionRadius" min="0" max="300" increment="0.1" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-              <increment-setting text="Section X · mm" value="SectionX" min="-300" max="300" increment="0.1" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-              <increment-setting text="Section Y · mm" value="SectionY" min="-300" max="300" increment="0.1" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-              <increment-setting text="Sides" value="Sides" min="3" max="128" increment="1" integer-only="true" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-              <button text="Delete part" on-click="DeletePart" preferred-height="8" preferred-width="94" />
-            </vertical>
-          </vertical>
-          <vertical active="~MaterialPage" preferred-width="98" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" vertical-fit="PreferredSize" horizontal-fit="Unconstrained">
-            <dropdown-list-setting text="Layer" id="material-list" choices="MaterialOptions" value="MaterialChoice" apply-on-change="true" preferred-height="8" preferred-width="96" />
-            <vertical child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="PreferredSize" horizontal-fit="Unconstrained" spacing="1">
-              <color-setting text="Color" value="TintColor" active="~HasTint" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-              <slider-setting text="Glow" value="Glow" active="~HasGlow" min="0" max="10" increment="0.1" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-            </vertical>
-            <dropdown-list-setting text="Shader" id="shader-list" choices="ShaderOptions" value="ShaderChoice" apply-on-change="true" preferred-height="8" preferred-width="96" />
-            <horizontal preferred-height="8" spacing="2" child-control-width="true" child-control-height="true" child-expand-width="false">
-              <button text="New material" on-click="CreateMaterial" preferred-width="46" preferred-height="8" />
-              <button text="Duplicate" on-click="DuplicateMaterial" preferred-width="46" preferred-height="8" />
-            </horizontal>
-            <button text="Apply shader" on-click="ApplyShader" preferred-height="8" preferred-width="94" />
-            <bool-setting text="Advanced" value="Advanced" apply-on-change="true" preferred-height="8" preferred-width="96" />
-            <string-setting text="Material name" value="MaterialName" apply-on-change="true" bind-value="true" preferred-width="96" preferred-height="8" />
-            <bool-setting text="Use player color" value="PlayerColor" apply-on-change="true" bind-value="true" preferred-width="96" preferred-height="8" />
-            <vertical active="~Advanced" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="PreferredSize" horizontal-fit="Unconstrained" spacing="1">
-              <dropdown-list-setting text="Property" id="property-list" choices="PropertyOptions" value="PropertyChoice" apply-on-change="true" preferred-height="8" preferred-width="96" />
-              <vertical active="~IsNumber" preferred-width="98" child-control-height="true" child-control-width="true" spacing="1" child-expand-height="false" vertical-fit="PreferredSize" horizontal-fit="Unconstrained">
-                <increment-setting text="Value" value="NumberValue" increment="0.01" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-              </vertical>
-              <vertical active="~IsColor" preferred-width="98" child-control-height="true" child-control-width="true" spacing="1" child-expand-height="false" vertical-fit="PreferredSize" horizontal-fit="Unconstrained">
-                <color-setting text="Color" value="ColorValue" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-                <increment-setting text="HDR brightness" value="ColorIntensity" min="0" max="32" increment="0.1" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-                <slider-setting text="Opacity" value="AlphaValue" min="0" max="1" increment="0.01" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-              </vertical>
-              <vertical active="~IsVector" preferred-width="98" child-control-height="true" child-control-width="true" spacing="1" child-expand-height="false" vertical-fit="PreferredSize" horizontal-fit="Unconstrained">
-                <increment-setting text="X / R" value="VectorX" increment="0.01" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-                <increment-setting text="Y / G" value="VectorY" increment="0.01" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-                <increment-setting text="Z / B" value="VectorZ" increment="0.01" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-                <increment-setting text="W / A" value="VectorW" increment="0.01" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-              </vertical>
-            </vertical>
-          </vertical>
-          <vertical active="~TexturePage" preferred-width="98" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" vertical-fit="PreferredSize" horizontal-fit="Unconstrained">
-            <dropdown-list-setting text="Layer" id="texture-material-list" choices="MaterialOptions" value="MaterialChoice" apply-on-change="true" preferred-height="8" preferred-width="96" />
-            <dropdown-list-setting text="Texture slot" id="texture-slot-list" choices="TextureSlotOptions" value="TextureSlotChoice" apply-on-change="true" preferred-height="8" preferred-width="96" />
-            <button text="Refresh images" on-click="RefreshFiles" preferred-height="8" preferred-width="94" />
-            <button text="Generate plasma" on-click="GeneratePlasma" preferred-height="8" preferred-width="94" />
-            <dropdown-list-setting text="Image" id="texture-file-list" choices="TextureFileOptions" value="TextureFileChoice" apply-on-change="true" preferred-height="8" preferred-width="96" />
-            <button text="Apply image" on-click="ApplyTexture" preferred-height="8" preferred-width="94" />
-            <increment-setting text="Repeat X" value="TileX" increment="0.05" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-            <increment-setting text="Repeat Y" value="TileY" increment="0.05" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-            <increment-setting text="Offset X" value="OffsetX" increment="0.05" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-            <increment-setting text="Offset Y" value="OffsetY" increment="0.05" apply-on-change="true" bind-value="true" preferred-height="8" preferred-width="96" />
-          </vertical>
-          <vertical active="~ScenePage" preferred-width="98" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" vertical-fit="PreferredSize" horizontal-fit="Unconstrained">
-            <string-setting text="Project name" value="ProjectName" apply-on-change="true" preferred-height="8" preferred-width="96" />
-            <color-setting text="Left color" value="LeftColor" apply-on-change="true" preferred-height="8" preferred-width="96" />
-            <color-setting text="Right color" value="RightColor" apply-on-change="true" preferred-height="8" preferred-width="96" />
-            <bool-setting text="Show preview" value="PreviewVisible" apply-on-change="true" preferred-height="8" preferred-width="96" />
-            <increment-setting text="Preview scale" value="PreviewScale" min="0.2" max="2" increment="0.1" apply-on-change="true" preferred-height="8" preferred-width="96" />
-            <button text="Recenter preview" on-click="ShowPreview" preferred-height="8" preferred-width="94" />
-            <button text="Save project" on-click="Save" preferred-height="8" preferred-width="94" />
-            <slider-setting text="Saber length" value="SaberLength" min="0.1" max="3" increment="0.05" apply-on-change="true" bind-value="true" preferred-width="96" preferred-height="8" />
-            <slider-setting text="Saber width" value="SaberWidth" min="0.1" max="3" increment="0.05" apply-on-change="true" bind-value="true" preferred-width="96" preferred-height="8" />
+            <slider-setting text="Along part · %" value="SectionPosition" min="0" max="100" increment="1" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+            <increment-setting text="Radius · mm" value="SectionRadius" min="0" max="300" increment="0.1" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+            <increment-setting text="Section X · mm" value="SectionX" min="-300" max="300" increment="0.1" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+            <increment-setting text="Section Y · mm" value="SectionY" min="-300" max="300" increment="0.1" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+            <increment-setting text="Sides" value="Sides" min="3" max="128" increment="1" integer-only="true" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+            <button text="Delete part" on-click="DeletePart" preferred-height="7" preferred-width="62" />
           </vertical>
         </vertical>
       </scroll-view>
     </vertical>
+    <vertical preferred-width="36" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" preferred-height="106">
+      <text text="PREVIEW" font-size="3.2" align="Center" preferred-width="36" preferred-height="5" word-wrapping="false" />
+    </vertical>
+    <vertical preferred-width="70" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" preferred-height="106">
+      <text text="MATERIAL" font-size="3.2" align="Center" preferred-width="70" preferred-height="5" word-wrapping="false" />
+      <scroll-view preferred-width="70" preferred-height="99">
+        <vertical preferred-width="66" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" vertical-fit="PreferredSize" horizontal-fit="Unconstrained">
+          <dropdown-list-setting text="Layer" id="material-list" choices="MaterialOptions" value="MaterialChoice" apply-on-change="true" preferred-height="7" preferred-width="62" />
+          <vertical child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="PreferredSize" horizontal-fit="Unconstrained" spacing="1">
+            <color-setting text="Color" value="TintColor" active="~HasTint" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+            <slider-setting text="Glow" value="Glow" active="~HasGlow" min="0" max="10" increment="0.1" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+          </vertical>
+          <dropdown-list-setting text="Shader" id="shader-list" choices="ShaderOptions" value="ShaderChoice" apply-on-change="true" preferred-height="7" preferred-width="62" />
+          <horizontal preferred-height="7" spacing="2" child-control-width="true" child-control-height="true" child-expand-width="false">
+            <button text="New material" on-click="CreateMaterial" preferred-width="30.0" preferred-height="7" />
+            <button text="Duplicate" on-click="DuplicateMaterial" preferred-width="30.0" preferred-height="7" />
+          </horizontal>
+          <button text="Apply shader" on-click="ApplyShader" preferred-height="7" preferred-width="62" />
+          <bool-setting text="Advanced" value="Advanced" apply-on-change="true" preferred-height="7" preferred-width="62" />
+          <string-setting text="Material name" value="MaterialName" apply-on-change="true" bind-value="true" preferred-width="62" preferred-height="7" />
+          <bool-setting text="Use player color" value="PlayerColor" apply-on-change="true" bind-value="true" preferred-width="62" preferred-height="7" />
+          <vertical active="~Advanced" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="PreferredSize" horizontal-fit="Unconstrained" spacing="1">
+            <dropdown-list-setting text="Property" id="property-list" choices="PropertyOptions" value="PropertyChoice" apply-on-change="true" preferred-height="7" preferred-width="62" />
+            <vertical active="~IsNumber" preferred-width="62" child-control-height="true" child-control-width="true" spacing="1" child-expand-height="false" vertical-fit="PreferredSize" horizontal-fit="Unconstrained">
+              <increment-setting text="Value" value="NumberValue" increment="0.01" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+            </vertical>
+            <vertical active="~IsColor" preferred-width="62" child-control-height="true" child-control-width="true" spacing="1" child-expand-height="false" vertical-fit="PreferredSize" horizontal-fit="Unconstrained">
+              <color-setting text="Color" value="ColorValue" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+              <increment-setting text="HDR brightness" value="ColorIntensity" min="0" max="32" increment="0.1" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+              <slider-setting text="Opacity" value="AlphaValue" min="0" max="1" increment="0.01" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+            </vertical>
+            <vertical active="~IsVector" preferred-width="62" child-control-height="true" child-control-width="true" spacing="1" child-expand-height="false" vertical-fit="PreferredSize" horizontal-fit="Unconstrained">
+              <increment-setting text="X / R" value="VectorX" increment="0.01" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+              <increment-setting text="Y / G" value="VectorY" increment="0.01" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+              <increment-setting text="Z / B" value="VectorZ" increment="0.01" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+              <increment-setting text="W / A" value="VectorW" increment="0.01" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+            </vertical>
+          </vertical>
+        </vertical>
+      </scroll-view>
+    </vertical>
+    <vertical preferred-width="70" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" preferred-height="106">
+      <text text="TEXTURES / VIEW" font-size="3.2" align="Center" preferred-width="70" preferred-height="5" word-wrapping="false" />
+      <scroll-view preferred-width="70" preferred-height="99">
+        <vertical preferred-width="66" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" vertical-fit="PreferredSize" horizontal-fit="Unconstrained">
+          <dropdown-list-setting text="Layer" id="texture-material-list" choices="MaterialOptions" value="MaterialChoice" apply-on-change="true" preferred-height="7" preferred-width="62" />
+          <dropdown-list-setting text="Texture slot" id="texture-slot-list" choices="TextureSlotOptions" value="TextureSlotChoice" apply-on-change="true" preferred-height="7" preferred-width="62" />
+          <button text="Refresh images" on-click="RefreshFiles" preferred-height="7" preferred-width="62" />
+          <button text="Generate plasma" on-click="GeneratePlasma" preferred-height="7" preferred-width="62" />
+          <dropdown-list-setting text="Image" id="texture-file-list" choices="TextureFileOptions" value="TextureFileChoice" apply-on-change="true" preferred-height="7" preferred-width="62" />
+          <button text="Apply image" on-click="ApplyTexture" preferred-height="7" preferred-width="62" />
+          <increment-setting text="Repeat X" value="TileX" increment="0.05" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+          <increment-setting text="Repeat Y" value="TileY" increment="0.05" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+          <increment-setting text="Offset X" value="OffsetX" increment="0.05" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+          <increment-setting text="Offset Y" value="OffsetY" increment="0.05" apply-on-change="true" bind-value="true" preferred-height="7" preferred-width="62" />
+          <text text="PREVIEW" font-size="3.2" align="Center" preferred-width="96" preferred-height="5" word-wrapping="false" />
+          <color-setting text="Left color" value="LeftColor" apply-on-change="true" preferred-height="7" preferred-width="62" />
+          <color-setting text="Right color" value="RightColor" apply-on-change="true" preferred-height="7" preferred-width="62" />
+          <bool-setting text="Show preview" value="PreviewVisible" apply-on-change="true" preferred-height="7" preferred-width="62" />
+          <increment-setting text="Preview scale" value="PreviewScale" min="0.2" max="2" increment="0.1" apply-on-change="true" preferred-height="7" preferred-width="62" />
+          <button text="Recenter preview" on-click="ShowPreview" preferred-height="7" preferred-width="62" />
+          <slider-setting text="Saber length" value="SaberLength" min="0.1" max="3" increment="0.05" apply-on-change="true" bind-value="true" preferred-width="62" preferred-height="7" />
+          <slider-setting text="Saber width" value="SaberWidth" min="0.1" max="3" increment="0.05" apply-on-change="true" bind-value="true" preferred-width="62" preferred-height="7" />
+        </vertical>
+      </scroll-view>
+    </vertical>
   </horizontal>
-  <text text="~Status" font-size="3" word-wrapping="false" overflow-mode="Ellipsis" align="Left" preferred-width="152" preferred-height="5" />
+  <text text="~Status" font-size="3" word-wrapping="false" overflow-mode="Ellipsis" align="Left" preferred-width="324" preferred-height="6" />
 </vertical>

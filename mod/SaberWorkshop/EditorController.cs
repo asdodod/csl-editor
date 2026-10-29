@@ -18,11 +18,8 @@ namespace SaberWorkshop;
 public sealed partial class EditorController : NotifiableBase,IInitializable,IDisposable
 {
     private readonly GameplaySetup gameplaySetup;
-    private readonly MainFlowCoordinator mainFlow;
     private readonly ColorSchemesSettings colorSchemes;
-    private HMUI.FlowCoordinator? presenter;
-    private WorkshopFlow? flow;
-    private string page="project";
+    private WorkshopWall? workspace;
     private readonly WorkshopState state=WorkshopState.Instance;
     private GameObject? preview;
     private List<Renderer> renderers=new List<Renderer>();
@@ -42,27 +39,18 @@ public sealed partial class EditorController : NotifiableBase,IInitializable,IDi
     [UIComponent("texture-slot-list")] private DropDownListSetting textureSlotList=null!;
     [UIComponent("texture-file-list")] private DropDownListSetting textureFileList=null!;
     [UIComponent("section-list")] private DropDownListSetting sectionList=null!;
-    public EditorController(GameplaySetup gameplaySetup,MainFlowCoordinator mainFlow,ColorSchemesSettings colorSchemes){this.gameplaySetup=gameplaySetup;this.mainFlow=mainFlow;this.colorSchemes=colorSchemes;}
+    public EditorController(GameplaySetup gameplaySetup,ColorSchemesSettings colorSchemes){this.gameplaySetup=gameplaySetup;this.colorSchemes=colorSchemes;}
     public void Initialize(){gameplaySetup.AddTab("Saber Workshop","SaberWorkshop.Gameplay.bsml",this,MenuType.Solo);RefreshFiles();}
-    public void Dispose(){gameplaySetup.RemoveTab("Saber Workshop");if(preview)Object.Destroy(preview);if(flow)Object.Destroy(flow!.gameObject);}
-    [UIAction("OpenEditor")] public void OpenEditor(){
-        if(!flow){flow=BeatSaberUI.CreateFlowCoordinator<WorkshopFlow>();flow.Editor=this;flow.Exit=()=>BeatSaberUI.DismissFlowCoordinator(presenter??mainFlow,flow);}
-        presenter=mainFlow.YoungestChildFlowCoordinatorOrSelf();
-        BeatSaberUI.PresentFlowCoordinator(presenter,flow);
-    }
+    public void Dispose(){gameplaySetup.RemoveTab("Saber Workshop");if(preview)Object.Destroy(preview);workspace?.Dispose();}
+    [UIAction("OpenEditor")] public void OpenEditor(){Guard(()=>{
+        if(workspace==null)workspace=new WorkshopWall(this);
+        workspace.Show();EditorOpened();
+        if(!state.Ready){state.CreateStarter();partIndex=0;BuildPreview();SetStatus("Flux created. Select a part to edit.");}
+    });}
+    [UIAction("CloseEditor")] public void CloseEditor(){workspace?.Hide();EditorClosed();}
+    [UIAction("RecenterWall")] public void RecenterWall(){workspace?.Recenter();if(preview)PlacePreview();}
     public void EditorOpened(){var scheme=colorSchemes.GetOverrideColorScheme();if(scheme!=null){left=scheme.saberAColor;right=scheme.saberBColor;}RefreshFiles();if(preview){preview!.SetActive(visible);PlacePreview();ApplyColors();}}
     public void EditorClosed(){if(preview)preview!.SetActive(false);}
-    public bool ProjectPage=>page=="project";
-    public bool ShapePage=>page=="shape";
-    public bool MaterialPage=>page=="material";
-    public bool TexturePage=>page=="texture";
-    public bool ScenePage=>page=="scene";
-    private void SetPage(string value){page=value;foreach(var name in new[]{nameof(ProjectPage),nameof(ShapePage),nameof(MaterialPage),nameof(TexturePage),nameof(ScenePage)})NotifyPropertyChanged(name);}
-    [UIAction("ProjectTab")] public void ProjectTab()=>SetPage("project");
-    [UIAction("ShapeTab")] public void ShapeTab()=>SetPage("shape");
-    [UIAction("MaterialTab")] public void MaterialTab()=>SetPage("material");
-    [UIAction("TextureTab")] public void TextureTab()=>SetPage("texture");
-    [UIAction("SceneTab")] public void SceneTab()=>SetPage("scene");
     [UIAction("#post-parse")] private void Parsed(){RefreshFiles();RefreshSelection();}
 
     public string Status {get;private set;}="";
@@ -114,17 +102,21 @@ public sealed partial class EditorController : NotifiableBase,IInitializable,IDi
     });}
     [UIAction("OpenSource")] public async void OpenSource(){await Run(async()=>{if(SourceChoice=="")throw new InvalidOperationException("Add a .saber to CustomSabers, then refresh files.");SetStatus("Loading saber...");await state.OpenSaber(SourceChoice);partIndex=-1;BuildPreview();SetStatus("Opened "+state.Project.Name+"");});}
     [UIAction("OpenProject")] public async void OpenProject(){await Run(async()=>{if(ProjectChoice=="")throw new InvalidOperationException("No saved projects.");await state.LoadProject(ProjectChoice);BuildPreview();SetStatus("Project opened.");});}
-    [UIAction("New")] public void New(){Guard(()=>{state.CreateStarter();partIndex=0;BuildPreview();SetPage("shape");SetStatus("Flux created.");});}
+    [UIAction("New")] public void New(){Guard(()=>{state.CreateStarter();partIndex=0;BuildPreview();SetStatus("Flux created.");});}
     [UIAction("Save")] public void Save(){Guard(()=>{var path=state.Save();RefreshFiles();SetStatus("Saved: "+Path.GetFileName(path));});}
     [UIAction("ShowPreview")] public void ShowPreview(){Guard(()=>{if(!state.Ready)throw new InvalidOperationException("Create or open a saber first.");if(!preview)BuildPreview();visible=true;PlacePreview();preview!.SetActive(true);NotifyPropertyChanged(nameof(PreviewVisible));});}
     private void PlacePreview(){
         var camera=Resources.FindObjectsOfTypeAll<Camera>().FirstOrDefault(c=>c.isActiveAndEnabled&&c.stereoEnabled)??Camera.main;if(!camera||!preview)return;
-        var yaw=Quaternion.Euler(0,camera.transform.eulerAngles.y,0);preview!.transform.SetPositionAndRotation(Vector3.zero,yaw);preview.transform.localScale=Vector3.one*previewScale;
-        var target=camera.transform.position+yaw*new Vector3(.82f,0,1.65f);target.y=Mathf.Max(1.2f,camera.transform.position.y-.08f);
-        var meshes=preview.GetComponentsInChildren<MeshRenderer>(true).Where(r=>r.enabled&&r.gameObject.activeSelf).ToArray();var bounds=new Bounds(Vector3.zero,Vector3.zero);
+        var wall=workspace?.Transform;
+        var yaw=wall?wall!.rotation:Quaternion.Euler(0,camera.transform.eulerAngles.y,0);
+        preview!.transform.SetParent(wall,true);preview.transform.SetPositionAndRotation(Vector3.zero,yaw);
+        preview.transform.localScale=Vector3.one*(previewScale/(wall?wall!.lossyScale.x:1));
+        var target=wall?wall!.TransformPoint(new Vector3(1,-2,-35)):camera.transform.position+yaw*new Vector3(0,-.08f,1.65f);target.y=Mathf.Max(1.0f,target.y);
+        var meshes=preview.GetComponentsInChildren<Renderer>(true).Where(r=>(r is MeshRenderer||r is SkinnedMeshRenderer)&&r.enabled&&VisibleParents(r.transform,preview.transform)).ToArray();var bounds=new Bounds(Vector3.zero,Vector3.zero);
         if(meshes.Length>0){bounds=meshes[0].bounds;foreach(var mesh in meshes.Skip(1))bounds.Encapsulate(mesh.bounds);}preview.transform.position=target-bounds.center;
         Plugin.Log.Info("Preview centered at "+target+" from camera "+camera.name+" at "+camera.transform.position);
     }
+    private static bool VisibleParents(Transform node,Transform root){while(node!=root&&node){if(!node.gameObject.activeSelf)return false;node=node.parent;}return true;}
     private void BuildPreview(){if(preview)Object.Destroy(preview);preview=state.InstantiatePair();preview.SetActive(visible);PlacePreview();RefreshSelection();ApplyColors();NotifyPropertyChanged(nameof(ProjectName));NotifyPropertyChanged(nameof(PlayEnabled));}
     public bool PreviewVisible {get=>visible;set{visible=value;if(preview)preview!.SetActive(value);NotifyPropertyChanged();}}
     public float PreviewScale {get=>previewScale;set{previewScale=Mathf.Clamp(value,.2f,2);if(preview)PlacePreview();}}
