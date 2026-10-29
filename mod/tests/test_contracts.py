@@ -1,10 +1,20 @@
 """Checks the shipped BSML against the actual host bindings, not UI screenshots."""
-import json, re, unittest
+import json, re, unittest, subprocess, sys, tempfile
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
 ROOT=Path(__file__).resolve().parents[1]
 class Contracts(unittest.TestCase):
+    def test_imported_export_cannot_use_binary_repacking(self):
+        with tempfile.TemporaryDirectory() as folder:
+            config=Path(folder)/'config.json';config.write_text('{}')
+            snapshot=Path(folder)/'input.json';snapshot.write_text(json.dumps({'Project':{'SourceFile':'original.saber'}}))
+            result=subprocess.run([sys.executable,str(ROOT/'exporter/export_csl.py'),'--config',str(config),'--input',str(snapshot)],capture_output=True,text=True)
+            self.assertEqual(result.returncode,1)
+            reply=json.loads(result.stdout)
+            self.assertFalse(reply['ok'])
+            self.assertIn('paused',reply['error'])
+            self.assertFalse(list(Path(folder).rglob('*.saber')))
     def test_menu_tags_and_bindings(self):
         source='\n'.join(p.read_text(encoding='utf-8') for p in (ROOT/'SaberWorkshop').glob('*.cs'))
         tags={'list','scroll-view','text','horizontal','vertical','button','dropdown-list-setting','bool-setting','increment-setting','slider-setting','color-setting','string-setting'}

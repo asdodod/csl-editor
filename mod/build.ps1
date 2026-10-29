@@ -11,12 +11,12 @@ New-Item -ItemType Directory -Force -Path (Join-Path $package 'Plugins') | Out-N
 New-Item -ItemType Directory -Force -Path (Join-Path $package 'UserData/SaberWorkshop/Textures') | Out-Null
 New-Item -ItemType Directory -Force -Path (Join-Path $package 'UserData/SaberWorkshop/Projects') | Out-Null
 Copy-Item -LiteralPath (Join-Path $modRoot 'SaberWorkshop/bin/Release/net472/SaberWorkshop.dll') -Destination (Join-Path $package 'Plugins/SaberWorkshop.dll')
-Copy-Item -LiteralPath (Join-Path $modRoot 'README.md') -Destination (Join-Path $package 'README.md')
 Copy-Item -LiteralPath (Join-Path $modRoot 'Legacy/LICENSE') -Destination (Join-Path $package 'LICENSE.Legacy.txt')
 Copy-Item -LiteralPath (Join-Path $modRoot '../LICENSE') -Destination (Join-Path $package 'LICENSE.txt')
 $exporter=Join-Path $package 'ExporterSetup'
 New-Item -ItemType Directory -Force -Path $exporter | Out-Null
-foreach($file in @('export_csl.py','install-local.ps1','README.md','requirements.txt')){Copy-Item -LiteralPath (Join-Path $modRoot "exporter/$file") -Destination (Join-Path $exporter $file)}
+foreach($file in @('export_csl.py','install-local.ps1')){Copy-Item -LiteralPath (Join-Path $modRoot "exporter/$file") -Destination (Join-Path $exporter $file)}
+Copy-Item -LiteralPath (Join-Path $modRoot 'exporter/Unity') -Destination $exporter -Recurse -Force
 $zip=Join-Path $modRoot "../SaberWorkshop-$version-BeatSaber-1.40.8.zip"
 Compress-Archive -Path (Join-Path $package '*') -DestinationPath $zip -Force
 Write-Output "Built package: $zip"
