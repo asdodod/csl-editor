@@ -1,0 +1,9 @@
+<vertical anchor-min="0 1" anchor-max="1 1" pivot="0.5 1" anchored-position="0 -2" preferred-width="100" vertical-fit="PreferredSize" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2">
+  <bool-setting text="Use in game" value="PlayEnabled" apply-on-change="true" bind-value="true" preferred-width="96" preferred-height="8" />
+  <dropdown-list-setting text="Preset" id="gameplay-project-list" choices="ProjectOptions" value="ProjectChoice" apply-on-change="true" preferred-width="96" preferred-height="8" />
+  <horizontal preferred-height="8" spacing="2" child-control-width="true" child-control-height="true" child-expand-width="false">
+    <button text="Load preset" on-click="OpenProject" preferred-width="46" preferred-height="8" />
+    <button text="Open editor" on-click="OpenEditor" preferred-width="46" preferred-height="8" />
+  </horizontal>
+  <button text="Refresh presets" on-click="RefreshFiles" preferred-width="96" preferred-height="8" />
+</vertical>

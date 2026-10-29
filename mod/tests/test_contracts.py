@@ -8,11 +8,11 @@ class Contracts(unittest.TestCase):
     def test_menu_tags_and_bindings(self):
         source=(ROOT/'SaberWorkshop/EditorController.cs').read_text(encoding='utf-8')
         tags={'scroll-view','text','horizontal','vertical','button','dropdown-list-setting','bool-setting','increment-setting','slider-setting','color-setting','string-setting'}
-        tree=ET.parse(ROOT/'SaberWorkshop/Editor.bsml')
+        trees=[ET.parse(ROOT/'SaberWorkshop'/file) for file in ['Editor.bsml','Gameplay.bsml']]
         members=set(re.findall(r'public\s+(?:[\w<>?]+)\s+(\w+)\s*(?:\{|=>)',source))
         actions=set(re.findall(r'\[UIAction\("([^"]+)"\)\]',source))
         ids=set()
-        for element in tree.iter():
+        for element in (element for tree in trees for element in tree.iter()):
             self.assertIn(element.tag,tags)
             for key in ['value','choices']:
                 if key in element.attrib:self.assertIn(element.attrib[key].lstrip('~'),members)
@@ -25,7 +25,9 @@ class Contracts(unittest.TestCase):
         for binding in re.findall(r'\[UIComponent\("([^"]+)"\)\]',source):self.assertIn(binding,ids)
     def test_mods_menu_and_compact_english_layout(self):
         source=(ROOT/'SaberWorkshop/EditorController.cs').read_text(encoding='utf-8')
-        self.assertIn('menuButtons.RegisterButton(menuButton)',source)
+        self.assertIn('gameplaySetup.AddTab("Saber Workshop"',source)
+        self.assertIn('MenuType.Solo',source)
+        self.assertNotIn('RegisterButton',source)
         self.assertNotIn('AddSettingsMenu',source)
         tree=ET.parse(ROOT/'SaberWorkshop/Editor.bsml')
         self.assertEqual(tree.getroot().tag,'vertical')
@@ -42,6 +44,15 @@ class Contracts(unittest.TestCase):
             self.assertEqual(group.get('child-control-height'),'true')
         for group in tree.find('scroll-view').iter('vertical'):
             self.assertEqual(group.get('vertical-fit'),'PreferredSize')
+    def test_bsml_vectors_use_space_separated_numbers(self):
+        for file in ['Editor.bsml','Gameplay.bsml']:
+            for element in ET.parse(ROOT/'SaberWorkshop'/file).iter():
+                for key in ['anchor-min','anchor-max','pivot','anchored-position','size-delta']:
+                    if key not in element.attrib:continue
+                    value=element.attrib[key]
+                    self.assertNotIn(',',value)
+                    self.assertIn(len(value.split()),[1,2])
+                    for component in value.split():float(component)
     def test_standalone_dependencies(self):
         manifest=json.loads((ROOT/'SaberWorkshop/manifest.json').read_text())
         self.assertEqual(manifest['gameVersion'],'1.40.8')

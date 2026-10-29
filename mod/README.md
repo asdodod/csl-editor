@@ -1,8 +1,8 @@
 # Saber Workshop — отдельный мод Beat Saber
 
-Игровой редактор мечей для **Beat Saber 1.40.8 PC**. Работает самостоятельно: CustomSabersLite и VainSabers не нужны. Открывается кнопкой **Saber Workshop** в меню **Mods**.
+Игровой редактор мечей для **Beat Saber 1.40.8 PC**. Работает самостоятельно: CustomSabersLite и VainSabers не нужны. В одиночном режиме откройте вкладку **Mods** рядом с **Base Game**, затем **Saber Workshop** → **Open editor**.
 
-Версия **0.1.1 alpha**. Английский интерфейс в отдельном окне с вкладками Project, Parts, Materials, Textures, Scene. DLL собрана с библиотеками Beat Saber 1.40.8; проверка нового окна в пользовательском VR-сеансе ещё требуется.
+Версия **0.1.2 alpha**. Английский интерфейс в отдельном окне с вкладками Project, Parts, Materials, Textures, Scene. Исправлена ошибка формата координат BSML из 0.1.1. На панели перед картой доступны Preset, Load preset, Use in game и Open editor.
 
 ## Установка
 
@@ -45,6 +45,7 @@
 ```powershell
 ./mod/build.ps1 -BeatSaberDir 'C:/Games/Beat Saber'
 python ./mod/tests/test_contracts.py
+./mod/tests/test-installed-bsml.ps1 -BeatSaberDir 'C:/Games/Beat Saber'
 ```
 
 Игровые DLL не входят в репозиторий и релиз. Legacy-компоненты формата `.saber` взяты из [SabersCore](https://github.com/qqrz997/SabersCore) по MIT, уведомление сохранено в `Legacy/LICENSE`. Система профилей написана отдельно; исходники VainSabers не включены.

@@ -7,7 +7,7 @@ using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Components;
 using BeatSaberMarkupLanguage.Components.Settings;
 using BeatSaberMarkupLanguage;
-using BeatSaberMarkupLanguage.MenuButtons;
+using BeatSaberMarkupLanguage.GameplaySetup;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Zenject;
@@ -17,9 +17,9 @@ namespace SaberWorkshop;
 
 public sealed class EditorController : NotifiableBase,IInitializable,IDisposable
 {
-    private readonly MenuButtons menuButtons;
+    private readonly GameplaySetup gameplaySetup;
     private readonly MainFlowCoordinator mainFlow;
-    private readonly MenuButton menuButton;
+    private HMUI.FlowCoordinator? presenter;
     private WorkshopFlow? flow;
     private string page="project";
     private readonly WorkshopState state=WorkshopState.Instance;
@@ -32,6 +32,7 @@ public sealed class EditorController : NotifiableBase,IInitializable,IDisposable
     private Color left=new Color(.5f,0,1),right=new Color(.5f,0,1);
     [UIComponent("source-list")] private DropDownListSetting sourceList=null!;
     [UIComponent("project-list")] private DropDownListSetting projectList=null!;
+    [UIComponent("gameplay-project-list")] private DropDownListSetting gameplayProjectList=null!;
     [UIComponent("part-list")] private DropDownListSetting partList=null!;
     [UIComponent("material-part-list")] private DropDownListSetting materialPartList=null!;
     [UIComponent("texture-part-list")] private DropDownListSetting texturePartList=null!;
@@ -42,12 +43,13 @@ public sealed class EditorController : NotifiableBase,IInitializable,IDisposable
     [UIComponent("texture-slot-list")] private DropDownListSetting textureSlotList=null!;
     [UIComponent("texture-file-list")] private DropDownListSetting textureFileList=null!;
     [UIComponent("section-list")] private DropDownListSetting sectionList=null!;
-    public EditorController(MenuButtons menuButtons,MainFlowCoordinator mainFlow){this.menuButtons=menuButtons;this.mainFlow=mainFlow;menuButton=new MenuButton("Saber Workshop",OpenEditor);}
-    public void Initialize(){menuButtons.RegisterButton(menuButton);RefreshFiles();}
-    public void Dispose(){menuButtons.UnregisterButton(menuButton);if(preview)Object.Destroy(preview);if(flow)Object.Destroy(flow!.gameObject);}
-    private void OpenEditor(){
-        if(!flow){flow=BeatSaberUI.CreateFlowCoordinator<WorkshopFlow>();flow.Editor=this;flow.Exit=()=>BeatSaberUI.DismissFlowCoordinator(mainFlow,flow);}
-        BeatSaberUI.PresentFlowCoordinator(mainFlow,flow);
+    public EditorController(GameplaySetup gameplaySetup,MainFlowCoordinator mainFlow){this.gameplaySetup=gameplaySetup;this.mainFlow=mainFlow;}
+    public void Initialize(){gameplaySetup.AddTab("Saber Workshop","SaberWorkshop.Gameplay.bsml",this,MenuType.Solo);RefreshFiles();}
+    public void Dispose(){gameplaySetup.RemoveTab("Saber Workshop");if(preview)Object.Destroy(preview);if(flow)Object.Destroy(flow!.gameObject);}
+    [UIAction("OpenEditor")] public void OpenEditor(){
+        if(!flow){flow=BeatSaberUI.CreateFlowCoordinator<WorkshopFlow>();flow.Editor=this;flow.Exit=()=>BeatSaberUI.DismissFlowCoordinator(presenter??mainFlow,flow);}
+        presenter=mainFlow.YoungestChildFlowCoordinatorOrSelf();
+        BeatSaberUI.PresentFlowCoordinator(presenter,flow);
     }
     public void EditorOpened(){RefreshFiles();if(preview)preview!.SetActive(visible);}
     public void EditorClosed(){if(preview)preview!.SetActive(false);}
@@ -109,7 +111,7 @@ public sealed class EditorController : NotifiableBase,IInitializable,IDisposable
         WorkshopState.EnsureFolders();sources=WorkshopState.SaberFiles().ToList();projects=Directory.GetFiles(WorkshopState.ProjectFolder,"*.workshop.json").OrderBy(x=>x).ToList();textures=Directory.GetFiles(WorkshopState.TextureFolder).Where(x=>new[]{".png",".jpg",".jpeg"}.Contains(Path.GetExtension(x).ToLowerInvariant())).OrderBy(x=>x).ToList();
         SourceOptions=sources.Select(x=>(object)x.Substring(Path.Combine(WorkshopState.GameRoot,"CustomSabers").Length+1)).ToList();ProjectOptions=projects.Select(x=>(object)Path.GetFileName(x)).ToList();TextureFileOptions=textures.Select(x=>(object)Path.GetFileName(x)).ToList();
         if(!SourceOptions.Contains(SourceChoice))SourceChoice=Choice(SourceOptions,0);if(!ProjectOptions.Contains(ProjectChoice))ProjectChoice=Choice(ProjectOptions,0);if(!TextureFileOptions.Contains(TextureFileChoice))TextureFileChoice=Choice(TextureFileOptions,0);
-        UpdateList(sourceList,SourceOptions,SourceChoice);UpdateList(projectList,ProjectOptions,ProjectChoice);UpdateList(textureFileList,TextureFileOptions,TextureFileChoice);
+        UpdateList(sourceList,SourceOptions,SourceChoice);UpdateList(projectList,ProjectOptions,ProjectChoice);UpdateList(gameplayProjectList,ProjectOptions,ProjectChoice);UpdateList(textureFileList,TextureFileOptions,TextureFileChoice);
     });}
     [UIAction("OpenSource")] public async void OpenSource(){await Run(async()=>{if(SourceChoice=="")throw new InvalidOperationException("Add a .saber to CustomSabers, then refresh files.");SetStatus("Loading saber...");await state.OpenSaber(SourceChoice);BuildPreview();SetStatus("Opened "+state.Project.Name+"");});}
     [UIAction("OpenProject")] public async void OpenProject(){await Run(async()=>{if(ProjectChoice=="")throw new InvalidOperationException("No saved projects.");await state.LoadProject(ProjectChoice);BuildPreview();SetStatus("Project opened.");});}
