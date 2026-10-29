@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework><AssemblyName>CustomSaber</AssemblyName><LangVersion>latest</LangVersion>
+    <EnableFrameworkPathOverride>true</EnableFrameworkPathOverride><FrameworkPathOverride>$(BeatSaberDir)/Beat Saber_Data/Managed</FrameworkPathOverride>
+    <AutomaticallyUseReferenceAssemblyPackages>false</AutomaticallyUseReferenceAssemblyPackages><GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(BeatSaberDir)/Beat Saber_Data/Managed/UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine"><HintPath>$(BeatSaberDir)/Beat Saber_Data/Managed/UnityEngine.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="netstandard"><HintPath>$(BeatSaberDir)/Beat Saber_Data/Managed/netstandard.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>

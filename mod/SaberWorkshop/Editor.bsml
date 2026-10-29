@@ -1,0 +1,111 @@
+<scrollable-settings-container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://monkeymanboy.github.io/BSML-Docs/BSMLSchema.xsd">
+  <text text="SABER WORKSHOP" font-size="6" align="Center" />
+  <text text="~Status" font-size="3.2" word-wrapping="true" preferred-height="12" />
+  <horizontal preferred-height="8" spacing="2">
+    <button text="Новый меч" on-click="New" preferred-width="28" />
+    <button text="Сохранить" on-click="Save" preferred-width="28" />
+    <button text="Предпросмотр" on-click="ShowPreview" preferred-width="32" />
+  </horizontal>
+  <bool-setting text="Использовать в игре" value="PlayEnabled" apply-on-change="true" hover-hint="Ваш меч заменит игровую модель на следующем запуске карты. Редактор работает самостоятельно, CSL не требуется." />
+  <settings-submenu text="Открыть меч / проект">
+    <scrollable-settings-container>
+      <text text=".saber берутся из папки CustomSabers, проекты — UserData/SaberWorkshop/Projects" font-size="3.2" word-wrapping="true" preferred-height="12" />
+      <button text="Обновить файлы" on-click="RefreshFiles" />
+      <dropdown-list-setting text="Меч .saber" id="source-list" choices="SourceOptions" value="SourceChoice" apply-on-change="true" />
+      <button text="Открыть .saber" on-click="OpenSource" />
+      <dropdown-list-setting text="Проект" id="project-list" choices="ProjectOptions" value="ProjectChoice" apply-on-change="true" />
+      <button text="Открыть проект" on-click="OpenProject" />
+      <string-setting text="Название" value="ProjectName" apply-on-change="true" />
+    </scrollable-settings-container>
+  </settings-submenu>
+  <settings-submenu text="Детали и форма">
+    <scrollable-settings-container>
+      <dropdown-list-setting text="Деталь" id="part-list" choices="PartOptions" value="PartChoice" apply-on-change="true" />
+      <horizontal preferred-height="8" spacing="2">
+        <button text="+ Профиль" on-click="AddProfile" preferred-width="30" />
+        <button text="+ Кольцо" on-click="AddRing" preferred-width="30" />
+        <button text="+ Внутренний слой" on-click="AddInner" preferred-width="40" />
+      </horizontal>
+      <bool-setting text="Связать руки" value="LinkHands" apply-on-change="true" />
+      <bool-setting text="Показать деталь" value="PartVisible" apply-on-change="true" />
+      <increment-setting text="Позиция X, мм" value="PositionX" min="-1000" max="1000" increment="1" apply-on-change="true" bind-value="true" />
+      <increment-setting text="Позиция Y, мм" value="PositionY" min="-1000" max="1000" increment="1" apply-on-change="true" bind-value="true" />
+      <increment-setting text="Позиция Z, мм" value="PositionZ" min="-1000" max="2000" increment="1" apply-on-change="true" bind-value="true" />
+      <increment-setting text="Вращение X, °" value="RotationX" min="-360" max="360" increment="1" apply-on-change="true" bind-value="true" />
+      <increment-setting text="Вращение Y, °" value="RotationY" min="-360" max="360" increment="1" apply-on-change="true" bind-value="true" />
+      <increment-setting text="Вращение Z, °" value="RotationZ" min="-360" max="360" increment="1" apply-on-change="true" bind-value="true" />
+      <vertical active="~IsProfile">
+        <text text="Сечения идут от основания к концу детали. Радиус задаёт толщину в выбранной точке." font-size="3.2" word-wrapping="true" preferred-height="12" />
+        <increment-setting text="Длина, мм" value="PartLength" min="1" max="2000" increment="1" apply-on-change="true" bind-value="true" />
+        <dropdown-list-setting text="Сечение" id="section-list" choices="SectionOptions" value="SectionChoice" apply-on-change="true" />
+        <horizontal preferred-height="8" spacing="2">
+          <button text="Добавить сечение" on-click="AddSection" preferred-width="42" />
+          <button text="Удалить сечение" on-click="DeleteSection" preferred-width="42" />
+        </horizontal>
+        <slider-setting text="Вдоль детали, %" value="SectionPosition" min="0" max="100" increment="1" apply-on-change="true" bind-value="true" />
+        <increment-setting text="Радиус, мм" value="SectionRadius" min="0" max="300" increment="0.1" apply-on-change="true" bind-value="true" />
+        <increment-setting text="Сдвиг сечения X, мм" value="SectionX" min="-300" max="300" increment="0.1" apply-on-change="true" bind-value="true" />
+        <increment-setting text="Сдвиг сечения Y, мм" value="SectionY" min="-300" max="300" increment="0.1" apply-on-change="true" bind-value="true" />
+        <increment-setting text="Грани" value="Sides" min="3" max="128" increment="1" integer-only="true" apply-on-change="true" bind-value="true" />
+        <button text="Удалить созданную деталь" on-click="DeletePart" />
+      </vertical>
+    </scrollable-settings-container>
+  </settings-submenu>
+  <settings-submenu text="Материалы и шейдеры">
+    <scrollable-settings-container>
+      <dropdown-list-setting text="Деталь" id="material-part-list" choices="PartOptions" value="PartChoice" apply-on-change="true" />
+      <dropdown-list-setting text="Слой материала" id="material-list" choices="MaterialOptions" value="MaterialChoice" apply-on-change="true" />
+      <text text="~MaterialInfo" font-size="3" word-wrapping="true" preferred-height="12" />
+      <dropdown-list-setting text="Готовый шейдер" id="shader-list" choices="ShaderOptions" value="ShaderChoice" apply-on-change="true" />
+      <button text="Применить шейдер к слою" on-click="ApplyShader" />
+      <bool-setting text="Расширенные свойства" value="Advanced" apply-on-change="true" />
+      <dropdown-list-setting text="Свойство" id="property-list" choices="PropertyOptions" value="PropertyChoice" apply-on-change="true" />
+      <text text="~PropertyHelp" font-size="3" word-wrapping="true" preferred-height="10" />
+      <vertical active="~IsNumber">
+        <increment-setting text="Значение" value="NumberValue" increment="0.01" apply-on-change="true" bind-value="true" />
+      </vertical>
+      <vertical active="~IsColor">
+        <color-setting text="Цвет слоя" value="ColorValue" apply-on-change="true" bind-value="true" />
+        <increment-setting text="Яркость HDR" value="ColorIntensity" min="0" max="32" increment="0.1" apply-on-change="true" bind-value="true" />
+        <slider-setting text="Альфа" value="AlphaValue" min="0" max="1" increment="0.01" apply-on-change="true" bind-value="true" />
+      </vertical>
+      <vertical active="~IsVector">
+        <increment-setting text="X / R" value="VectorX" increment="0.01" apply-on-change="true" bind-value="true" />
+        <increment-setting text="Y / G" value="VectorY" increment="0.01" apply-on-change="true" bind-value="true" />
+        <increment-setting text="Z / B" value="VectorZ" increment="0.01" apply-on-change="true" bind-value="true" />
+        <increment-setting text="W / A" value="VectorW" increment="0.01" apply-on-change="true" bind-value="true" />
+      </vertical>
+      <text text="Новые шейдеры собираются в Unity. Здесь редактируются свойства реально загруженных шейдеров." font-size="3" word-wrapping="true" preferred-height="12" />
+    </scrollable-settings-container>
+  </settings-submenu>
+  <settings-submenu text="Текстуры внутренних слоёв">
+    <scrollable-settings-container>
+      <text text="Выберите деталь, слой и слот текстуры. Для плазмы меняйте внутренний слой; для контура — внешний." font-size="3.2" word-wrapping="true" preferred-height="14" />
+      <dropdown-list-setting text="Деталь" id="texture-part-list" choices="PartOptions" value="PartChoice" apply-on-change="true" />
+      <dropdown-list-setting text="Слой" id="texture-material-list" choices="MaterialOptions" value="MaterialChoice" apply-on-change="true" />
+      <dropdown-list-setting text="Слот текстуры" id="texture-slot-list" choices="TextureSlotOptions" value="TextureSlotChoice" apply-on-change="true" />
+      <text text="~TextureInfo" font-size="3" word-wrapping="true" preferred-height="10" />
+      <button text="Обновить PNG / JPG" on-click="RefreshFiles" />
+      <button text="Создать текстуру плазмы" on-click="GeneratePlasma" />
+      <dropdown-list-setting text="Картинка" id="texture-file-list" choices="TextureFileOptions" value="TextureFileChoice" apply-on-change="true" />
+      <button text="Применить картинку" on-click="ApplyTexture" />
+      <increment-setting text="Повтор по X" value="TileX" increment="0.05" apply-on-change="true" bind-value="true" />
+      <increment-setting text="Повтор по Y" value="TileY" increment="0.05" apply-on-change="true" bind-value="true" />
+      <increment-setting text="Смещение X" value="OffsetX" increment="0.05" apply-on-change="true" bind-value="true" />
+      <increment-setting text="Смещение Y" value="OffsetY" increment="0.05" apply-on-change="true" bind-value="true" />
+      <text text="Картинки: UserData/SaberWorkshop/Textures. PNG и JPG до 4096 × 4096. Они встраиваются в сохранённый проект." font-size="3.2" word-wrapping="true" preferred-height="14" />
+    </scrollable-settings-container>
+  </settings-submenu>
+  <settings-submenu text="Предпросмотр и сохранение">
+    <scrollable-settings-container>
+      <string-setting text="Название проекта" value="ProjectName" apply-on-change="true" />
+      <color-setting text="Левый меч" value="LeftColor" apply-on-change="true" />
+      <color-setting text="Правый меч" value="RightColor" apply-on-change="true" />
+      <bool-setting text="Показать пару" value="PreviewVisible" apply-on-change="true" />
+      <increment-setting text="Масштаб предпросмотра" value="PreviewScale" min="0.2" max="2" increment="0.1" apply-on-change="true" />
+      <button text="Поставить мечи передо мной" on-click="ShowPreview" />
+      <button text="Сохранить игровой проект" on-click="Save" />
+      <text text="Проект Workshop хранит исходный .saber и ваши правки отдельно. Он загружается этим модом; исходный файл не перезаписывается." font-size="3.2" word-wrapping="true" preferred-height="14" />
+    </scrollable-settings-container>
+  </settings-submenu>
+</scrollable-settings-container>

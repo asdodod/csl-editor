@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.tools/
+.local/
+*.log
+*.zip
+__pycache__/
+.DS_Store
+**/bin/
+**/obj/
+*.csproj.user
