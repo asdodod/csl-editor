@@ -56,6 +56,11 @@ class Contracts(unittest.TestCase):
         self.assertEqual(float(tree.getroot().get('preferred-width')),250)
         self.assertEqual(tree.getroot().get('vertical-fit'),'Unconstrained')
         self.assertEqual(len(tree.findall('.//scroll-view')),4)
+        self.assertIsNotNone(tree.find('.//button[@on-click="CreatePreset"]'))
+        self.assertIsNotNone(tree.find('.//button[@on-click="AddOutline"]'))
+        self.assertIsNotNone(tree.find('.//bool-setting[@value="ShowSizeGuide"]'))
+        self.assertIn('Mask>()??flat.gameObject.AddComponent<Mask>()',wall)
+        self.assertIn('StackField',wall)
         for scroll in tree.findall('.//scroll-view'):self.assertLessEqual(float(scroll.get('preferred-height')),100)
         for e in tree.iter():self.assertNotIn('Page',e.get('active',''))
         for e in tree.iter():

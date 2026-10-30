@@ -1,6 +1,6 @@
 Shader "Workshop/Glow" {
-Properties { _Color("Color", Color)=(1,1,1,1) _Glow("Glow",Float)=1 _CustomColors("Player color",Float)=1 _MainTex("Texture",2D)="white" {} }
-SubShader { Tags {"RenderType"="Opaque"} Pass {
+Properties { _Color("Color", Color)=(1,1,1,1) _Glow("Glow",Float)=1 _CustomColors("Player color",Float)=1 [Enum(UnityEngine.Rendering.CullMode)] _Cull("Cull",Float)=2 _MainTex("Texture",2D)="white" {} }
+SubShader { Tags {"RenderType"="Opaque"} Pass { Cull [_Cull]
 CGPROGRAM
 #pragma vertex vert
 #pragma fragment frag

@@ -4,7 +4,7 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <AssemblyName>SaberWorkshop</AssemblyName>
-    <Version>0.2.3</Version>
+    <Version>0.3.0</Version>
     <RootNamespace>SaberWorkshop</RootNamespace>
     <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
     <EnableFrameworkPathOverride>true</EnableFrameworkPathOverride>
@@ -43,6 +43,8 @@
     <EmbeddedResource Include="manifest.json" LogicalName="SaberWorkshop.manifest.json" />
     <EmbeddedResource Include="Editor.bsml" LogicalName="SaberWorkshop.Editor.bsml" />
     <EmbeddedResource Include="Gameplay.bsml" LogicalName="SaberWorkshop.Gameplay.bsml" />
+    <EmbeddedResource Include="Assets/size-guide.json" LogicalName="SaberWorkshop.size-guide.json" />
+    <EmbeddedResource Include="Assets/workshop-tools.bundle" LogicalName="SaberWorkshop.workshop-tools.bundle" />
     <EmbeddedResource Include="../Legacy/bin/Release/net472/CustomSaber.dll" LogicalName="SaberWorkshop.CustomSaber.dll" />
   </ItemGroup>
 </Project>

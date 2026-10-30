@@ -22,7 +22,8 @@ public sealed class WorkshopState
     public static string TextureFolder=>Path.Combine(DataRoot,"Textures");
     public WorkshopProject Project=new WorkshopProject();
     public bool PlayEnabled;
-    public bool Ready=>template!=null||Project.Parts.Count>0;
+    public bool Ready=>template!=null||Project.Created||Project.Parts.Count>0;
+    public bool HasGeometry=>template!=null||Project.Parts.Any(p=>p.Visible);
     private GameObject? template;
     private readonly Dictionary<string,GameObject> sourceCache=new Dictionary<string,GameObject>();
     private readonly Dictionary<string,Texture2D> textureCache=new Dictionary<string,Texture2D>();
@@ -32,7 +33,7 @@ public sealed class WorkshopState
     public static void EnsureFolders(){Directory.CreateDirectory(ProjectFolder);Directory.CreateDirectory(TextureFolder);}
     public static IEnumerable<string> SaberFiles(){var root=Path.Combine(GameRoot,"CustomSabers");return Directory.Exists(root)?Directory.EnumerateFiles(root,"*.saber",SearchOption.AllDirectories).OrderBy(Path.GetFileName):Enumerable.Empty<string>();}
     public static string SafePath(string root,string relative){var full=Path.GetFullPath(Path.Combine(root,relative));var prefix=Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar)+Path.DirectorySeparatorChar;if(!full.StartsWith(prefix,StringComparison.OrdinalIgnoreCase))throw new InvalidDataException("File is outside the Workshop folder");return full;}
-    public void New(){Project=new WorkshopProject();template=null;PlayEnabled=false;}
+    public void New(){Project=new WorkshopProject{Created=true};template=null;PlayEnabled=false;}
     public void CreateStarter(){
         New();Project.Name="Flux";
         var handle=AddPart("Handle",false);handle.Length=.23f;handle.Position[2]=-.18f;handle.Sections=new List<Section>{new Section{T=0,Radius=.012f},new Section{T=.08f,Radius=.018f},new Section{T=.9f,Radius=.017f},new Section{T=1,Radius=.012f}};
@@ -115,6 +116,7 @@ public sealed class WorkshopState
         finally{RenderTexture.active=previous;RenderTexture.ReleaseTemporary(target);if(image)OwnedAssets.Release(image!);}
     }
     public Material DefaultMaterial(bool glow){
+        var tool=WorkshopAssets.NewMaterial();if(tool){tool!.name="Workshop Material";tool.color=glow?Color.white:new Color(.09f,.1f,.13f,1);tool.SetFloat("_Glow",glow?1:0);tool.SetFloat("_CustomColors",glow?1:0);return tool;}
         var candidates=Resources.FindObjectsOfTypeAll<Material>().Where(m=>m&&m.shader&&m.shader.isSupported&&m.HasProperty("_Color")).ToList();
         var found=candidates.FirstOrDefault(m=>m.shader.name=="BeatSaber/Unlit Glow")??candidates.FirstOrDefault(m=>m.shader.name.IndexOf("Saber",StringComparison.OrdinalIgnoreCase)>=0)??candidates.FirstOrDefault(m=>m.shader.name=="Custom/SimpleLit");
         Material result;
@@ -147,7 +149,7 @@ public sealed class WorkshopState
     }
     public static void ApplyPlayerColor(GameObject root,Color color){foreach(var renderer in root.GetComponentsInChildren<Renderer>(true)){var identity=renderer.GetComponent<PartIdentity>();foreach(var material in renderer.sharedMaterials.Where(m=>m&&m.HasProperty("_Color"))){bool custom=identity?identity!.UsePlayerColor:material.HasProperty("_CustomColors")?material.GetFloat("_CustomColors")>0:material.HasProperty("_Glow")&&material.GetFloat("_Glow")>0;if(custom)material.SetColor("_Color",color);}}}
     public string Save(){
-        foreach(var s in Project.Surfaces.Values.Concat(Project.Parts.Select(x=>x.Surface)))if(shaderFiles.TryGetValue(s.Shader,out var file)){
+        foreach(var s in Project.Surfaces.Values.Concat(Project.Parts.Select(x=>x.Surface)))if(s.Shader!="Workshop/Glow"&&shaderFiles.TryGetValue(s.Shader,out var file)){
             string relative=file.Substring(Path.Combine(GameRoot,"CustomSabers").Length+1);using(var sha=SHA256.Create())using(var stream=File.OpenRead(file))Project.ShaderFiles[relative]=BitConverter.ToString(sha.ComputeHash(stream)).Replace("-","").ToLowerInvariant();
         }
         Validate(Project);EnsureFolders();string name=string.Concat(Project.Name.Where(c=>!Path.GetInvalidFileNameChars().Contains(c))).Trim();if(name.Length==0)name="Workshop Saber";name=name.Substring(0,Math.Min(80,name.Length));var path=SafePath(ProjectFolder,name+".workshop.json");var json=JsonConvert.SerializeObject(Project,Formatting.Indented);var temporary=path+".tmp";File.WriteAllText(temporary,json,Encoding.UTF8);if(File.Exists(path))File.Replace(temporary,path,path+".bak");else File.Move(temporary,path);return path;
@@ -168,10 +170,11 @@ public sealed class WorkshopState
         if(p==null||p.Version!=1||p.Name==null||p.Name.Length>200||p.Parts==null||p.Parts.Count>400||p.Surfaces==null||p.Transforms==null||p.ShaderFiles==null||p.ShaderFiles.Count>100||p.Surfaces.Count>10000||p.Transforms.Count>10000)throw new InvalidDataException("Invalid Workshop project");
         foreach(var e in p.Transforms.Values)if(e==null||!Vec(e.Position,3)||!Vec(e.Rotation,3)||!Vec(e.Scale,3))throw new InvalidDataException("Invalid transform");
         if(!(p.SaberLength>=.1f&&p.SaberLength<=3&&p.SaberWidth>=.1f&&p.SaberWidth<=3))throw new InvalidDataException("Invalid saber size");
-        foreach(var x in p.Parts){if(x.Sections==null||x.Sections.Count<2||x.Sections.Count>128||x.Sides<3||x.Sides>128||!(x.Length>.00001f&&x.Length<=5)||!Vec(x.Position,3)||!Vec(x.Rotation,3))throw new InvalidDataException("Invalid profile");foreach(var s in x.Sections)if(float.IsNaN(s.T)||float.IsNaN(s.Radius)||float.IsNaN(s.X)||float.IsNaN(s.Y)||s.T<0||s.T>1||s.Radius<0||s.Radius>3||Math.Abs(s.X)>3||Math.Abs(s.Y)>3)throw new InvalidDataException("Invalid section");}
+        foreach(var x in p.Parts){if(x.Sections==null||x.Sections.Count<2||x.Sections.Count>128||x.Sides<3||x.Sides>128||!(x.Length>.00001f&&x.Length<=5)||!Vec(x.Position,3)||!Vec(x.Rotation,3)||!(x.OutlineThickness>=0&&x.OutlineThickness<=.05f))throw new InvalidDataException("Invalid profile");if(x.Geometry!=null){var g=x.Geometry;if(g.Positions==null||g.Indices==null||g.UV==null||g.Positions.Length==0||g.Positions.Length%3!=0||g.Positions.Length>1500000||g.Indices.Length%3!=0||g.Indices.Any(i=>i<0||i>=g.Positions.Length/3)||g.Positions.Any(v=>float.IsNaN(v)||float.IsInfinity(v)||Math.Abs(v)>100))throw new InvalidDataException("Invalid mesh");}foreach(var s in x.Sections)if(float.IsNaN(s.T)||float.IsNaN(s.Radius)||float.IsNaN(s.X)||float.IsNaN(s.Y)||s.T<0||s.T>1||s.Radius<0||s.Radius>3||Math.Abs(s.X)>3||Math.Abs(s.Y)>3)throw new InvalidDataException("Invalid section");}
         foreach(var s in p.Surfaces.Values.Concat(p.Parts.Select(x=>x.Surface))){if(s==null||s.Numbers.Count>2000||s.Textures.Count>100)throw new InvalidDataException("Invalid material");foreach(var x in s.Numbers.Values)if(float.IsNaN(x)||float.IsInfinity(x))throw new InvalidDataException("Invalid material value");foreach(var x in s.Colors.Values.Concat(s.Vectors.Values))if(!Vec(x,4))throw new InvalidDataException("Invalid color / vector");foreach(var t in s.Textures.Values)if(t==null||!Vec(t.Scale,2)||!Vec(t.Offset,2)||t.Png==null||t.Png.Length>17*1024*1024)throw new InvalidDataException("Invalid texture");}
     }
     public static Mesh BuildMesh(ProfilePart p){
+        if(p.Geometry!=null){var loaded=p.Geometry.Create();loaded.name=p.Name;FinishMesh(loaded,p);return loaded;}
         var vertices=new List<Vector3>();var uv=new List<Vector2>();var indices=new List<int>();int sides=Mathf.Clamp(p.Sides,3,128);
         var rings=p.Sections.OrderBy(s=>s.T).ToArray();
         if(p.Shape=="ring"){
@@ -183,7 +186,8 @@ public sealed class WorkshopState
             for(int j=0;j<rings.Length-1;j++)for(int i=0;i<sides;i++){int a=j*(sides+1)+i,b=a+sides+1;indices.AddRange(new[]{a,a+1,b,a+1,b+1,b});}
             if(p.Caps)for(int end=0;end<2;end++){int ri=end==0?0:rings.Length-1,center=vertices.Count;var s=rings[ri];vertices.Add(new Vector3(s.X,s.Y,s.T*p.Length));uv.Add(new Vector2(.5f,s.T));for(int i=0;i<sides;i++){int a=ri*(sides+1)+i;indices.AddRange(end==0?new[]{center,a+1,a}:new[]{center,a,a+1});}}
         }
-        var mesh=new Mesh{name=p.Name,indexFormat=IndexFormat.UInt32};mesh.SetVertices(vertices);mesh.SetUVs(0,uv);mesh.SetTriangles(indices,0);mesh.RecalculateNormals();mesh.RecalculateBounds();return mesh;
+        var mesh=new Mesh{name=p.Name,indexFormat=IndexFormat.UInt32};mesh.SetVertices(vertices);mesh.SetUVs(0,uv);mesh.SetTriangles(indices,0);mesh.RecalculateNormals();FinishMesh(mesh,p);mesh.RecalculateBounds();return mesh;
     }
+    private static void FinishMesh(Mesh mesh,ProfilePart p){var vertices=mesh.vertices;var normals=mesh.normals;for(int i=0;i<vertices.Length;i++)vertices[i]+=normals[i]*p.OutlineThickness;mesh.vertices=vertices;if(p.Inverted){var triangles=mesh.triangles;for(int i=0;i<triangles.Length;i+=3){int a=triangles[i+1];triangles[i+1]=triangles[i+2];triangles[i+2]=a;}mesh.triangles=triangles;mesh.normals=normals.Select(n=>-n).ToArray();}mesh.RecalculateBounds();}
 }
 public sealed class PartIdentity : MonoBehaviour {public string Id="";public bool UsePlayerColor;}

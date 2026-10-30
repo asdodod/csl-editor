@@ -55,7 +55,7 @@ public sealed partial class EditorController : NotifiableBase,IInitializable,IDi
 
     public string Status {get;private set;}="";
     public string ProjectName {get=>state.Project.Name;set{state.Project.Name=(value??"New saber").Substring(0,Math.Min(120,(value??"New saber").Length));NotifyPropertyChanged();}}
-    public bool PlayEnabled {get=>state.PlayEnabled;set{if(value&&!state.Ready){SetStatus("Create or open a saber first.");return;}state.PlayEnabled=value;NotifyPropertyChanged();SetStatus(value?"Enabled for the next map.":"Gameplay model disabled.");}}
+    public bool PlayEnabled {get=>state.PlayEnabled;set{if(value&&!state.HasGeometry){SetStatus("Add a blade or handle first.");return;}state.PlayEnabled=value;NotifyPropertyChanged();SetStatus(value?"Enabled for the next map.":"Gameplay model disabled.");}}
     public bool LinkHands {get=>state.Project.LinkHands;set{state.Project.LinkHands=value;NotifyPropertyChanged();}}
     public List<object> SourceOptions {get;private set;}=new List<object>();
     public List<object> ProjectOptions {get;private set;}=new List<object>();
@@ -86,7 +86,8 @@ public sealed partial class EditorController : NotifiableBase,IInitializable,IDi
     public bool IsNumber=>PropertyType==ShaderPropertyType.Float||PropertyType==ShaderPropertyType.Range||PropertyType==ShaderPropertyType.Int;
     public bool IsColor=>PropertyType==ShaderPropertyType.Color;
     public bool IsVector=>PropertyType==ShaderPropertyType.Vector;
-    public bool IsProfile=>Part!=null;
+    public bool IsProfile=>Part!=null&&Part.Geometry==null;
+    public bool IsCreatedPart=>Part!=null;
     public string MaterialInfo=>Material?Material!.name+"\n"+Material.shader.name:"Select a part and layer.";
     public string PropertyHelp {get{if(!Material||Property=="")return "Select a property.";int index=Material!.shader.FindPropertyIndex(Property);var type=Material.shader.GetPropertyType(index);return Property+(type==ShaderPropertyType.Range?" · range "+Material.shader.GetPropertyRangeLimits(index):"");}}
     public string TextureInfo {get{if(!Material||TextureSlot=="")return "No 2D texture slots.";var texture=Material!.GetTexture(TextureSlot);return TextureSlot+" · "+(texture?texture!.name+" · "+texture.width+" × "+texture.height:"none");}}
@@ -96,14 +97,14 @@ public sealed partial class EditorController : NotifiableBase,IInitializable,IDi
     private async Task Run(Func<Task> action){if(busy)return;busy=true;try{await action();}catch(Exception e){Plugin.Log.Error(e.ToString());SetStatus(e.Message);}finally{busy=false;}}
     [UIAction("RefreshFiles")] public void RefreshFiles(){Guard(()=>{
         WorkshopState.EnsureFolders();sources=WorkshopState.SaberFiles().ToList();projects=Directory.GetFiles(WorkshopState.ProjectFolder,"*.workshop.json").OrderBy(x=>x).ToList();textures=Directory.GetFiles(WorkshopState.TextureFolder).Where(x=>new[]{".png",".jpg",".jpeg"}.Contains(Path.GetExtension(x).ToLowerInvariant())).OrderBy(x=>x).ToList();
-        SourceOptions=sources.Select(x=>(object)x.Substring(Path.Combine(WorkshopState.GameRoot,"CustomSabers").Length+1)).ToList();ProjectOptions=projects.Select(x=>(object)Path.GetFileName(x)).ToList();TextureFileOptions=textures.Select(x=>(object)Path.GetFileName(x)).ToList();
+        SourceOptions=sources.Select(x=>(object)x.Substring(Path.Combine(WorkshopState.GameRoot,"CustomSabers").Length+1)).ToList();ProjectOptions=projects.Select(x=>(object)Path.GetFileName(x).Replace(".workshop.json","")).ToList();TextureFileOptions=textures.Select(x=>(object)Path.GetFileName(x)).ToList();
         if(!SourceOptions.Contains(SourceChoice))SourceChoice=Choice(SourceOptions,0);if(!ProjectOptions.Contains(ProjectChoice))ProjectChoice=Choice(ProjectOptions,0);if(!TextureFileOptions.Contains(TextureFileChoice))TextureFileChoice=Choice(TextureFileOptions,0);
         UpdateList(sourceList,SourceOptions,SourceChoice);UpdateList(projectList,ProjectOptions,ProjectChoice);UpdateList(gameplayProjectList,ProjectOptions,ProjectChoice);UpdateList(textureFileList,TextureFileOptions,TextureFileChoice);
     });}
     [UIAction("OpenSource")] public async void OpenSource(){await Run(async()=>{if(SourceChoice=="")throw new InvalidOperationException("Add a .saber to CustomSabers, then refresh files.");SetStatus("Loading saber...");await state.OpenSaber(SourceChoice);partIndex=-1;BuildPreview();SetStatus("Opened "+state.Project.Name+"");});}
-    [UIAction("OpenProject")] public async void OpenProject(){await Run(async()=>{if(ProjectChoice=="")throw new InvalidOperationException("No saved projects.");await state.LoadProject(ProjectChoice);BuildPreview();SetStatus("Project opened.");});}
+    [UIAction("OpenProject")] public async void OpenProject(){await Run(async()=>{int index=ProjectOptions.IndexOf(ProjectChoice);if(index<0)throw new InvalidOperationException("No saved presets.");await state.LoadProject(Path.GetFileName(projects[index]));undo.Clear();redo.Clear();partIndex=-1;BuildPreview();SetStatus("Preset opened.");});}
     [UIAction("New")] public void New(){Guard(()=>{state.CreateStarter();partIndex=0;BuildPreview();SetStatus("Flux created.");});}
-    [UIAction("Save")] public void Save(){Guard(()=>{var path=state.Save();RefreshFiles();SetStatus("Saved: "+Path.GetFileName(path));});}
+    [UIAction("Save")] public void Save(){Guard(()=>{var path=state.Save();RefreshFiles();ProjectChoice=Path.GetFileName(path).Replace(".workshop.json","");UpdateList(projectList,ProjectOptions,ProjectChoice);UpdateList(gameplayProjectList,ProjectOptions,ProjectChoice);SetStatus("Preset saved: "+Path.GetFileName(path));});}
     [UIAction("ShowPreview")] public void ShowPreview(){Guard(()=>{if(!state.Ready)throw new InvalidOperationException("Create or open a saber first.");if(!preview)BuildPreview();visible=true;PlacePreview();preview!.SetActive(true);NotifyPropertyChanged(nameof(PreviewVisible));});}
     private void PlacePreview(){
         if(!preview)return;
@@ -112,12 +113,12 @@ public sealed partial class EditorController : NotifiableBase,IInitializable,IDi
         preview!.transform.SetParent(wall,true);preview.transform.SetPositionAndRotation(Vector3.zero,yaw);
         preview.transform.localScale=Vector3.one*(previewScale/(wall?wall!.lossyScale.x:1));
         var target=WorkbenchLayout.PreviewCenter(wall);
-        var meshes=preview.GetComponentsInChildren<Renderer>(true).Where(r=>(r is MeshRenderer||r is SkinnedMeshRenderer)&&r.enabled&&VisibleParents(r.transform,preview.transform)).ToArray();var bounds=new Bounds(Vector3.zero,Vector3.zero);
+        var meshes=preview.GetComponentsInChildren<Renderer>(true).Where(r=>(r is MeshRenderer||r is SkinnedMeshRenderer)&&!r.GetComponentInParent<SizeGuideMarker>()&&r.enabled&&VisibleParents(r.transform,preview.transform)).ToArray();var bounds=new Bounds(Vector3.zero,Vector3.zero);
         if(meshes.Length>0){bounds=meshes[0].bounds;foreach(var mesh in meshes.Skip(1))bounds.Encapsulate(mesh.bounds);}preview.transform.position=target-bounds.center;
         Plugin.Log.Info("Preview centered at "+target+" in static menu space");
     }
     private static bool VisibleParents(Transform node,Transform root){while(node!=root&&node){if(!node.gameObject.activeSelf)return false;node=node.parent;}return true;}
-    private void BuildPreview(){if(preview)Object.Destroy(preview);preview=state.InstantiatePair();preview.SetActive(visible);PlacePreview();RefreshSelection();ApplyColors();NotifyPropertyChanged(nameof(ProjectName));NotifyPropertyChanged(nameof(PlayEnabled));}
+    private void BuildPreview(){if(preview)Object.Destroy(preview);preview=state.InstantiatePair();guidePreview=WorkshopAssets.AttachGuide(preview);guidePreview.SetActive(showSizeGuide);preview.SetActive(visible);PlacePreview();RefreshSelection();ApplyColors();NotifyPropertyChanged(nameof(ProjectName));NotifyPropertyChanged(nameof(PlayEnabled));}
     public bool PreviewVisible {get=>visible;set{visible=value;if(preview)preview!.SetActive(value);NotifyPropertyChanged();}}
     public float PreviewScale {get=>previewScale;set{previewScale=Mathf.Clamp(value,.2f,2);if(preview)PlacePreview();}}
     public Color LeftColor {get=>left;set{left=value;ApplyColors();}}
@@ -139,7 +140,7 @@ public sealed partial class EditorController : NotifiableBase,IInitializable,IDi
         }finally{refreshing=false;}NotifyValues();
     }
     private void UpdateList(DropDownListSetting list,List<object> options,string value){if(!list)return;bool old=refreshing;refreshing=true;try{list.Values=options;list.UpdateChoices();if(options.Count>0)list.Value=value;}finally{refreshing=old;}}
-    private void NotifyValues(){foreach(string name in new[]{nameof(IsNumber),nameof(IsColor),nameof(IsVector),nameof(IsProfile),nameof(MaterialInfo),nameof(PropertyHelp),nameof(TextureInfo),nameof(NumberValue),nameof(ColorValue),nameof(ColorIntensity),nameof(AlphaValue),nameof(VectorX),nameof(VectorY),nameof(VectorZ),nameof(VectorW),nameof(TileX),nameof(TileY),nameof(OffsetX),nameof(OffsetY),nameof(PartLength),nameof(SectionRadius),nameof(SectionPosition),nameof(SectionX),nameof(SectionY),nameof(Sides),nameof(PositionX),nameof(PositionY),nameof(PositionZ),nameof(RotationX),nameof(RotationY),nameof(RotationZ),nameof(PartVisible),nameof(PartName),nameof(MaterialName),nameof(PlayerColor),nameof(TintColor),nameof(Glow),nameof(HasTint),nameof(HasGlow),nameof(SaberLength),nameof(SaberWidth),nameof(LinkHands)})NotifyPropertyChanged(name);}
+    private void NotifyValues(){foreach(string name in new[]{nameof(IsNumber),nameof(IsColor),nameof(IsVector),nameof(IsProfile),nameof(MaterialInfo),nameof(PropertyHelp),nameof(TextureInfo),nameof(NumberValue),nameof(ColorValue),nameof(ColorIntensity),nameof(AlphaValue),nameof(VectorX),nameof(VectorY),nameof(VectorZ),nameof(VectorW),nameof(TileX),nameof(TileY),nameof(OffsetX),nameof(OffsetY),nameof(PartLength),nameof(SectionRadius),nameof(SectionPosition),nameof(SectionX),nameof(SectionY),nameof(Sides),nameof(PositionX),nameof(PositionY),nameof(PositionZ),nameof(RotationX),nameof(RotationY),nameof(RotationZ),nameof(PartVisible),nameof(PartName),nameof(MaterialName),nameof(PlayerColor),nameof(TintColor),nameof(Glow),nameof(HasTint),nameof(HasGlow),nameof(SaberLength),nameof(SaberWidth),nameof(LinkHands),nameof(IsCreatedPart),nameof(InvertedFaces),nameof(OutlineWidth)})NotifyPropertyChanged(name);}
     private static bool Common(string key)=>new[]{"_Color","_TintColor","_StarNestMainColor","_Glow","_BSGlow","_ALTGlow","_Bloom","_CustomColors","_Opacity","_Intensity","_Brightness","_Metallic","_Glossiness"}.Contains(key);
     private static string Label(string key,string fallback){return new Dictionary<string,string>{{"_Color","Color"},{"_TintColor","Tint"},{"_StarNestMainColor","Plasma color"},{"_Glow","Glow"},{"_BSGlow","Glow"},{"_CustomColors","Player color: 0 off, 1 on"},{"_Opacity","Opacity"},{"_Intensity","Brightness"},{"_Brightness","Texture brightness"},{"_AlphaTexture","Pattern / mask"},{"_AlphaTex","Pattern / mask"},{"_MainTex","Main texture"},{"_Displacement","Distortion / fire"},{"_DisplaceTex","Distortion / fire"},{"_FadeMask","Fade mask"},{"_MaskTex","Mask"},{"_textureScroll","Texture speed X / Y"},{"_fademaskScroll","Mask speed X / Y"},{"_Metallic","Metallic"},{"_Glossiness","Smoothness"},{"_Markiplier","Edge sharpness"}}.TryGetValue(key,out var label)?label:string.IsNullOrEmpty(fallback)?key:fallback;}
     private SurfaceEdit? Edit {get{if(!Material||!Selected)return null;if(Part!=null)return Part.Surface;var hand=preview!.transform.Find("LeftSaber");var key="LeftSaber/"+WorkshopState.PathOf(Selected!.transform,hand)+"#"+materialIndex;if(!state.Project.Surfaces.TryGetValue(key,out var edit)){edit=new SurfaceEdit();state.Project.Surfaces[key]=edit;}return edit;}}

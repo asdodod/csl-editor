@@ -7,6 +7,7 @@ namespace SaberWorkshop;
 public class WorkshopProject
 {
     public int Version=1;
+    public bool Created;
     public string Name="New saber";
     public string SourceFile="";
     public string SourceHash="";
@@ -44,8 +45,18 @@ public class ProfilePart
     public string Id=Guid.NewGuid().ToString("N");public string Name="Part";public string Shape="profile";
     public float Length=.2f;public int Sides=32;public bool Caps=true;public string Side="both";public bool Visible=true;
     public float[] Position={0,0,0};public float[] Rotation={0,0,0};
+    [Newtonsoft.Json.JsonProperty(ObjectCreationHandling=Newtonsoft.Json.ObjectCreationHandling.Replace)]
     public List<Section> Sections=new List<Section>{new Section{T=0,Radius=.018f},new Section{T=1,Radius=.018f}};
     public SurfaceEdit Surface=new SurfaceEdit();
+    public bool Inverted;
+    public float OutlineThickness;
+    public MeshData? Geometry;
+}
+public class MeshData
+{
+    public float[] Positions=Array.Empty<float>();public float[] Normals=Array.Empty<float>();public float[] UV=Array.Empty<float>();public int[] Indices=Array.Empty<int>();
+    public static MeshData Capture(Mesh mesh)=>new MeshData{Positions=System.Linq.Enumerable.ToArray(System.Linq.Enumerable.SelectMany(mesh.vertices,v=>new[]{v.x,v.y,v.z})),Normals=System.Linq.Enumerable.ToArray(System.Linq.Enumerable.SelectMany(mesh.normals,v=>new[]{v.x,v.y,v.z})),UV=System.Linq.Enumerable.ToArray(System.Linq.Enumerable.SelectMany(mesh.uv,v=>new[]{v.x,v.y})),Indices=mesh.triangles};
+    public Mesh Create(){var mesh=new Mesh{indexFormat=UnityEngine.Rendering.IndexFormat.UInt32};var v=new Vector3[Positions.Length/3];for(int i=0;i<v.Length;i++)v[i]=new Vector3(Positions[i*3],Positions[i*3+1],Positions[i*3+2]);mesh.vertices=v;mesh.triangles=Indices;if(UV.Length==v.Length*2){var uv=new Vector2[v.Length];for(int i=0;i<uv.Length;i++)uv[i]=new Vector2(UV[i*2],UV[i*2+1]);mesh.uv=uv;}mesh.RecalculateNormals();mesh.RecalculateBounds();return mesh;}
 }
 public class Section
 {

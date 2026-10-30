@@ -15,6 +15,7 @@ public sealed partial class EditorController
     [UIAction("ExportCSL")]
     public async void ExportCSL(){await Run(async()=>{
         if(!state.Ready)throw new InvalidOperationException("Create or open a saber first.");
+        if(!state.HasGeometry)throw new InvalidOperationException("Add a blade or handle before exporting.");
         WorkshopState.Validate(state.Project);
         var configPath=Path.Combine(WorkshopState.DataRoot,"exporter.json");if(!File.Exists(configPath))throw new InvalidOperationException("CSL exporter is not installed.");
         var config=JObject.Parse(File.ReadAllText(configPath));var python=(string?)config["PythonExecutable"];var script=(string?)config["Script"];
