@@ -41,7 +41,7 @@ public sealed partial class EditorController : NotifiableBase,IInitializable,IDi
     [UIComponent("section-list")] private DropDownListSetting sectionList=null!;
     public EditorController(GameplaySetup gameplaySetup,ColorSchemesSettings colorSchemes){this.gameplaySetup=gameplaySetup;this.colorSchemes=colorSchemes;}
     public void Initialize(){gameplaySetup.AddTab("Saber Workshop","SaberWorkshop.Gameplay.bsml",this,MenuType.Solo);RefreshFiles();}
-    public void Dispose(){gameplaySetup.RemoveTab("Saber Workshop");if(preview)Object.Destroy(preview);workspace?.Dispose();}
+    public void Dispose(){DisposeEffectDraft();gameplaySetup.RemoveTab("Saber Workshop");if(preview)Object.Destroy(preview);workspace?.Dispose();}
     [UIAction("OpenEditor")] public void OpenEditor(){Guard(()=>{
         if(workspace==null)workspace=new WorkshopWall(this);
         workspace.Show();EditorOpened();
@@ -49,7 +49,7 @@ public sealed partial class EditorController : NotifiableBase,IInitializable,IDi
     });}
     [UIAction("CloseEditor")] public void CloseEditor(){workspace?.Hide();EditorClosed();}
     [UIAction("RecenterWall")] public void RecenterWall(){workspace?.Recenter();if(preview)PlacePreview();}
-    public void EditorOpened(){editorOpen=true;var scheme=colorSchemes.GetOverrideColorScheme();if(scheme!=null){left=scheme.saberAColor;right=scheme.saberBColor;}RefreshFiles();if(preview){preview!.SetActive(visible);PlacePreview();ApplyColors();}RefreshSelection();}
+    public void EditorOpened(){editorOpen=true;var scheme=colorSchemes.GetOverrideColorScheme();if(scheme!=null){left=scheme.saberAColor;right=scheme.saberBColor;}RefreshFiles();if(preview){preview!.SetActive(visible&&!ShaderInspector);PlacePreview();ApplyColors();}RefreshSelection();}
     public void EditorClosed(){editorOpen=false;if(preview)preview!.SetActive(false);}
     [UIAction("#post-parse")] private void Parsed(){RefreshFiles();RefreshSelection();}
 
@@ -119,7 +119,7 @@ public sealed partial class EditorController : NotifiableBase,IInitializable,IDi
         Plugin.Log.Info("Preview centered at "+target+" in static menu space");
     }
     private static bool VisibleParents(Transform node,Transform root){while(node!=root&&node){if(!node.gameObject.activeSelf)return false;node=node.parent;}return true;}
-    private void BuildPreview(){if(preview){preview!.SetActive(false);Object.Destroy(preview);}preview=state.InstantiatePair();guidePreview=WorkshopAssets.AttachGuide(preview);guidePreview.SetActive(showSizeGuide);PlacePreview();RefreshSelection();ApplyColors();PreparePreview();ConfigureMotion();preview.SetActive(visible&&editorOpen);NotifyPropertyChanged(nameof(ProjectName));NotifyPropertyChanged(nameof(PlayEnabled));}
+    private void BuildPreview(){if(preview){preview!.SetActive(false);Object.Destroy(preview);}preview=state.InstantiatePair();guidePreview=WorkshopAssets.AttachGuide(preview);guidePreview.SetActive(showSizeGuide);PlacePreview();RefreshSelection();ApplyColors();PreparePreview();ConfigureMotion();preview.SetActive(visible&&editorOpen&&!ShaderInspector);NotifyPropertyChanged(nameof(ProjectName));NotifyPropertyChanged(nameof(PlayEnabled));}
     public bool PreviewVisible {get=>visible;set{visible=value;if(preview)preview!.SetActive(value);NotifyPropertyChanged();}}
     public float PreviewScale {get=>previewScale;set{previewScale=Mathf.Clamp(value,.2f,2);if(preview)PlacePreview();}}
     public Color LeftColor {get=>left;set{left=value;ApplyColors();}}
@@ -139,7 +139,7 @@ public sealed partial class EditorController : NotifiableBase,IInitializable,IDi
             RefreshTree();
             foreach(var list in new[]{materialList,textureMaterialList})UpdateList(list,MaterialOptions,MaterialChoice);
             UpdateList(shaderList,ShaderOptions,ShaderChoice);UpdateList(propertyList,PropertyOptions,PropertyChoice);UpdateList(textureSlotList,TextureSlotOptions,TextureSlotChoice);UpdateList(sectionList,SectionOptions,SectionChoice);
-        }finally{refreshing=false;}NotifyValues();
+        }finally{refreshing=false;}if(ShaderInspector){RefreshEffectTargets();RefreshMaterialThumbnail();}NotifyValues();
     }
     private void UpdateList(DropDownListSetting list,List<object> options,string value){if(!list)return;bool old=refreshing;refreshing=true;try{list.Values=options;list.UpdateChoices();if(options.Count>0)list.Value=value;}finally{refreshing=old;}}
     private void NotifyValues(){bool old=refreshing;refreshing=true;try{SyncSliderRanges();foreach(string name in new[]{nameof(IsNumber),nameof(IsColor),nameof(IsVector),nameof(IsProfile),nameof(MaterialInfo),nameof(PropertyHelp),nameof(TextureInfo),nameof(NumberValue),nameof(ColorValue),nameof(ColorIntensity),nameof(AlphaValue),nameof(VectorX),nameof(VectorY),nameof(VectorZ),nameof(VectorW),nameof(TileX),nameof(TileY),nameof(OffsetX),nameof(OffsetY),nameof(PartLength),nameof(SectionRadius),nameof(SectionPosition),nameof(SectionX),nameof(SectionY),nameof(Sides),nameof(PositionX),nameof(PositionY),nameof(PositionZ),nameof(RotationX),nameof(RotationY),nameof(RotationZ),nameof(PartVisible),nameof(PartName),nameof(MaterialName),nameof(PlayerColor),nameof(TintColor),nameof(Glow),nameof(HasTint),nameof(HasGlow),nameof(SaberLength),nameof(SaberWidth),nameof(LinkHands),nameof(IsCreatedPart),nameof(InvertedFaces),nameof(OutlineWidth)})NotifyPropertyChanged(name);NotifyModern();NotifyPropertyChanged(nameof(EditorTitle));}finally{refreshing=old;}}

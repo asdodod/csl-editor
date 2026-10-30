@@ -40,6 +40,7 @@ public static class PreviewBatch {
  static void Capture(string name){
   Canvas.ForceUpdateCanvases();foreach(var text in view.GetComponentsInChildren<PreviewTextSize>(true))text.Apply();Canvas.ForceUpdateCanvases();
   foreach(var scroll in view.GetComponentsInChildren<ScrollRect>())if(scroll.verticalScrollbar)scroll.verticalScrollbar.size=Mathf.Clamp01(scroll.viewport.rect.height/Mathf.Max(1,scroll.content.rect.height));
+  foreach(var sample in view.GetComponentsInChildren<SaberWorkshop.MaterialThumbnail>())sample.RenderNow();
   var rt=new RenderTexture(2000,1120,24);camera.targetTexture=rt;camera.Render();var previous=RenderTexture.active;RenderTexture.active=rt;
   var image=new Texture2D(rt.width,rt.height,TextureFormat.RGBA32,false);image.ReadPixels(new Rect(0,0,rt.width,rt.height),0,0);image.Apply();File.WriteAllBytes(Path.Combine(output,name),image.EncodeToPNG());
   RenderTexture.active=previous;camera.targetTexture=null;UnityEngine.Object.DestroyImmediate(image);UnityEngine.Object.DestroyImmediate(rt);

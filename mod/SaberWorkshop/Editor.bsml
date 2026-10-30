@@ -337,6 +337,10 @@
                 <button text="Flow plasma" on-click="PlasmaEffect" preferred-width="30.666666666666668" preferred-height="7" />
                 <button text="3D space" on-click="SpaceEffect" preferred-width="30.666666666666668" preferred-height="7" />
               </horizontal>
+              <horizontal preferred-width="94" preferred-height="8" child-control-width="true" child-control-height="true" child-expand-width="false" spacing="2">
+                <dropdown-list-setting text="" value="TextureFileChoice" choices="TextureFileOptions" apply-on-change="true" bind-value="true" preferred-width="64" preferred-height="8" />
+                <button text="Use image" on-click="UseDraftImage" preferred-width="28" preferred-height="8" />
+              </horizontal>
               <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
                 <text text="Saved effects" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
                 <dropdown-list-setting text="" value="SavedEffectChoice" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" id="effect-list" choices="SavedEffects" />
@@ -352,7 +356,7 @@
                 </horizontal>
                 <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
                   <text text="Base colour" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                  <color-setting text="" value="TintColor" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" />
+                  <color-setting text="" value="EffectColor" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" />
                 </horizontal>
                 <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
                   <text text="Accent" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
@@ -380,7 +384,7 @@
                 </horizontal>
                 <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
                   <text text="Glow" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                  <slider-setting text="" value="Glow" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.05" min="0" max="5" show-buttons="false" formatter="FormatNumber" />
+                  <slider-setting text="" value="EffectGlow" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.05" min="0" max="5" show-buttons="false" formatter="FormatNumber" />
                 </horizontal>
               </vertical>
             </vertical>
@@ -389,22 +393,34 @@
         </vertical>
       </scroll-view>
     </vertical>
-    <vertical preferred-width="82" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" preferred-height="104">
-      <text text="PREVIEW" font-size="3.8" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="82" preferred-height="5" />
-      <vertical preferred-height="60" min-height="60" preferred-width="82" child-control-height="true" child-control-width="true" child-expand-height="false" />
-      <horizontal preferred-width="80" preferred-height="6.4" child-control-height="true" child-control-width="true" child-expand-width="false">
-        <text text="FBX sizing guide" preferred-width="62" preferred-height="6.4" font-size="3.4" word-wrapping="false" />
-        <bool-setting text="" value="ShowSizeGuide" apply-on-change="true" bind-value="true" preferred-width="18" preferred-height="6.4" />
-      </horizontal>
-      <horizontal preferred-width="80" preferred-height="6.4" child-control-height="true" child-control-width="true" child-expand-width="false">
-        <text text="Use preset in game" preferred-width="62" preferred-height="6.4" font-size="3.4" word-wrapping="false" />
-        <bool-setting text="" value="PlayEnabled" apply-on-change="true" bind-value="true" preferred-width="18" preferred-height="6.4" />
-      </horizontal>
-      <horizontal preferred-width="80" preferred-height="6.4" child-control-height="true" child-control-width="true" child-expand-width="false">
-        <text text="Test swing" preferred-width="62" preferred-height="6.4" font-size="3.4" word-wrapping="false" />
-        <bool-setting text="" value="TestSwing" bind-value="true" apply-on-change="true" preferred-width="18" preferred-height="6.4" />
-      </horizontal>
-      <button text="Fit preview" on-click="ShowPreview" preferred-width="80" preferred-height="7" />
+    <vertical preferred-width="82" preferred-height="104" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1">
+      <text text="~PreviewTitle" font-size="3.8" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="82" preferred-height="5" />
+      <vertical active="~SaberPreviewArea" preferred-width="82" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1">
+        <vertical preferred-height="60" min-height="60" preferred-width="82" child-control-height="true" child-control-width="true" child-expand-height="false" />
+        <horizontal preferred-width="80" preferred-height="6.4" child-control-height="true" child-control-width="true" child-expand-width="false">
+          <text text="FBX sizing guide" preferred-width="62" preferred-height="6.4" font-size="3.4" word-wrapping="false" />
+          <bool-setting text="" value="ShowSizeGuide" apply-on-change="true" bind-value="true" preferred-width="18" preferred-height="6.4" />
+        </horizontal>
+        <horizontal preferred-width="80" preferred-height="6.4" child-control-height="true" child-control-width="true" child-expand-width="false">
+          <text text="Use preset in game" preferred-width="62" preferred-height="6.4" font-size="3.4" word-wrapping="false" />
+          <bool-setting text="" value="PlayEnabled" apply-on-change="true" bind-value="true" preferred-width="18" preferred-height="6.4" />
+        </horizontal>
+        <horizontal preferred-width="80" preferred-height="6.4" child-control-height="true" child-control-width="true" child-expand-width="false">
+          <text text="Test swing" preferred-width="62" preferred-height="6.4" font-size="3.4" word-wrapping="false" />
+          <bool-setting text="" value="TestSwing" bind-value="true" apply-on-change="true" preferred-width="18" preferred-height="6.4" />
+        </horizontal>
+        <button text="Fit preview" on-click="ShowPreview" preferred-width="80" preferred-height="7" />
+      </vertical>
+      <vertical active="~ShaderInspector" preferred-width="80" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2">
+        <raw-image id="material-thumbnail" preferred-width="80" preferred-height="50" />
+        <horizontal preferred-width="80" preferred-height="8" child-control-width="true" child-control-height="true" child-expand-width="false" spacing="2">
+          <text text="Sample" preferred-width="22" preferred-height="8" font-size="3.4" word-wrapping="false" />
+          <dropdown-list-setting text="" value="MaterialPreviewForm" choices="MaterialPreviewForms" bind-value="true" apply-on-change="true" preferred-width="56" preferred-height="8" />
+        </horizontal>
+        <text text="Apply material to" preferred-height="4" font-size="3.4" preferred-width="80" word-wrapping="false" />
+        <dropdown-list-setting text="" id="material-target-list" value="EffectTarget" choices="EffectTargets" apply-on-change="true" bind-value="true" preferred-width="80" preferred-height="8" />
+        <button text="Apply to part" on-click="ApplyEffectDraft" preferred-width="80" preferred-height="8" />
+      </vertical>
     </vertical>
   </horizontal>
   <text text="~Status" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Ellipsis" preferred-width="244" preferred-height="6" />

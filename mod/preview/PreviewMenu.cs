@@ -21,15 +21,15 @@ public sealed class PreviewMenu : MonoBehaviour {
  readonly List<(Text text,string binding)> labels=new List<(Text,string)>();
  readonly List<(GameObject obj,string binding)> conditions=new List<(GameObject,string)>();
  RectTransform content;Font font;string inputTarget="";bool replaceNumber;
- GameObject sabers;readonly Color ink=new Color(.88f,.92f,.96f);
+ GameObject sabers;Material sampleMaterial;readonly Color ink=new Color(.88f,.92f,.96f);
  void Start(){if(content==null&&!string.IsNullOrEmpty(Markup))Initialize(Markup);}
  public void Initialize(string markup){
   foreach(var child in transform.Cast<Transform>().ToArray())Object.DestroyImmediate(child.gameObject);
   Markup=markup;font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
   var state=WorkshopState.Instance;state.CreateStarter();state.Project.Name="Flux";
-  var defaults=new Dictionary<string,object>{{"EditorTitle","Saber Workshop / Flux"},{"ProjectName","Flux"},{"PartName","Handle"},{"PartHeight",230f},{"PartWidth",36f},{"PartDepth",36f},{"HasSelection",true},{"NoSelection",false},{"ShapeInspector",true},{"ColorInspector",false},{"TextureInspector",false},{"ShaderInspector",false},{"IsSolidPart",true},{"IsProfile",true},{"HasTint",true},{"HasGlow",true},{"IsCreatedPart",true},{"ColorSource","RGB"},{"CrossSection","Round"},{"ShapeTabLabel","Part"},{"ColorTabLabel","Material"},{"TextureTabLabel","Images"},{"ShaderTabLabel","Effects"},{"Status","Select a part. Drag a slider; tap it to enter a number."},{"NumberText","0"},{"NumberTitle","Width · mm"},{"NewPresetName","My saber"},{"StarterChoice","Straight"},{"NewPartType","Blade"},{"MaterialName","Workshop material"},{"MaterialChoice","Workshop material"},{"TextureSlotChoice","Main texture"},{"EffectName","My plasma"},{"Glow",1f},{"EffectScale",4f},{"EffectSpeed",.3f},{"EffectDepth",1f},{"EffectBrightness",1.5f},{"FlowDirection","Up"}};
+  var defaults=new Dictionary<string,object>{{"EditorTitle","Saber Workshop / Flux"},{"ProjectName","Flux"},{"PartName","Handle"},{"PartHeight",230f},{"PartWidth",36f},{"PartDepth",36f},{"SaberPreviewArea",true},{"PreviewTitle","SABER PREVIEW"},{"MaterialPreviewForm","Sphere"},{"EffectTarget","1. Handle"},{"HasSelection",true},{"NoSelection",false},{"ShapeInspector",true},{"ColorInspector",false},{"TextureInspector",false},{"ShaderInspector",false},{"IsSolidPart",true},{"IsProfile",true},{"HasTint",true},{"HasGlow",true},{"IsCreatedPart",true},{"ColorSource","RGB"},{"CrossSection","Round"},{"ShapeTabLabel","Part"},{"ColorTabLabel","Material"},{"TextureTabLabel","Images"},{"ShaderTabLabel","Effects"},{"Status","Select a part. Drag a slider; tap it to enter a number."},{"NumberText","0"},{"NumberTitle","Width · mm"},{"NewPresetName","My saber"},{"StarterChoice","Straight"},{"NewPartType","Blade"},{"MaterialName","Workshop material"},{"MaterialChoice","Workshop material"},{"TextureSlotChoice","Main texture"},{"EffectName","My plasma"},{"Glow",1f},{"EffectScale",4f},{"EffectSpeed",.3f},{"EffectDepth",1f},{"EffectBrightness",1.5f},{"FlowDirection","Up"}};
   foreach(var pair in defaults)Values[pair.Key]=pair.Value;
-  Values["PartTypes"]=new[]{"Blade","Handle","Ring","Particles","Trail"};Values["ColorSources"]=new[]{"RGB","Note colour"};Values["CrossSections"]=new[]{"Round","Flat","Square","Triangle"};Values["StarterOptions"]=new[]{"Straight","Segmented","Empty"};Values["ProjectOptions"]=new[]{"Flux","My saber"};Values["MaterialOptions"]=new[]{"Workshop material"};Values["FlowDirections"]=new[]{"Up","Down","Across"};
+  Values["EffectTargets"]=state.Project.Parts.Select((p,i)=>(i+1)+". "+p.Name).ToArray();Values["MaterialPreviewForms"]=new[]{"Sphere","Blade","Ring","Selected part"};Values["TextureFileOptions"]=new[]{"No image"};Values["PartTypes"]=new[]{"Blade","Handle","Ring","Particles","Trail"};Values["ColorSources"]=new[]{"RGB","Note colour"};Values["CrossSections"]=new[]{"Round","Flat","Square","Triangle"};Values["StarterOptions"]=new[]{"Straight","Segmented","Empty"};Values["ProjectOptions"]=new[]{"Flux","My saber"};Values["MaterialOptions"]=new[]{"Workshop material"};Values["FlowDirections"]=new[]{"Up","Down","Across"};
   Build();
   sabers=state.InstantiatePair();sabers.transform.SetParent(transform,false);sabers.transform.localPosition=new Vector3(84,-5,-4);sabers.transform.localScale=Vector3.one*40;
   WorkshopState.ApplyPlayerColor(sabers.transform.Find("LeftSaber").gameObject,new Color(.9f,.07f,.2f));WorkshopState.ApplyPlayerColor(sabers.transform.Find("RightSaber").gameObject,new Color(.06f,.75f,.95f));sabers.AddComponent<PreviewPresentation>().Apply();
@@ -47,7 +47,7 @@ public sealed class PreviewMenu : MonoBehaviour {
   foreach(var label in labels)if(label.text)label.text.text=Convert.ToString(Get(label.binding),CultureInfo.InvariantCulture)??"";
   foreach(var condition in conditions)if(condition.obj)condition.obj.SetActive(Flag(condition.binding));
  }
- public void Activate(string page){foreach(var key in new[]{"ShapeInspector","ColorInspector","TextureInspector","ShaderInspector"})Values[key]=key==page;Refresh();}
+ public void Activate(string page){Values["SaberPreviewArea"]=page!="ShaderInspector";Values["PreviewTitle"]=page=="ShaderInspector"?"MATERIAL PREVIEW":"SABER PREVIEW";if(sabers)sabers.SetActive(page!="ShaderInspector");foreach(var key in new[]{"ShapeInspector","ColorInspector","TextureInspector","ShaderInspector"})Values[key]=key==page;Refresh();}
  static float N(XElement e,string key,float fallback=0)=>float.TryParse((string)e.Attribute(key),NumberStyles.Float,CultureInfo.InvariantCulture,out var n)?n:fallback;
  static bool B(XElement e,string key,bool fallback=false)=>bool.TryParse((string)e.Attribute(key),out var b)?b:fallback;
  static string A(XElement e,string key,string fallback="")=>(string)e.Attribute(key)??fallback;
@@ -96,7 +96,8 @@ public sealed class PreviewMenu : MonoBehaviour {
   }else if(tag=="dropdown-list-setting"){
    string key=A(e,"value");var choices=Get(A(e,"choices")) as string[]??new[]{"Workshop material"};int index=Math.Max(0,Array.IndexOf(choices,Convert.ToString(Get(key))));
    Button button=null;button=MakeButton(rect,choices[Math.Min(index,choices.Length-1)]+"  v",()=>{index=(index+1)%choices.Length;Set(key,choices[index]);button.GetComponentInChildren<Text>().text=choices[index]+"  v";});
-  }else if(tag=="color-setting")Fill(rect,new Color(.37f,.15f,.75f));
+  }else if(tag=="raw-image"){var image=rect.gameObject.AddComponent<RawImage>();sampleMaterial=WorkshopAssets.EffectMaterial();image.gameObject.AddComponent<MaterialThumbnail>().Show(sampleMaterial,null,"Sphere");}
+  else if(tag=="color-setting")Fill(rect,new Color(.37f,.15f,.75f));
   else if(tag=="list"){
    var group=rect.gameObject.AddComponent<VerticalLayoutGroup>();group.childControlHeight=true;group.childForceExpandHeight=false;group.childControlWidth=true;group.childForceExpandWidth=true;group.spacing=1;
    foreach(var part in WorkshopState.Instance.Project.Parts){var cell=Node("Part",rect);var item=cell.gameObject.AddComponent<LayoutElement>();item.preferredHeight=5;var current=part;MakeButton(cell,part.Name,()=>{Set("PartName",current.Name);});}
@@ -112,11 +113,13 @@ public sealed class PreviewMenu : MonoBehaviour {
   }
   return rect;
  }
- void ResizePart(string key,float value){if(!sabers)return;var part=WorkshopState.Instance.Project.Parts[0];if(key=="PartHeight")part.HeightScale=value/230;else if(key=="PartWidth")part.WidthScale=value/36;else if(key=="PartDepth")part.DepthScale=value/36;else return;foreach(var id in sabers.GetComponentsInChildren<PartIdentity>()){if(id.Id!=part.Id)continue;var filter=id.GetComponent<MeshFilter>();if(filter){var old=filter.sharedMesh;filter.sharedMesh=WorkshopState.BuildMesh(part);Object.DestroyImmediate(old);}}}
+ void ResizePart(string key,float value){var property=key=="EffectScale"?"_Scale":key=="EffectSpeed"?"_Speed":key=="EffectDepth"?"_Depth":key=="EffectBrightness"?"_Brightness":key=="EffectGlow"?"_Glow":"";if(property!=""&&sampleMaterial){sampleMaterial.SetFloat(property,value);return;}if(!sabers)return;var part=WorkshopState.Instance.Project.Parts[0];if(key=="PartHeight")part.HeightScale=value/230;else if(key=="PartWidth")part.WidthScale=value/36;else if(key=="PartDepth")part.DepthScale=value/36;else return;foreach(var id in sabers.GetComponentsInChildren<PartIdentity>()){if(id.Id!=part.Id)continue;var filter=id.GetComponent<MeshFilter>();if(filter){var old=filter.sharedMesh;filter.sharedMesh=WorkshopState.BuildMesh(part);Object.DestroyImmediate(old);}}}
  public void OpenNumber(string key){if(sabers)sabers.SetActive(false);inputTarget=key;Set("NumberTitle",key.StartsWith("Part")?key.Substring(4)+" · mm":key);Set("NumberText",Number(key).ToString("0.##",CultureInfo.InvariantCulture));replaceNumber=true;Modals["number-dialog"].SetActive(true);Modals["number-dialog"].transform.SetAsLastSibling();}
  public void Action(string action){
   if(action.StartsWith("Num")&&action.Length==4&&char.IsDigit(action[3])){var t=replaceNumber?"":Convert.ToString(Get("NumberText"));replaceNumber=false;Set("NumberText",t+action[3]);return;}
   switch(action){
+   case "PlasmaEffect":sampleMaterial.SetFloat("_Mode",1);Set("HasEffect",true);break;case "SpaceEffect":sampleMaterial.SetFloat("_Mode",2);Set("HasEffect",true);break;
+   case "ApplyEffectDraft":foreach(var id in sabers.GetComponentsInChildren<PartIdentity>())if(id.Id==WorkshopState.Instance.Project.Parts[0].Id)id.GetComponent<Renderer>().sharedMaterial=new Material(sampleMaterial);Activate("ShapeInspector");break;
    case "InspectShape":Activate("ShapeInspector");break;case "InspectColor":Activate("ColorInspector");break;case "InspectTexture":Activate("TextureInspector");break;case "ShaderWorkshop":Activate("ShaderInspector");break;
    case "NewPresetDialog":Modals["preset-dialog"].SetActive(true);break;case "OpenLibrary":Modals["library-dialog"].SetActive(true);break;case "AddPartDialog":Modals["part-dialog"].SetActive(true);break;
    case "CloseNumber":Modals["number-dialog"].SetActive(false);if(sabers)sabers.SetActive(true);break;

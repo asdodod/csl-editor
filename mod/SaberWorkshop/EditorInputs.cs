@@ -81,16 +81,16 @@ public sealed partial class EditorController {
     [UIAction("NumSign")] public void NumSign(){replaceNumber=false;NumberText=NumberText.StartsWith("-")?NumberText.Substring(1):"-"+NumberText;NotifyNumber();}
     [UIAction("NumBack")] public void NumBack(){replaceNumber=false;if(NumberText.Length>0)NumberText=NumberText.Substring(0,NumberText.Length-1);NotifyNumber();}
     [UIAction("NumClear")] public void NumClear(){NumberText="";replaceNumber=false;NotifyNumber();}
-    [UIAction("CloseNumber")] public void CloseNumber(){if(numberDialog)numberDialog.Hide(true);numericTarget=null;if(preview)preview!.SetActive(visible&&editorOpen);}
+    [UIAction("CloseNumber")] public void CloseNumber(){if(numberDialog)numberDialog.Hide(true);numericTarget=null;if(preview)preview!.SetActive(visible&&editorOpen&&!ShaderInspector);}
     [UIAction("ApplyNumber")] public void ApplyNumber(){
         if(!numericTarget||numericTarget!.AssociatedValue==null)return;
         if(!float.TryParse(NumberText,NumberStyles.Float,CultureInfo.InvariantCulture,out float value)||float.IsNaN(value)||float.IsInfinity(value)||Math.Abs(value)>100000){NumberError="Enter a valid number.";NotifyNumber();return;}
         Guard(()=>{var target=numericTarget!;bool old=refreshing;refreshing=true;try{ExpandSlider(target,value);}finally{refreshing=old;}target.AssociatedValue.SetValue(target.IsInt?(object)Mathf.RoundToInt(value):value);refreshing=true;try{target.ReceiveValue();}finally{refreshing=old;}CloseNumber();});
     }
     [UIAction("OpenLibrary")] public void OpenLibrary(){RefreshFiles();if(preview)preview!.SetActive(false);if(libraryDialog)libraryDialog.Show(true,false);}
-    [UIAction("CloseLibrary")] public void CloseLibrary(){if(libraryDialog)libraryDialog.Hide(true);if(preview)preview!.SetActive(visible&&editorOpen);}
+    [UIAction("CloseLibrary")] public void CloseLibrary(){if(libraryDialog)libraryDialog.Hide(true);if(preview)preview!.SetActive(visible&&editorOpen&&!ShaderInspector);}
     [UIAction("AddPartDialog")] public void AddPartDialog(){if(preview)preview!.SetActive(false);if(partDialog)partDialog.Show(true,false);}
-    [UIAction("ClosePartDialog")] public void ClosePartDialog(){if(partDialog)partDialog.Hide(true);if(preview)preview!.SetActive(visible&&editorOpen);}
+    [UIAction("ClosePartDialog")] public void ClosePartDialog(){if(partDialog)partDialog.Hide(true);if(preview)preview!.SetActive(visible&&editorOpen&&!ShaderInspector);}
     [UIAction("CreateChosenPart")] public void CreateChosenPart(){switch(NewPartType){case "Handle":AddHandle();break;case "Ring":AddRing();break;case "Particles":AddParticles();break;case "Trail":AddTrail();break;default:AddBlade();break;}ClosePartDialog();}
 }
 

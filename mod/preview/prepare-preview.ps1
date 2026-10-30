@@ -12,3 +12,6 @@ foreach($file in @('PreviewMenu.cs','PreviewTextSize.cs','PreviewTap.cs')){Copy-
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'PreviewBatch.cs') -Destination (Join-Path $target 'Editor/PreviewBatch.cs')
 Copy-Item -LiteralPath (Join-Path $repo 'mod/SaberWorkshop/Editor.bsml') -Destination (Join-Path $target 'Editor.bsml')
 Write-Output "Offline menu preview prepared: $target"
+
+$shared=[IO.File]::ReadAllText((Join-Path $repo "mod/SaberWorkshop/MaterialThumbnail.cs")).Replace("namespace SaberWorkshop;","namespace SaberWorkshop {")+"`n}"
+[IO.File]::WriteAllText((Join-Path $target "MaterialThumbnail.cs"),$shared)

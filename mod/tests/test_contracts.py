@@ -17,7 +17,7 @@ class Contracts(unittest.TestCase):
             self.assertFalse(list(Path(folder).rglob('*.saber')))
     def test_menu_tags_and_bindings(self):
         source='\n'.join(p.read_text(encoding='utf-8') for p in (ROOT/'SaberWorkshop').glob('*.cs'))
-        tags={'modal','list','scroll-view','text','horizontal','vertical','button','dropdown-list-setting','bool-setting','increment-setting','slider-setting','color-setting','string-setting'}
+        tags={'raw-image','modal','list','scroll-view','text','horizontal','vertical','button','dropdown-list-setting','bool-setting','increment-setting','slider-setting','color-setting','string-setting'}
         trees=[ET.parse(ROOT/'SaberWorkshop'/file) for file in ['Editor.bsml','Gameplay.bsml']]
         members=set(re.findall(r'public\s+(?:[\w<>?]+)\s+(\w+)\s*(?:\{|=>)',source))
         actions=set(re.findall(r'\[UIAction\("([^"]+)"\)\]',source))
