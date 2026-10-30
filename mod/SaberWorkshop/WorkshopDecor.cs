@@ -15,8 +15,8 @@ internal static class WorkshopDecor {
   }
   foreach(var button in root.GetComponentsInChildren<Button>(true)){
    var text=button.GetComponentInChildren<TextMeshProUGUI>(true);if(!text)continue;
-   string key=text.text switch {"Hide / show"=>"eye","Duplicate"=>"copy","Delete"=>"delete","Create new preset"=>"plus",_=>""};if(key=="")continue;
-   var icon=new GameObject("Action icon",typeof(RectTransform)).AddComponent<ImageView>();icon.transform.SetParent(button.transform,false);icon.sprite=Icon(key);icon.material=BeatSaberMarkupLanguage.Utilities.ImageResources.NoGlowMat;icon.color=new Color(.45f,.85f,.93f);icon.raycastTarget=false;
+   string key=text.text switch {"Hide / show"=>"eye","Duplicate"=>"copy","Delete"=>"delete","Add part"=>"plus",_=>""};if(key=="")continue;
+   var icon=new GameObject("Action icon",typeof(RectTransform),typeof(LayoutElement)).AddComponent<ImageView>();icon.GetComponent<LayoutElement>().ignoreLayout=true;icon.transform.SetParent(button.transform,false);icon.sprite=Icon(key);icon.material=BeatSaberMarkupLanguage.Utilities.ImageResources.NoGlowMat;icon.color=new Color(.45f,.85f,.93f);icon.raycastTarget=false;
    var rect=(RectTransform)icon.transform;rect.anchorMin=rect.anchorMax=new Vector2(0,.5f);rect.sizeDelta=new Vector2(3.1f,3.1f);rect.anchoredPosition=new Vector2(3.6f,0);text.margin=new Vector4(4,0,0,0);
   }
  }

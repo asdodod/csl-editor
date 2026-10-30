@@ -1,44 +1,25 @@
 <vertical preferred-width="250" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" anchor-min="0 0" anchor-max="1 1" size-delta="0 0" pivot="0.5 0.5" anchored-position="0 0" vertical-fit="Unconstrained" pad-top="1" pad-bottom="1">
-  <horizontal preferred-width="250" preferred-height="12" spacing="2" child-control-width="true" child-control-height="true" child-expand-width="false">
-    <button text="Create new preset" on-click="NewPresetDialog" preferred-width="35" preferred-height="9" />
-    <vertical preferred-width="72" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-      <text text="Preset" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="72" preferred-height="3.6" />
-      <string-setting text="" value="ProjectName" apply-on-change="true" bind-value="true" preferred-width="72" preferred-height="6.4" />
-    </vertical>
-    <button text="Save" on-click="Save" preferred-width="25" preferred-height="9" />
-    <button text="Export CSL" on-click="ExportCSL" preferred-width="34" preferred-height="9" />
-    <button text="Undo" on-click="Undo" preferred-width="22" preferred-height="9" />
-    <button text="Redo" on-click="Redo" preferred-width="22" preferred-height="9" />
-    <button text="Close" on-click="CloseEditor" preferred-width="28" preferred-height="9" />
+  <horizontal preferred-width="250" preferred-height="12" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
+    <text text="~EditorTitle" preferred-width="89" preferred-height="8" font-size="4" word-wrapping="false" overflow-mode="Ellipsis" />
+    <button text="New" on-click="NewPresetDialog" preferred-width="22" preferred-height="8" />
+    <button text="Open" on-click="OpenLibrary" preferred-width="22" preferred-height="8" />
+    <button text="Save" on-click="Save" preferred-width="22" preferred-height="8" />
+    <button text="Export CSL" on-click="ExportCSL" preferred-width="28" preferred-height="8" />
+    <button text="Undo" on-click="Undo" preferred-width="18" preferred-height="8" />
+    <button text="Redo" on-click="Redo" preferred-width="18" preferred-height="8" />
+    <button text="Close" on-click="CloseEditor" preferred-width="24" preferred-height="8" />
   </horizontal>
   <horizontal preferred-width="250" preferred-height="104" spacing="3" child-control-width="true" child-control-height="true" child-expand-width="false">
-    <vertical preferred-width="58" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" preferred-height="104">
-      <text text="PRESETS" font-size="3.6" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="58" preferred-height="5" />
-      <vertical preferred-width="54" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-        <text text="Open saved preset" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="54" preferred-height="3.6" />
-        <dropdown-list-setting text="" value="ProjectChoice" apply-on-change="true" bind-value="true" preferred-width="54" preferred-height="6.4" id="project-list" choices="ProjectOptions" />
-      </vertical>
-      <horizontal preferred-width="54" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
-        <button text="Open" on-click="OpenProject" preferred-width="26.5" preferred-height="7" />
-        <button text="Copy preset" on-click="SaveCopy" preferred-width="26.5" preferred-height="7" />
-      </horizontal>
-      <text text="PARTS" font-size="3.6" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="58" preferred-height="5" />
-      <list id="part-tree" list-style="Simple" select-cell="SelectTreePart" list-width="58" visible-cells="8" cell-size="5" show-scrollbar="true" preferred-height="40" />
+    <vertical preferred-width="58" preferred-height="104" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained">
+      <text text="PARTS" preferred-width="58" preferred-height="6" font-size="3.8" word-wrapping="false" overflow-mode="Ellipsis" />
+      <list id="part-tree" list-style="Simple" select-cell="SelectTreePart" list-width="58" visible-cells="14" cell-size="5" show-scrollbar="true" preferred-height="70" />
       <horizontal preferred-width="58" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
         <button text="Hide / show" on-click="TogglePart" preferred-width="28.5" preferred-height="7" />
         <button text="Duplicate" on-click="DuplicatePart" preferred-width="28.5" preferred-height="7" />
       </horizontal>
-      <horizontal preferred-width="58" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
-        <button text="+ Blade" on-click="AddBlade" preferred-width="28.5" preferred-height="7" />
-        <button text="+ Handle" on-click="AddHandle" preferred-width="28.5" preferred-height="7" />
-      </horizontal>
-      <horizontal preferred-width="58" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
-        <button text="+ Ring" on-click="AddRing" preferred-width="28.5" preferred-height="7" />
-        <button text="+ Particles" on-click="AddParticles" preferred-width="28.5" preferred-height="7" />
-      </horizontal>
-      <horizontal preferred-width="58" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
-        <button text="+ Trail" on-click="AddTrail" preferred-width="28.5" preferred-height="7" />
-        <button text="Delete" on-click="DeletePart" preferred-width="28.5" preferred-height="7" />
+      <horizontal preferred-width="58" preferred-height="8" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
+        <button text="Add part" on-click="AddPartDialog" preferred-width="28.5" preferred-height="8" />
+        <button text="Delete" on-click="DeletePart" preferred-width="28.5" preferred-height="8" />
       </horizontal>
     </vertical>
     <vertical preferred-width="104" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" preferred-height="104">
@@ -52,342 +33,359 @@
         <vertical preferred-width="96" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" vertical-fit="PreferredSize">
           <vertical active="~HasSelection" child-control-height="true" child-control-width="true" child-expand-height="false" preferred-width="96" vertical-fit="PreferredSize" spacing="1">
             <vertical preferred-width="96" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" active="~ShapeInspector" vertical-fit="PreferredSize">
-              <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                <text text="Selected part" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="94" preferred-height="3.6" />
-                <string-setting text="" value="PartName" apply-on-change="true" bind-value="true" preferred-width="94" preferred-height="6.4" />
-              </vertical>
-              <text text="POSITION · mm" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="94" preferred-height="5" />
-              <horizontal preferred-width="94" preferred-height="10" spacing="2" child-control-width="true" child-control-height="true" child-expand-width="false">
-                <vertical preferred-width="30" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="X" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="3.6" />
-                  <increment-setting text="" value="PositionX" apply-on-change="true" bind-value="true" preferred-width="30" preferred-height="6.4" increment="1" min="-3000" max="3000" />
-                </vertical>
-                <vertical preferred-width="30" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Y" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="3.6" />
-                  <increment-setting text="" value="PositionY" apply-on-change="true" bind-value="true" preferred-width="30" preferred-height="6.4" increment="1" min="-3000" max="3000" />
-                </vertical>
-                <vertical preferred-width="30" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Z" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="3.6" />
-                  <increment-setting text="" value="PositionZ" apply-on-change="true" bind-value="true" preferred-width="30" preferred-height="6.4" increment="1" min="-3000" max="3000" />
-                </vertical>
-              </horizontal>
-              <text text="ROTATION · degrees" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="94" preferred-height="5" />
-              <horizontal preferred-width="94" preferred-height="10" spacing="2" child-control-width="true" child-control-height="true" child-expand-width="false">
-                <vertical preferred-width="30" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="X" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="3.6" />
-                  <increment-setting text="" value="RotationX" apply-on-change="true" bind-value="true" preferred-width="30" preferred-height="6.4" increment="1" min="-3000" max="3000" />
-                </vertical>
-                <vertical preferred-width="30" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Y" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="3.6" />
-                  <increment-setting text="" value="RotationY" apply-on-change="true" bind-value="true" preferred-width="30" preferred-height="6.4" increment="1" min="-3000" max="3000" />
-                </vertical>
-                <vertical preferred-width="30" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Z" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="3.6" />
-                  <increment-setting text="" value="RotationZ" apply-on-change="true" bind-value="true" preferred-width="30" preferred-height="6.4" increment="1" min="-3000" max="3000" />
-                </vertical>
-              </horizontal>
-              <horizontal preferred-width="94" preferred-height="6.4" child-control-width="true" child-control-height="true" child-expand-width="false">
-                <text text="Visible" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="76" preferred-height="6.4" />
-                <bool-setting text="" value="PartVisible" apply-on-change="true" bind-value="true" preferred-width="18" preferred-height="6.4" />
+              <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                <text text="Part name" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                <string-setting text="" value="PartName" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="8" />
               </horizontal>
               <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" active="~IsSolidPart" vertical-fit="PreferredSize">
-                <horizontal preferred-width="94" preferred-height="10" spacing="2" child-control-width="true" child-control-height="true" child-expand-width="false">
-                  <vertical preferred-width="30" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                    <text text="Height · mm" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="3.6" />
-                    <string-setting text="" value="PartHeightText" apply-on-change="true" bind-value="true" preferred-width="30" preferred-height="6.4" />
-                  </vertical>
-                  <vertical preferred-width="30" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                    <text text="Width · mm" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="3.6" />
-                    <string-setting text="" value="PartWidthText" apply-on-change="true" bind-value="true" preferred-width="30" preferred-height="6.4" />
-                  </vertical>
-                  <vertical preferred-width="30" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                    <text text="Depth · mm" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="3.6" />
-                    <string-setting text="" value="PartDepthText" apply-on-change="true" bind-value="true" preferred-width="30" preferred-height="6.4" />
-                  </vertical>
+                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Height · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <slider-setting text="" value="PartHeight" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="8" min="0.05" max="1500" increment="1" show-buttons="false" formatter="FormatHeight" />
                 </horizontal>
-                <horizontal preferred-width="94" preferred-height="6.4" child-control-width="true" child-control-height="true" child-expand-width="false">
-                  <text text="Inverted faces" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="76" preferred-height="6.4" />
-                  <bool-setting text="" value="InvertedFaces" apply-on-change="true" bind-value="true" preferred-width="18" preferred-height="6.4" />
+                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Width · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <slider-setting text="" value="PartWidth" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="8" min="0.05" max="100" increment="0.1" show-buttons="false" formatter="FormatWidth" />
                 </horizontal>
-                <horizontal preferred-width="94" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
-                  <button text="Create outline pair" on-click="OutlinePair" preferred-width="46.5" preferred-height="7" />
-                  <button text="Duplicate in place" on-click="DuplicatePart" preferred-width="46.5" preferred-height="7" />
+                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Depth · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <slider-setting text="" value="PartDepth" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="8" min="0.05" max="100" increment="0.1" show-buttons="false" formatter="FormatDepth" />
                 </horizontal>
-                <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" active="~IsProfile" vertical-fit="PreferredSize">
-                  <vertical preferred-width="94" preferred-height="10" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="PreferredSize" spacing="0">
-                    <text text="Cross section" font-size="3" preferred-height="3.6" word-wrapping="false" />
-                    <dropdown-list-setting text="" value="CrossSection" choices="CrossSections" bind-value="true" apply-on-change="true" preferred-height="6.4" />
-                  </vertical>
-                  <horizontal preferred-width="94" preferred-height="6.4" child-control-width="true" child-control-height="true" child-expand-width="false">
-                    <text text="Edit shape points" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="76" preferred-height="6.4" />
-                    <bool-setting text="" value="ShowShapePoints" apply-on-change="true" bind-value="true" preferred-width="18" preferred-height="6.4" />
-                  </horizontal>
-                  <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" active="~ShowShapePoints" vertical-fit="PreferredSize">
-                    <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                      <text text="Shape point" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                      <dropdown-list-setting text="" value="SectionChoice" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" id="section-list" choices="SectionOptions" />
-                    </vertical>
-                    <horizontal preferred-width="92" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
-                      <button text="Add point" on-click="AddSection" preferred-width="45.5" preferred-height="7" />
-                      <button text="Remove point" on-click="DeleteSection" preferred-width="45.5" preferred-height="7" />
-                    </horizontal>
-                    <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                      <text text="Along height · %" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                      <increment-setting text="" value="SectionPosition" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" increment="1" min="0" max="100" />
-                    </vertical>
-                    <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                      <text text="Point width · mm" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                      <increment-setting text="" value="PointWidth" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" increment="0.1" min="0.05" max="600" />
-                    </vertical>
-                    <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                      <text text="Point depth · mm" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                      <increment-setting text="" value="PointDepth" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" increment="0.1" min="0.05" max="600" />
-                    </vertical>
-                    <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                      <text text="Offset X · mm" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                      <increment-setting text="" value="SectionX" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" increment="0.1" min="-300" max="300" />
-                    </vertical>
-                    <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                      <text text="Offset Y · mm" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                      <increment-setting text="" value="SectionY" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" increment="0.1" min="-300" max="300" />
-                    </vertical>
-                  </vertical>
-                </vertical>
+                <horizontal preferred-width="94" preferred-height="8" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="Unconstrained" spacing="2" child-expand-width="false">
+                  <text text="Cross section" font-size="3.4" preferred-height="8" word-wrapping="false" preferred-width="30" />
+                  <dropdown-list-setting text="" value="CrossSection" choices="CrossSections" bind-value="true" apply-on-change="true" preferred-height="8" preferred-width="62.0" />
+                </horizontal>
               </vertical>
               <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" active="~IsParticle" vertical-fit="PreferredSize">
-                <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Particle example" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                  <dropdown-list-setting text="" value="ParticleStyle" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" choices="ParticleStyles" />
-                </vertical>
-                <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Particles / second" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                  <increment-setting text="" value="ParticleRate" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" increment="1" min="0" max="500" />
-                </vertical>
-                <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Lifetime · seconds" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                  <increment-setting text="" value="ParticleLife" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" increment="0.05" min="0.05" max="10" />
-                </vertical>
-                <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Speed · m/s" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                  <increment-setting text="" value="ParticleSpeed" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" increment="0.01" min="0" max="5" />
-                </vertical>
-                <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Size · mm" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                  <increment-setting text="" value="ParticleSize" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" increment="0.1" min="0.1" max="100" />
-                </vertical>
-                <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Spread · degrees" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                  <increment-setting text="" value="ParticleSpread" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" increment="1" min="0" max="90" />
-                </vertical>
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Particle example" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <dropdown-list-setting text="" value="ParticleStyle" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" choices="ParticleStyles" />
+                </horizontal>
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Particles / second" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <slider-setting text="" value="ParticleRate" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="1.0" min="0.0" max="500.0" show-buttons="false" formatter="FormatNumber" />
+                </horizontal>
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Lifetime · seconds" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <slider-setting text="" value="ParticleLife" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.05" min="0.05" max="10.0" show-buttons="false" formatter="FormatNumber" />
+                </horizontal>
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Speed · m/s" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <slider-setting text="" value="ParticleSpeed" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.01" min="0.0" max="5.0" show-buttons="false" formatter="FormatNumber" />
+                </horizontal>
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Size · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <slider-setting text="" value="ParticleSize" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.1" min="0.1" max="100.0" show-buttons="false" formatter="FormatNumber" />
+                </horizontal>
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Spread · degrees" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <slider-setting text="" value="ParticleSpread" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="1.0" min="0.0" max="90.0" show-buttons="false" formatter="FormatNumber" />
+                </horizontal>
               </vertical>
               <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="PreferredSize" spacing="1" active="~IsTrail">
-                <vertical preferred-width="92" preferred-height="10" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="PreferredSize" spacing="0">
-                  <text text="Trail type" preferred-height="3.6" font-size="3" word-wrapping="false" />
-                  <dropdown-list-setting text="" value="TrailType" bind-value="true" apply-on-change="true" preferred-height="6.4" preferred-width="92" choices="TrailTypes" />
+                <horizontal preferred-width="92" preferred-height="8" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="Unconstrained" spacing="2" child-expand-width="false">
+                  <text text="Trail type" preferred-height="8" font-size="3.4" word-wrapping="false" preferred-width="30" />
+                  <dropdown-list-setting text="" value="TrailType" bind-value="true" apply-on-change="true" preferred-height="8" preferred-width="60.0" choices="TrailTypes" />
+                </horizontal>
+                <horizontal preferred-width="92" preferred-height="8" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="Unconstrained" spacing="2" child-expand-width="false">
+                  <text text="Start with" preferred-height="8" font-size="3.4" word-wrapping="false" preferred-width="30" />
+                  <dropdown-list-setting text="" value="TrailPreset" bind-value="true" apply-on-change="true" preferred-height="8" preferred-width="60.0" choices="TrailPresets" />
+                </horizontal>
+                <horizontal preferred-width="92" preferred-height="8" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="Unconstrained" spacing="2" child-expand-width="false">
+                  <text text="Width · mm" preferred-height="8" font-size="3.4" word-wrapping="false" preferred-width="30" />
+                  <slider-setting text="" value="TrailWidth" bind-value="true" apply-on-change="true" preferred-height="8" preferred-width="60.0" min="0.1" max="1200" increment="0.5" show-buttons="false" formatter="FormatNumber" />
+                </horizontal>
+                <horizontal preferred-width="92" preferred-height="8" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="Unconstrained" spacing="2" child-expand-width="false">
+                  <text text="Fade time · ms" preferred-height="8" font-size="3.4" word-wrapping="false" preferred-width="30" />
+                  <slider-setting text="" value="TrailTime" bind-value="true" apply-on-change="true" preferred-height="8" preferred-width="60.0" increment="10.0" min="20.0" max="2000.0" show-buttons="false" formatter="FormatNumber" />
+                </horizontal>
+                <horizontal preferred-width="92" preferred-height="8" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="Unconstrained" spacing="2" child-expand-width="false">
+                  <text text="Tail width · %" preferred-height="8" font-size="3.4" word-wrapping="false" preferred-width="30" />
+                  <slider-setting text="" value="TrailTaper" bind-value="true" apply-on-change="true" preferred-height="8" preferred-width="60.0" increment="5.0" min="0.0" max="100.0" show-buttons="false" formatter="FormatNumber" />
+                </horizontal>
+                <text text="100%: same width. 0%: ends in a point." font-size="3.4" preferred-height="5" preferred-width="92" word-wrapping="false" />
+                <text text="Use Colour to tint it. A texture is optional." font-size="3.4" preferred-height="5" preferred-width="92" word-wrapping="false" />
+              </vertical>
+              <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" active="~HasTint">
+                <text text="COLOUR" preferred-width="94" preferred-height="5" font-size="3.6" word-wrapping="false" overflow-mode="Ellipsis" />
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Colour source" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <dropdown-list-setting text="" value="ColorSource" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" choices="ColorSources" />
+                </horizontal>
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="RGB colour" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <color-setting text="" value="TintColor" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" />
+                </horizontal>
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" active="~HasGlow" child-expand-width="false">
+                  <text text="Glow" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <slider-setting text="" value="Glow" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.05" min="0" max="5" show-buttons="false" formatter="FormatNumber" />
+                </horizontal>
+              </vertical>
+              <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" active="~IsSolidPart">
+                <horizontal preferred-width="94" preferred-height="6.4" spacing="0" child-control-width="true" child-control-height="true" child-expand-width="false">
+                  <text text="Outline and shape details" preferred-width="76" preferred-height="6.4" font-size="3.4" word-wrapping="false" overflow-mode="Ellipsis" />
+                  <bool-setting text="" value="ShowShapeDetails" bind-value="true" apply-on-change="true" preferred-width="18" preferred-height="6.4" />
+                </horizontal>
+                <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" active="~ShowShapeDetails">
+                  <horizontal preferred-width="94" preferred-height="6.4" child-control-width="true" child-control-height="true" child-expand-width="false">
+                    <text text="Inverted faces" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="76" preferred-height="6.4" />
+                    <bool-setting text="" value="InvertedFaces" apply-on-change="true" bind-value="true" preferred-width="18" preferred-height="6.4" />
+                  </horizontal>
+                  <horizontal preferred-width="94" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
+                    <button text="Create outline pair" on-click="OutlinePair" preferred-width="46.5" preferred-height="7" />
+                    <button text="Duplicate in place" on-click="DuplicatePart" preferred-width="46.5" preferred-height="7" />
+                  </horizontal>
+                  <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" active="~IsProfile" vertical-fit="PreferredSize">
+                    <horizontal preferred-width="94" preferred-height="6.4" child-control-width="true" child-control-height="true" child-expand-width="false">
+                      <text text="Edit shape points" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="76" preferred-height="6.4" />
+                      <bool-setting text="" value="ShowShapePoints" apply-on-change="true" bind-value="true" preferred-width="18" preferred-height="6.4" />
+                    </horizontal>
+                    <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" active="~ShowShapePoints" vertical-fit="PreferredSize">
+                      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                        <text text="Shape point" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                        <dropdown-list-setting text="" value="SectionChoice" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" id="section-list" choices="SectionOptions" />
+                      </horizontal>
+                      <horizontal preferred-width="92" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
+                        <button text="Add point" on-click="AddSection" preferred-width="45.5" preferred-height="7" />
+                        <button text="Remove point" on-click="DeleteSection" preferred-width="45.5" preferred-height="7" />
+                      </horizontal>
+                      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                        <text text="Along height · %" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                        <slider-setting text="" value="SectionPosition" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="1.0" min="0.0" max="100.0" show-buttons="false" formatter="FormatNumber" />
+                      </horizontal>
+                      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                        <text text="Point width · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                        <slider-setting text="" value="PointWidth" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.1" min="0.05" max="600.0" show-buttons="false" formatter="FormatNumber" />
+                      </horizontal>
+                      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                        <text text="Point depth · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                        <slider-setting text="" value="PointDepth" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.1" min="0.05" max="600.0" show-buttons="false" formatter="FormatNumber" />
+                      </horizontal>
+                      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                        <text text="Offset X · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                        <slider-setting text="" value="SectionX" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.1" min="-300.0" max="300.0" show-buttons="false" formatter="FormatNumber" />
+                      </horizontal>
+                      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                        <text text="Offset Y · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                        <slider-setting text="" value="SectionY" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.1" min="-300.0" max="300.0" show-buttons="false" formatter="FormatNumber" />
+                      </horizontal>
+                    </vertical>
+                  </vertical>
                 </vertical>
-                <vertical preferred-width="92" preferred-height="10" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="PreferredSize" spacing="0">
-                  <text text="Start with" preferred-height="3.6" font-size="3" word-wrapping="false" />
-                  <dropdown-list-setting text="" value="TrailPreset" bind-value="true" apply-on-change="true" preferred-height="6.4" preferred-width="92" choices="TrailPresets" />
-                </vertical>
-                <vertical preferred-width="92" preferred-height="10" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="PreferredSize" spacing="0">
-                  <text text="Width · mm" preferred-height="3.6" font-size="3" word-wrapping="false" />
-                  <string-setting text="" value="TrailWidthText" bind-value="true" apply-on-change="true" preferred-height="6.4" preferred-width="92" />
-                </vertical>
-                <vertical preferred-width="92" preferred-height="10" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="PreferredSize" spacing="0">
-                  <text text="Fade time · ms" preferred-height="3.6" font-size="3" word-wrapping="false" />
-                  <increment-setting text="" value="TrailTime" bind-value="true" apply-on-change="true" preferred-height="6.4" preferred-width="92" increment="10" min="20" max="2000" />
-                </vertical>
-                <vertical preferred-width="92" preferred-height="10" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="PreferredSize" spacing="0">
-                  <text text="Tail width · %" preferred-height="3.6" font-size="3" word-wrapping="false" />
-                  <increment-setting text="" value="TrailTaper" bind-value="true" apply-on-change="true" preferred-height="6.4" preferred-width="92" increment="5" min="0" max="100" />
-                </vertical>
-                <text text="100%: same width. 0%: ends in a point." font-size="2.8" preferred-height="5" preferred-width="92" word-wrapping="false" />
-                <text text="Use Colour to tint it. A texture is optional." font-size="2.8" preferred-height="5" preferred-width="92" word-wrapping="false" />
+              </vertical>
+              <horizontal preferred-width="94" preferred-height="6.4" spacing="0" child-control-width="true" child-control-height="true" child-expand-width="false">
+                <text text="Position and rotation" preferred-width="76" preferred-height="6.4" font-size="3.4" word-wrapping="false" overflow-mode="Ellipsis" />
+                <bool-setting text="" value="ShowTransform" bind-value="true" apply-on-change="true" preferred-width="18" preferred-height="6.4" />
+              </horizontal>
+              <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" active="~ShowTransform">
+                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Position X · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <slider-setting text="" value="PositionX" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="8" increment="1" min="-300" max="300" show-buttons="false" formatter="FormatNumber" />
+                </horizontal>
+                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Position Y · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <slider-setting text="" value="PositionY" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="8" increment="1" min="-300" max="300" show-buttons="false" formatter="FormatNumber" />
+                </horizontal>
+                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Position Z · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <slider-setting text="" value="PositionZ" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="8" increment="1" min="-300" max="300" show-buttons="false" formatter="FormatNumber" />
+                </horizontal>
+                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Rotation X · degrees" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <slider-setting text="" value="RotationX" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="8" increment="1" min="-180" max="180" show-buttons="false" formatter="FormatNumber" />
+                </horizontal>
+                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Rotation Y · degrees" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <slider-setting text="" value="RotationY" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="8" increment="1" min="-180" max="180" show-buttons="false" formatter="FormatNumber" />
+                </horizontal>
+                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Rotation Z · degrees" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <slider-setting text="" value="RotationZ" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="8" increment="1" min="-180" max="180" show-buttons="false" formatter="FormatNumber" />
+                </horizontal>
               </vertical>
             </vertical>
             <vertical preferred-width="96" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" active="~ColorInspector" vertical-fit="PreferredSize">
-              <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                <text text="Material layer" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                <dropdown-list-setting text="" value="MaterialChoice" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" id="material-list" choices="MaterialOptions" />
-              </vertical>
-              <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                <text text="Colour source" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                <dropdown-list-setting text="" value="ColorSource" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" choices="ColorSources" />
-              </vertical>
-              <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                <text text="RGB colour" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                <color-setting text="" value="TintColor" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" />
-              </vertical>
-              <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                <text text="Glow" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                <increment-setting text="" value="Glow" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" increment="0.1" min="0" max="10" />
-              </vertical>
-              <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                <text text="Material name" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                <string-setting text="" value="MaterialName" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" />
-              </vertical>
+              <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                <text text="Material layer" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                <dropdown-list-setting text="" value="MaterialChoice" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" id="material-list" choices="MaterialOptions" />
+              </horizontal>
+              <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                <text text="Colour source" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                <dropdown-list-setting text="" value="ColorSource" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" choices="ColorSources" />
+              </horizontal>
+              <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                <text text="RGB colour" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                <color-setting text="" value="TintColor" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" />
+              </horizontal>
+              <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                <text text="Glow" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                <slider-setting text="" value="Glow" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.05" min="0" max="5" show-buttons="false" formatter="FormatNumber" />
+              </horizontal>
+              <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                <text text="Material name" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                <string-setting text="" value="MaterialName" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" />
+              </horizontal>
               <horizontal preferred-width="92" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
                 <button text="New material" on-click="CreateMaterial" preferred-width="45.5" preferred-height="7" />
                 <button text="Duplicate material" on-click="DuplicateMaterial" preferred-width="45.5" preferred-height="7" />
               </horizontal>
               <horizontal preferred-width="92" preferred-height="6.4" child-control-width="true" child-control-height="true" child-expand-width="false">
-                <text text="Advanced material properties" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="74" preferred-height="6.4" />
+                <text text="Advanced material properties" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="74" preferred-height="6.4" />
                 <bool-setting text="" value="Advanced" apply-on-change="true" bind-value="true" preferred-width="18" preferred-height="6.4" />
               </horizontal>
               <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" active="~Advanced" vertical-fit="PreferredSize">
-                <vertical preferred-width="90" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Loaded shader" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="90" preferred-height="3.6" />
-                  <dropdown-list-setting text="" value="ShaderChoice" apply-on-change="true" bind-value="true" preferred-width="90" preferred-height="6.4" id="shader-list" choices="ShaderOptions" />
-                </vertical>
+                <horizontal preferred-width="90" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Loaded shader" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <dropdown-list-setting text="" value="ShaderChoice" apply-on-change="true" bind-value="true" preferred-width="58.0" preferred-height="8" id="shader-list" choices="ShaderOptions" />
+                </horizontal>
                 <horizontal preferred-width="90" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
                   <button text="Apply shader" on-click="ApplyShader" preferred-width="90.0" preferred-height="7" />
                 </horizontal>
-                <vertical preferred-width="90" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Property" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="90" preferred-height="3.6" />
-                  <dropdown-list-setting text="" value="PropertyChoice" apply-on-change="true" bind-value="true" preferred-width="90" preferred-height="6.4" id="property-list" choices="PropertyOptions" />
-                </vertical>
+                <horizontal preferred-width="90" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Property" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <dropdown-list-setting text="" value="PropertyChoice" apply-on-change="true" bind-value="true" preferred-width="58.0" preferred-height="8" id="property-list" choices="PropertyOptions" />
+                </horizontal>
                 <vertical preferred-width="90" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" active="~IsNumber" vertical-fit="PreferredSize">
-                  <vertical preferred-width="90" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                    <text text="Value" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="90" preferred-height="3.6" />
-                    <increment-setting text="" value="NumberValue" apply-on-change="true" bind-value="true" preferred-width="90" preferred-height="6.4" />
-                  </vertical>
+                  <horizontal preferred-width="90" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                    <text text="Value" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                    <slider-setting text="" value="NumberValue" apply-on-change="true" bind-value="true" preferred-width="58.0" preferred-height="8" min="-10" max="10" increment="0.01" show-buttons="false" formatter="FormatNumber" />
+                  </horizontal>
                 </vertical>
                 <vertical preferred-width="90" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" active="~IsColor" vertical-fit="PreferredSize">
-                  <vertical preferred-width="90" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                    <text text="Colour" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="90" preferred-height="3.6" />
-                    <color-setting text="" value="ColorValue" apply-on-change="true" bind-value="true" preferred-width="90" preferred-height="6.4" />
-                  </vertical>
+                  <horizontal preferred-width="90" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                    <text text="Colour" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                    <color-setting text="" value="ColorValue" apply-on-change="true" bind-value="true" preferred-width="58.0" preferred-height="8" />
+                  </horizontal>
                 </vertical>
                 <vertical preferred-width="90" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" active="~IsVector" vertical-fit="PreferredSize">
-                  <vertical preferred-width="90" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                    <text text="X" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="90" preferred-height="3.6" />
-                    <increment-setting text="" value="VectorX" apply-on-change="true" bind-value="true" preferred-width="90" preferred-height="6.4" increment="0.01" />
-                  </vertical>
-                  <vertical preferred-width="90" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                    <text text="Y" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="90" preferred-height="3.6" />
-                    <increment-setting text="" value="VectorY" apply-on-change="true" bind-value="true" preferred-width="90" preferred-height="6.4" increment="0.01" />
-                  </vertical>
-                  <vertical preferred-width="90" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                    <text text="Z" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="90" preferred-height="3.6" />
-                    <increment-setting text="" value="VectorZ" apply-on-change="true" bind-value="true" preferred-width="90" preferred-height="6.4" increment="0.01" />
-                  </vertical>
-                  <vertical preferred-width="90" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                    <text text="W" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="90" preferred-height="3.6" />
-                    <increment-setting text="" value="VectorW" apply-on-change="true" bind-value="true" preferred-width="90" preferred-height="6.4" increment="0.01" />
-                  </vertical>
+                  <horizontal preferred-width="90" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                    <text text="X" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                    <slider-setting text="" value="VectorX" apply-on-change="true" bind-value="true" preferred-width="58.0" preferred-height="8" increment="0.01" min="-10" max="10" show-buttons="false" formatter="FormatNumber" />
+                  </horizontal>
+                  <horizontal preferred-width="90" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                    <text text="Y" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                    <slider-setting text="" value="VectorY" apply-on-change="true" bind-value="true" preferred-width="58.0" preferred-height="8" increment="0.01" min="-10" max="10" show-buttons="false" formatter="FormatNumber" />
+                  </horizontal>
+                  <horizontal preferred-width="90" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                    <text text="Z" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                    <slider-setting text="" value="VectorZ" apply-on-change="true" bind-value="true" preferred-width="58.0" preferred-height="8" increment="0.01" min="-10" max="10" show-buttons="false" formatter="FormatNumber" />
+                  </horizontal>
+                  <horizontal preferred-width="90" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                    <text text="W" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                    <slider-setting text="" value="VectorW" apply-on-change="true" bind-value="true" preferred-width="58.0" preferred-height="8" increment="0.01" min="-10" max="10" show-buttons="false" formatter="FormatNumber" />
+                  </horizontal>
                 </vertical>
               </vertical>
-              <vertical preferred-width="80" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                <text text="Left note colour" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="80" preferred-height="3.6" />
-                <color-setting text="" value="LeftColor" apply-on-change="true" bind-value="true" preferred-width="80" preferred-height="6.4" />
-              </vertical>
-              <vertical preferred-width="80" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                <text text="Right note colour" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="80" preferred-height="3.6" />
-                <color-setting text="" value="RightColor" apply-on-change="true" bind-value="true" preferred-width="80" preferred-height="6.4" />
-              </vertical>
+              <horizontal preferred-width="80" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                <text text="Left note colour" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                <color-setting text="" value="LeftColor" apply-on-change="true" bind-value="true" preferred-width="48.0" preferred-height="8" />
+              </horizontal>
+              <horizontal preferred-width="80" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                <text text="Right note colour" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                <color-setting text="" value="RightColor" apply-on-change="true" bind-value="true" preferred-width="48.0" preferred-height="8" />
+              </horizontal>
             </vertical>
             <vertical preferred-width="96" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" active="~TextureInspector" vertical-fit="PreferredSize">
-              <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                <text text="Material layer" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                <dropdown-list-setting text="" value="MaterialChoice" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" id="texture-material-list" choices="MaterialOptions" />
-              </vertical>
-              <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                <text text="Texture slot" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                <dropdown-list-setting text="" value="TextureSlotChoice" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" id="texture-slot-list" choices="TextureSlotOptions" />
-              </vertical>
+              <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                <text text="Material layer" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                <dropdown-list-setting text="" value="MaterialChoice" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" id="texture-material-list" choices="MaterialOptions" />
+              </horizontal>
+              <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                <text text="Texture slot" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                <dropdown-list-setting text="" value="TextureSlotChoice" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" id="texture-slot-list" choices="TextureSlotOptions" />
+              </horizontal>
               <horizontal preferred-width="92" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
                 <button text="Refresh images" on-click="RefreshFiles" preferred-width="45.5" preferred-height="7" />
                 <button text="Generate plasma" on-click="GeneratePlasma" preferred-width="45.5" preferred-height="7" />
               </horizontal>
-              <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                <text text="PNG / JPG" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                <dropdown-list-setting text="" value="TextureFileChoice" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" id="texture-file-list" choices="TextureFileOptions" />
-              </vertical>
+              <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                <text text="PNG / JPG" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                <dropdown-list-setting text="" value="TextureFileChoice" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" id="texture-file-list" choices="TextureFileOptions" />
+              </horizontal>
               <horizontal preferred-width="92" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
                 <button text="Apply image" on-click="ApplyTexture" preferred-width="92.0" preferred-height="7" />
               </horizontal>
-              <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                <text text="Repeat X" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                <increment-setting text="" value="TileX" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" increment="0.05" />
-              </vertical>
-              <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                <text text="Repeat Y" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                <increment-setting text="" value="TileY" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" increment="0.05" />
-              </vertical>
-              <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                <text text="Offset X" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                <increment-setting text="" value="OffsetX" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" increment="0.05" />
-              </vertical>
-              <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                <text text="Offset Y" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                <increment-setting text="" value="OffsetY" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" increment="0.05" />
-              </vertical>
-              <text text="IMPORT ORIGINAL .SABER" font-size="3.2" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="5" />
-              <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                <text text="Saber file" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                <dropdown-list-setting text="" value="SourceChoice" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" id="source-list" choices="SourceOptions" />
-              </vertical>
+              <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                <text text="Repeat X" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                <slider-setting text="" value="TileX" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.05" min="0.05" max="10" show-buttons="false" formatter="FormatNumber" />
+              </horizontal>
+              <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                <text text="Repeat Y" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                <slider-setting text="" value="TileY" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.05" min="0.05" max="10" show-buttons="false" formatter="FormatNumber" />
+              </horizontal>
+              <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                <text text="Offset X" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                <slider-setting text="" value="OffsetX" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.01" min="-1" max="1" show-buttons="false" formatter="FormatNumber" />
+              </horizontal>
+              <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                <text text="Offset Y" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                <slider-setting text="" value="OffsetY" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.01" min="-1" max="1" show-buttons="false" formatter="FormatNumber" />
+              </horizontal>
+              <text text="IMPORT ORIGINAL .SABER" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="5" />
+              <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                <text text="Saber file" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                <dropdown-list-setting text="" value="SourceChoice" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" id="source-list" choices="SourceOptions" />
+              </horizontal>
               <horizontal preferred-width="92" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
                 <button text="Open saber" on-click="OpenSource" preferred-width="92.0" preferred-height="7" />
               </horizontal>
             </vertical>
             <vertical preferred-width="96" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" active="~ShaderInspector" vertical-fit="PreferredSize">
               <text text="SHADER WORKSHOP" font-size="3.8" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="94" preferred-height="5" />
-              <text text="Choose a base, then make your own material." font-size="2.8" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="94" preferred-height="5" />
+              <text text="Choose a base, then make your own material." font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="94" preferred-height="5" />
               <horizontal preferred-width="94" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
                 <button text="2D texture" on-click="TextureEffect" preferred-width="30.666666666666668" preferred-height="7" />
                 <button text="Flow plasma" on-click="PlasmaEffect" preferred-width="30.666666666666668" preferred-height="7" />
                 <button text="3D space" on-click="SpaceEffect" preferred-width="30.666666666666668" preferred-height="7" />
               </horizontal>
-              <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                <text text="Saved effects" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                <dropdown-list-setting text="" value="SavedEffectChoice" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" id="effect-list" choices="SavedEffects" />
-              </vertical>
+              <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                <text text="Saved effects" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                <dropdown-list-setting text="" value="SavedEffectChoice" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" id="effect-list" choices="SavedEffects" />
+              </horizontal>
               <horizontal preferred-width="92" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
                 <button text="Load effect" on-click="LoadEffect" preferred-width="45.5" preferred-height="7" />
                 <button text="Save effect" on-click="SaveEffect" preferred-width="45.5" preferred-height="7" />
               </horizontal>
               <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" active="~HasEffect" vertical-fit="PreferredSize">
-                <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Effect name" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                  <string-setting text="" value="EffectName" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" />
-                </vertical>
-                <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Base colour" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                  <color-setting text="" value="TintColor" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" />
-                </vertical>
-                <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Accent" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                  <color-setting text="" value="EffectAccent" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" />
-                </vertical>
-                <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Flow direction" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                  <dropdown-list-setting text="" value="FlowDirection" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" choices="FlowDirections" />
-                </vertical>
-                <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Pattern scale" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                  <increment-setting text="" value="EffectScale" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" increment="0.1" min="0.1" max="30" />
-                </vertical>
-                <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Flow speed" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                  <increment-setting text="" value="EffectSpeed" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" increment="0.1" min="0" max="5" />
-                </vertical>
-                <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Volume depth" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                  <increment-setting text="" value="EffectDepth" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" increment="0.1" min="0.05" max="3" />
-                </vertical>
-                <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Brightness" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                  <increment-setting text="" value="EffectBrightness" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" increment="0.1" min="0" max="10" />
-                </vertical>
-                <vertical preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-                  <text text="Glow" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="92" preferred-height="3.6" />
-                  <increment-setting text="" value="Glow" apply-on-change="true" bind-value="true" preferred-width="92" preferred-height="6.4" increment="0.1" min="0" max="10" />
-                </vertical>
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Effect name" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <string-setting text="" value="EffectName" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" />
+                </horizontal>
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Base colour" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <color-setting text="" value="TintColor" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" />
+                </horizontal>
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Accent" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <color-setting text="" value="EffectAccent" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" />
+                </horizontal>
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Flow direction" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <dropdown-list-setting text="" value="FlowDirection" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" choices="FlowDirections" />
+                </horizontal>
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Pattern scale" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <slider-setting text="" value="EffectScale" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.1" min="0.1" max="30.0" show-buttons="false" formatter="FormatNumber" />
+                </horizontal>
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Flow speed" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <slider-setting text="" value="EffectSpeed" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.1" min="0.0" max="5.0" show-buttons="false" formatter="FormatNumber" />
+                </horizontal>
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Volume depth" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <slider-setting text="" value="EffectDepth" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.1" min="0.05" max="3.0" show-buttons="false" formatter="FormatNumber" />
+                </horizontal>
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Brightness" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <slider-setting text="" value="EffectBrightness" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.1" min="0.0" max="10.0" show-buttons="false" formatter="FormatNumber" />
+                </horizontal>
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+                  <text text="Glow" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+                  <slider-setting text="" value="Glow" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.05" min="0" max="5" show-buttons="false" formatter="FormatNumber" />
+                </horizontal>
               </vertical>
             </vertical>
           </vertical>
-          <text active="~NoSelection" text="Add a part on the left to start modelling." font-size="3.2" preferred-height="12" preferred-width="94" word-wrapping="true" />
+          <text active="~NoSelection" text="Add a part on the left to start modelling." font-size="3.4" preferred-height="12" preferred-width="94" word-wrapping="true" />
         </vertical>
       </scroll-view>
     </vertical>
@@ -395,37 +393,106 @@
       <text text="PREVIEW" font-size="3.8" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="82" preferred-height="5" />
       <vertical preferred-height="60" min-height="60" preferred-width="82" child-control-height="true" child-control-width="true" child-expand-height="false" />
       <horizontal preferred-width="80" preferred-height="6.4" child-control-height="true" child-control-width="true" child-expand-width="false">
-        <text text="FBX sizing guide" preferred-width="62" preferred-height="6.4" font-size="3" word-wrapping="false" />
+        <text text="FBX sizing guide" preferred-width="62" preferred-height="6.4" font-size="3.4" word-wrapping="false" />
         <bool-setting text="" value="ShowSizeGuide" apply-on-change="true" bind-value="true" preferred-width="18" preferred-height="6.4" />
       </horizontal>
       <horizontal preferred-width="80" preferred-height="6.4" child-control-height="true" child-control-width="true" child-expand-width="false">
-        <text text="Use preset in game" preferred-width="62" preferred-height="6.4" font-size="3" word-wrapping="false" />
+        <text text="Use preset in game" preferred-width="62" preferred-height="6.4" font-size="3.4" word-wrapping="false" />
         <bool-setting text="" value="PlayEnabled" apply-on-change="true" bind-value="true" preferred-width="18" preferred-height="6.4" />
       </horizontal>
       <horizontal preferred-width="80" preferred-height="6.4" child-control-height="true" child-control-width="true" child-expand-width="false">
-        <text text="Test swing" preferred-width="62" preferred-height="6.4" font-size="3" word-wrapping="false" />
+        <text text="Test swing" preferred-width="62" preferred-height="6.4" font-size="3.4" word-wrapping="false" />
         <bool-setting text="" value="TestSwing" bind-value="true" apply-on-change="true" preferred-width="18" preferred-height="6.4" />
       </horizontal>
       <button text="Fit preview" on-click="ShowPreview" preferred-width="80" preferred-height="7" />
     </vertical>
   </horizontal>
-  <text text="~Status" font-size="3" align="Left" word-wrapping="false" overflow-mode="Ellipsis" preferred-width="244" preferred-height="6" />
+  <text text="~Status" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Ellipsis" preferred-width="244" preferred-height="6" />
   <modal id="preset-dialog" size-delta="90 78" click-off-closes="false" move-to-center="false">
     <vertical preferred-width="88" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" pad="3">
       <text text="CREATE NEW PRESET" font-size="4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="82" preferred-height="7" />
-      <vertical preferred-width="80" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-        <text text="Name" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="80" preferred-height="3.6" />
-        <string-setting text="" value="NewPresetName" apply-on-change="true" bind-value="true" preferred-width="80" preferred-height="6.4" />
-      </vertical>
-      <vertical preferred-width="80" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="0" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" preferred-height="10">
-        <text text="Start with" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="80" preferred-height="3.6" />
-        <dropdown-list-setting text="" value="StarterChoice" apply-on-change="true" bind-value="true" preferred-width="80" preferred-height="6.4" choices="StarterOptions" />
-      </vertical>
+      <horizontal preferred-width="80" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+        <text text="Name" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+        <string-setting text="" value="NewPresetName" apply-on-change="true" bind-value="true" preferred-width="48.0" preferred-height="8" />
+      </horizontal>
+      <horizontal preferred-width="80" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+        <text text="Start with" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+        <dropdown-list-setting text="" value="StarterChoice" apply-on-change="true" bind-value="true" preferred-width="48.0" preferred-height="8" choices="StarterOptions" />
+      </horizontal>
       <horizontal preferred-width="80" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
         <button text="Create" on-click="CreatePreset" preferred-width="39.5" preferred-height="7" />
         <button text="Cancel" on-click="ClosePresetDialog" preferred-width="39.5" preferred-height="7" />
       </horizontal>
-      <text text="A unique filename protects existing presets." font-size="2.7" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="80" preferred-height="5" />
+      <text text="A unique filename protects existing presets." font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="80" preferred-height="5" />
+    </vertical>
+  </modal>
+  <modal id="library-dialog" size-delta="102 84" click-off-closes="false" move-to-center="false">
+    <vertical preferred-width="98" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" pad="3">
+      <text text="OPEN PRESET" preferred-width="92" preferred-height="7" font-size="4.5" word-wrapping="false" overflow-mode="Ellipsis" />
+      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+        <text text="Open saved preset" font-size="3" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
+        <dropdown-list-setting text="" value="ProjectChoice" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" id="project-list" choices="ProjectOptions" />
+      </horizontal>
+      <horizontal preferred-width="92" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
+        <button text="Load preset" on-click="OpenProject" preferred-width="45.5" preferred-height="7" />
+        <button text="Close" on-click="CloseLibrary" preferred-width="45.5" preferred-height="7" />
+      </horizontal>
+      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+        <text text="Current preset name" preferred-width="30" preferred-height="8" font-size="3.4" word-wrapping="false" overflow-mode="Ellipsis" />
+        <string-setting text="" value="ProjectName" bind-value="true" apply-on-change="true" preferred-width="60.0" preferred-height="8" />
+      </horizontal>
+      <horizontal preferred-width="92" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
+        <button text="Save a copy" on-click="SaveCopy" preferred-width="45.5" preferred-height="7" />
+        <button text="Refresh list" on-click="RefreshFiles" preferred-width="45.5" preferred-height="7" />
+      </horizontal>
+    </vertical>
+  </modal>
+  <modal id="part-dialog" size-delta="102 66" click-off-closes="false" move-to-center="false">
+    <vertical preferred-width="98" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" pad="3">
+      <text text="ADD PART" preferred-width="92" preferred-height="7" font-size="4.5" word-wrapping="false" overflow-mode="Ellipsis" />
+      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
+        <text text="Part type" preferred-width="30" preferred-height="8" font-size="3.4" word-wrapping="false" overflow-mode="Ellipsis" />
+        <dropdown-list-setting text="" value="NewPartType" choices="PartTypes" bind-value="true" apply-on-change="true" preferred-width="60.0" preferred-height="8" />
+      </horizontal>
+      <horizontal preferred-width="92" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
+        <button text="Add" on-click="CreateChosenPart" preferred-width="45.5" preferred-height="7" />
+        <button text="Cancel" on-click="ClosePartDialog" preferred-width="45.5" preferred-height="7" />
+      </horizontal>
+    </vertical>
+  </modal>
+  <modal id="number-dialog" size-delta="78 100" click-off-closes="false" move-to-center="false">
+    <vertical preferred-width="74" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" pad="2">
+      <text text="~NumberTitle" preferred-width="70" preferred-height="7" font-size="4.5" word-wrapping="false" overflow-mode="Ellipsis" />
+      <text text="~NumberText" preferred-width="70" preferred-height="10" font-size="6" word-wrapping="false" overflow-mode="Ellipsis" />
+      <text text="~NumberError" preferred-width="70" preferred-height="4" font-size="3.2" word-wrapping="false" overflow-mode="Ellipsis" />
+      <horizontal preferred-width="70" preferred-height="10" spacing="2" child-control-width="true" child-control-height="true" child-expand-width="false">
+        <button text="7" on-click="Num7" preferred-width="22" preferred-height="10" />
+        <button text="8" on-click="Num8" preferred-width="22" preferred-height="10" />
+        <button text="9" on-click="Num9" preferred-width="22" preferred-height="10" />
+      </horizontal>
+      <horizontal preferred-width="70" preferred-height="10" spacing="2" child-control-width="true" child-control-height="true" child-expand-width="false">
+        <button text="4" on-click="Num4" preferred-width="22" preferred-height="10" />
+        <button text="5" on-click="Num5" preferred-width="22" preferred-height="10" />
+        <button text="6" on-click="Num6" preferred-width="22" preferred-height="10" />
+      </horizontal>
+      <horizontal preferred-width="70" preferred-height="10" spacing="2" child-control-width="true" child-control-height="true" child-expand-width="false">
+        <button text="1" on-click="Num1" preferred-width="22" preferred-height="10" />
+        <button text="2" on-click="Num2" preferred-width="22" preferred-height="10" />
+        <button text="3" on-click="Num3" preferred-width="22" preferred-height="10" />
+      </horizontal>
+      <horizontal preferred-width="70" preferred-height="10" spacing="2" child-control-width="true" child-control-height="true" child-expand-width="false">
+        <button text="-" on-click="NumSign" preferred-width="22" preferred-height="10" />
+        <button text="0" on-click="Num0" preferred-width="22" preferred-height="10" />
+        <button text="." on-click="NumDot" preferred-width="22" preferred-height="10" />
+      </horizontal>
+      <horizontal preferred-width="70" preferred-height="7" spacing="2" child-control-width="true" child-control-height="true" child-expand-width="false">
+        <button text="Back" on-click="NumBack" preferred-width="34" preferred-height="7" />
+        <button text="Clear" on-click="NumClear" preferred-width="34" preferred-height="7" />
+      </horizontal>
+      <horizontal preferred-width="70" preferred-height="8" spacing="2" child-control-width="true" child-control-height="true" child-expand-width="false">
+        <button text="Apply" on-click="ApplyNumber" preferred-width="34" preferred-height="8" />
+        <button text="Cancel" on-click="CloseNumber" preferred-width="34" preferred-height="8" />
+      </horizontal>
     </vertical>
   </modal>
 </vertical>
