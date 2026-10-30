@@ -11,6 +11,10 @@ using UnityEngine.EventSystems;
 namespace SaberWorkshop;
 
 public sealed partial class EditorController {
+    [UIComponent("view-dialog")] private ModalView viewDialog=null!;
+    [UIAction("OpenView")] public void OpenView(){if(viewDialog)viewDialog.Show(true,false);}
+    [UIAction("CloseView")] public void CloseView(){if(viewDialog)viewDialog.Hide(true);}
+    [UIAction("ActualSize")] public void ActualSize(){PreviewScale=1;}
     [UIComponent("number-dialog")] private ModalView numberDialog=null!;
     [UIComponent("library-dialog")] private ModalView libraryDialog=null!;
     [UIComponent("part-dialog")] private ModalView partDialog=null!;
@@ -21,10 +25,9 @@ public sealed partial class EditorController {
     public string NumberTitle {get;private set;}="Value";
     public string NumberText {get;private set;}="0";
     public string NumberError {get;private set;}="";
-    public string EditorTitle=>"Saber Workshop / "+state.Project.Name;
+    public string EditorTitle=>"Saber Workshop";
     public List<object> PartTypes {get;}=new List<object>{"Blade","Handle","Ring","Particles","Trail"};
     public string NewPartType {get;set;}="Blade";
-    internal GameObject? PreviewForAudit=>preview;
     [UIAction("FormatWidth")] public string FormatWidth(float value)=>PartWidth.ToString("0.###",CultureInfo.InvariantCulture);
     [UIAction("FormatHeight")] public string FormatHeight(float value)=>PartHeight.ToString("0.###",CultureInfo.InvariantCulture);
     [UIAction("FormatDepth")] public string FormatDepth(float value)=>PartDepth.ToString("0.###",CultureInfo.InvariantCulture);

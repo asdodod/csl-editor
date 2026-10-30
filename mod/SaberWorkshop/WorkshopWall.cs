@@ -51,6 +51,7 @@ public sealed class WorkshopWall : IDisposable
     }
     public void Hide(){if(screen)screen!.gameObject.SetActive(false);}
     private static void ConfigureCurvedMasks(GameObject root){
+        foreach(var raw in root.GetComponentsInChildren<RawImage>(true))if(!raw.GetComponent<CurvedRawImageMesh>())raw.gameObject.AddComponent<CurvedRawImageMesh>();
         // EULA scroll prefabs carry viewport offsets and a preferred-width fitter.
         // Clear both before using them in an inspector column.
         foreach(var view in root.GetComponentsInChildren<BSMLScrollView>(true))foreach(var rect in view.GetComponentsInChildren<RectTransform>(true)){
@@ -59,7 +60,7 @@ public sealed class WorkshopWall : IDisposable
         }
         foreach(var list in root.GetComponentsInChildren<CustomListTableData>(true)){var canvas=list.TableView.GetComponent<Canvas>();if(canvas)canvas!.overrideSorting=false;}
         var background=root.transform.Find("Background")?.GetComponent<ImageView>();
-        if(background){background!.material=Utilities.ImageResources.NoGlowMat;background.color=new Color(.025f,.035f,.05f,1);}
+        if(background){background!.material=Utilities.ImageResources.NoGlowMat;background.color=WorkshopTheme.ColorOf(WorkshopTheme.Current.Background);}
         foreach(var flat in root.GetComponentsInChildren<RectMask2D>(true)){
             flat.enabled=false;if(flat.gameObject==root)continue;
             var image=flat.GetComponent<ImageView>()??flat.gameObject.AddComponent<ImageView>();
@@ -68,7 +69,7 @@ public sealed class WorkshopWall : IDisposable
         }
     }
     private static void CompactFields(GameObject root){
-        foreach(var text in root.GetComponentsInChildren<TextMeshProUGUI>(true)){if(text.name!="BSMLText"){text.fontSize=3.4f;text.fontSizeMin=3.4f;text.fontSizeMax=3.4f;text.enableAutoSizing=false;}text.enableWordWrapping=false;text.margin=Vector4.zero;}
+        foreach(var text in root.GetComponentsInChildren<TextMeshProUGUI>(true)){if(text.name!="BSMLText"){text.fontSize=3.4f;text.fontSizeMin=3.4f;text.fontSizeMax=3.4f;text.enableAutoSizing=false;}if(text.name!="BSMLText")text.enableWordWrapping=false;text.margin=Vector4.zero;}
         foreach(var button in root.GetComponentsInChildren<Button>(true).Where(b=>b.name=="BSMLButton")){var fitter=button.GetComponent<ContentSizeFitter>();if(fitter){fitter.horizontalFit=ContentSizeFitter.FitMode.Unconstrained;fitter.verticalFit=ContentSizeFitter.FitMode.Unconstrained;}var element=button.GetComponent<LayoutElement>();if(element){element.minWidth=0;element.minHeight=0;}}
         foreach(var setting in root.GetComponentsInChildren<IncDecSetting>(true))FillControl(setting.transform,setting.transform.Find("NameText") as RectTransform,setting.transform.Find("ValuePicker") as RectTransform);
         foreach(var setting in root.GetComponentsInChildren<StringSetting>(true))FillControl(setting.transform,setting.transform.Find("NameText") as RectTransform,setting.BoundingBox);

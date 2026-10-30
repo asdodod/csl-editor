@@ -35,7 +35,7 @@ public sealed class WorkshopState
     public static string SafePath(string root,string relative){var full=Path.GetFullPath(Path.Combine(root,relative));var prefix=Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar)+Path.DirectorySeparatorChar;if(!full.StartsWith(prefix,StringComparison.OrdinalIgnoreCase))throw new InvalidDataException("File is outside the Workshop folder");return full;}
     public void New(){Project=new WorkshopProject{Created=true};template=null;PlayEnabled=false;}
     public void CreateStarter(){
-        New();Project.Name="Flux";
+        New();Project.Name="Segmented saber";
         var handle=AddPart("Handle",false);handle.Length=.23f;handle.Position[2]=-.18f;handle.Sections=new List<Section>{new Section{T=0,Radius=.012f},new Section{T=.08f,Radius=.018f},new Section{T=.9f,Radius=.017f},new Section{T=1,Radius=.012f}};
         for(int i=0;i<3;i++){var p=AddPart("Segment "+(i+1),true);p.Position[2]=.08f+i*.34f;p.Length=.325f;p.Sections=new List<Section>{new Section{T=0,Radius=.001f},new Section{T=.02f,Radius=.007f},new Section{T=.94f,Radius=.006f},new Section{T=1,Radius=.0002f}};}
         var ring=AddPart("Light ring",true);ring.Shape="ring";ring.Position[2]=.045f;ring.Sections[0].Radius=.043f;ring.Sections[1].Radius=.002f;

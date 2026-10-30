@@ -19,7 +19,9 @@ public static class VerifyWorkbenchLayout
             if(preview.y<1||preview.z>=rect.position.z)throw new Exception("Preview is below floor or behind wall");
             if((WorkbenchLayout.PreviewCenter(null)-preview).sqrMagnitude>.00001f)throw new Exception("Camera-less fallback differs from static pose");
             if(WorkbenchLayout.Radius!=120)throw new Exception("Wrong curved canvas radius");
-            var size=new Vector3(.4f,1.2f,.1f);float fit=WorkbenchLayout.PreviewFit(new Bounds(Vector3.zero,size));if(size.y*fit>WorkbenchLayout.PreviewSize.y+.0001f||size.x*fit>WorkbenchLayout.PreviewSize.x+.0001f)throw new Exception("Preview does not fit reserved area");
+            var model=new GameObject("Metre reference");WorkbenchLayout.PlacePreviewFrame(model.transform,rect,WorkbenchLayout.ActualSizeScale);
+            if(Math.Abs(Vector3.Distance(model.transform.TransformPoint(Vector3.zero),model.transform.TransformPoint(Vector3.forward))-1)>.00001f)throw new Exception("Canvas changed the physical metre scale");
+            WorkbenchLayout.PlacePreviewFrame(model.transform,rect,.5f);if(Math.Abs(model.transform.lossyScale.z-.5f)>.00001f)throw new Exception("Preview zoom is not independent of canvas scale");
             Debug.Log("Workbench bottom="+corners[0].y+"; preview="+preview+"; radius="+WorkbenchLayout.Radius);
         }finally{UnityEngine.Object.DestroyImmediate(go);}
     }

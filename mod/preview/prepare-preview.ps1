@@ -15,3 +15,9 @@ Write-Output "Offline menu preview prepared: $target"
 
 $shared=[IO.File]::ReadAllText((Join-Path $repo "mod/SaberWorkshop/MaterialThumbnail.cs")).Replace("namespace SaberWorkshop;","namespace SaberWorkshop {")+"`n}"
 [IO.File]::WriteAllText((Join-Path $target "MaterialThumbnail.cs"),$shared)
+
+$theme=[IO.File]::ReadAllText((Join-Path $repo "mod/SaberWorkshop/WorkshopTheme.cs")).Replace("namespace SaberWorkshop;","namespace SaberWorkshop {").Replace('Assembly.GetExecutingAssembly().GetManifestResourceStream("SaberWorkshop.workshop-theme.json")','File.OpenRead(@"'+(Join-Path $repo 'mod/SaberWorkshop/Assets/workshop-theme.json')+'")')+"`n}"
+[IO.File]::WriteAllText((Join-Path $target "WorkshopTheme.cs"),$theme)
+
+$help=[IO.File]::ReadAllText((Join-Path $repo "mod/SaberWorkshop/TutorialContent.cs")).Replace("namespace SaberWorkshop;","namespace SaberWorkshop {")+"`n}"
+[IO.File]::WriteAllText((Join-Path $target "TutorialContent.cs"),$help)

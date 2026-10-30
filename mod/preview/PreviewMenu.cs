@@ -21,23 +21,24 @@ public sealed class PreviewMenu : MonoBehaviour {
  readonly List<(Text text,string binding)> labels=new List<(Text,string)>();
  readonly List<(GameObject obj,string binding)> conditions=new List<(GameObject,string)>();
  RectTransform content;Font font;string inputTarget="";bool replaceNumber;
- GameObject sabers;Material sampleMaterial;readonly Color ink=new Color(.88f,.92f,.96f);
+ GameObject sabers;Material sampleMaterial;int helpStep;readonly Color ink=new Color(.88f,.92f,.96f);
  void Start(){if(content==null&&!string.IsNullOrEmpty(Markup))Initialize(Markup);}
  public void Initialize(string markup){
   foreach(var child in transform.Cast<Transform>().ToArray())Object.DestroyImmediate(child.gameObject);
-  Markup=markup;font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-  var state=WorkshopState.Instance;state.CreateStarter();state.Project.Name="Flux";
-  var defaults=new Dictionary<string,object>{{"EditorTitle","Saber Workshop / Flux"},{"ProjectName","Flux"},{"PartName","Handle"},{"PartHeight",230f},{"PartWidth",36f},{"PartDepth",36f},{"SaberPreviewArea",true},{"PreviewTitle","SABER PREVIEW"},{"MaterialPreviewForm","Sphere"},{"EffectTarget","1. Handle"},{"HasSelection",true},{"NoSelection",false},{"ShapeInspector",true},{"ColorInspector",false},{"TextureInspector",false},{"ShaderInspector",false},{"IsSolidPart",true},{"IsProfile",true},{"HasTint",true},{"HasGlow",true},{"IsCreatedPart",true},{"ColorSource","RGB"},{"CrossSection","Round"},{"ShapeTabLabel","Part"},{"ColorTabLabel","Material"},{"TextureTabLabel","Images"},{"ShaderTabLabel","Effects"},{"Status","Select a part. Drag a slider; tap it to enter a number."},{"NumberText","0"},{"NumberTitle","Width · mm"},{"NewPresetName","My saber"},{"StarterChoice","Straight"},{"NewPartType","Blade"},{"MaterialName","Workshop material"},{"MaterialChoice","Workshop material"},{"TextureSlotChoice","Main texture"},{"EffectName","My plasma"},{"Glow",1f},{"EffectScale",4f},{"EffectSpeed",.3f},{"EffectDepth",1f},{"EffectBrightness",1.5f},{"FlowDirection","Up"}};
+  Markup=markup;font=Font.CreateDynamicFontFromOSFont(WorkshopTheme.Current.FontFamily,34);
+  var state=WorkshopState.Instance;state.CreateStarter();state.Project.Name="My saber";
+  var defaults=new Dictionary<string,object>{{"EditorTitle","Saber Workshop"},{"ProjectName","My saber"},{"PartName","Handle"},{"PartHeight",230f},{"PartWidth",36f},{"PartDepth",36f},{"PreviewScale",1f},{"SaberPreviewArea",true},{"PreviewTitle","SABER PREVIEW"},{"MaterialPreviewForm","Sphere"},{"EffectTarget","1. Handle"},{"HasSelection",true},{"NoSelection",false},{"ShapeInspector",true},{"ColorInspector",false},{"TextureInspector",false},{"ShaderInspector",false},{"IsSolidPart",true},{"IsProfile",true},{"HasTint",true},{"HasGlow",true},{"IsCreatedPart",true},{"ColorSource","RGB"},{"CrossSection","Round"},{"ShapeTabLabel","Part"},{"ColorTabLabel","Material"},{"TextureTabLabel","Images"},{"ShaderTabLabel","Effects"},{"Status","Select a part. Drag a slider; tap it to enter a number."},{"NumberText","0"},{"NumberTitle","Width · mm"},{"NewPresetName","My saber"},{"StarterChoice","Straight"},{"NewPartType","Blade"},{"MaterialName","Workshop material"},{"MaterialChoice","Workshop material"},{"TextureSlotChoice","Main texture"},{"EffectName","My plasma"},{"Glow",1f},{"EffectScale",4f},{"EffectSpeed",.3f},{"EffectDepth",1f},{"EffectBrightness",1.5f},{"FlowDirection","Up"}};
   foreach(var pair in defaults)Values[pair.Key]=pair.Value;
-  Values["EffectTargets"]=state.Project.Parts.Select((p,i)=>(i+1)+". "+p.Name).ToArray();Values["MaterialPreviewForms"]=new[]{"Sphere","Blade","Ring","Selected part"};Values["TextureFileOptions"]=new[]{"No image"};Values["PartTypes"]=new[]{"Blade","Handle","Ring","Particles","Trail"};Values["ColorSources"]=new[]{"RGB","Note colour"};Values["CrossSections"]=new[]{"Round","Flat","Square","Triangle"};Values["StarterOptions"]=new[]{"Straight","Segmented","Empty"};Values["ProjectOptions"]=new[]{"Flux","My saber"};Values["MaterialOptions"]=new[]{"Workshop material"};Values["FlowDirections"]=new[]{"Up","Down","Across"};
+  Values["EffectTargets"]=state.Project.Parts.Select((p,i)=>(i+1)+". "+p.Name).ToArray();Values["MaterialPreviewForms"]=new[]{"Sphere","Blade","Ring","Selected part"};Values["TextureFileOptions"]=new[]{"No image"};Values["PartTypes"]=new[]{"Blade","Handle","Ring","Particles","Trail"};Values["ColorSources"]=new[]{"RGB","Note colour"};Values["CrossSections"]=new[]{"Round","Flat","Square","Triangle"};Values["StarterOptions"]=new[]{"Straight","Segmented","Empty"};Values["ProjectOptions"]=new[]{"My saber","My second saber"};Values["MaterialOptions"]=new[]{"Workshop material"};Values["FlowDirections"]=new[]{"Up","Down","Across"};
   Build();
-  sabers=state.InstantiatePair();sabers.transform.SetParent(transform,false);sabers.transform.localPosition=new Vector3(84,-5,-4);sabers.transform.localScale=Vector3.one*40;
+  sabers=state.InstantiatePair();sabers.transform.SetParent(transform,false);float scale=(WorkbenchLayout.Position.z/WorkbenchLayout.PreviewCenter(null).z)/WorkbenchLayout.Scale;sabers.transform.localScale=Vector3.one*scale;var meshes=sabers.GetComponentsInChildren<Renderer>();var bounds=meshes[0].bounds;foreach(var mesh in meshes.Skip(1))bounds.Encapsulate(mesh.bounds);sabers.transform.position=new Vector3(84,-5,-4)-bounds.center;
   WorkshopState.ApplyPlayerColor(sabers.transform.Find("LeftSaber").gameObject,new Color(.9f,.07f,.2f));WorkshopState.ApplyPlayerColor(sabers.transform.Find("RightSaber").gameObject,new Color(.06f,.75f,.95f));sabers.AddComponent<PreviewPresentation>().Apply();
  }
  public object Get(string key)=>Values.TryGetValue(key,out var value)?value:"";
  public float Number(string key)=>float.TryParse(Convert.ToString(Get(key),CultureInfo.InvariantCulture),NumberStyles.Float,CultureInfo.InvariantCulture,out var value)?value:0;
  public bool Flag(string key)=>Get(key) is bool value&&value;
  public void Set(string key,object value){Values[key]=value;Refresh();}
+ void UpdateHelp(){Set("HelpTitle",(helpStep+1)+" / 7 · "+TutorialContent.Titles[helpStep]);Set("HelpBody",TutorialContent.English[helpStep]);Set("HelpNextText",helpStep==6?"Done":"Next");}
  void Build(){
   if(content)Object.DestroyImmediate(content.gameObject);labels.Clear();conditions.Clear();Sliders.Clear();Actions.Clear();Modals.Clear();
   content=Node("Editor markup",transform);content.sizeDelta=new Vector2(250,126);
@@ -69,7 +70,7 @@ public sealed class PreviewMenu : MonoBehaviour {
   return label;
  }
  Image Fill(RectTransform rect,Color color){var image=rect.gameObject.AddComponent<Image>();image.color=color;return image;}
- Button MakeButton(RectTransform rect,string text,Action click){var image=Fill(rect,new Color(.12f,.17f,.23f));var button=rect.gameObject.AddComponent<Button>();button.targetGraphic=image;var c=button.colors;c.highlightedColor=new Color(.3f,.65f,.76f);c.pressedColor=new Color(.15f,.5f,.65f);button.colors=c;var inner=Node("Button label",rect);Stretch(inner,2,0);Label(inner,text,3.4f,TextAnchor.MiddleCenter);button.onClick.AddListener(()=>click());return button;}
+ Button MakeButton(RectTransform rect,string text,Action click){var image=Fill(rect,Color.white);var button=rect.gameObject.AddComponent<Button>();button.targetGraphic=image;var c=button.colors;c.normalColor=WorkshopTheme.ColorOf(WorkshopTheme.Current.Button);c.selectedColor=c.normalColor;c.highlightedColor=WorkshopTheme.ColorOf(WorkshopTheme.Current.Hover);c.pressedColor=WorkshopTheme.ColorOf(WorkshopTheme.Current.Pressed);button.colors=c;var inner=Node("Button label",rect);Stretch(inner,2,0);Label(inner,text,3.4f,TextAnchor.MiddleCenter);button.onClick.AddListener(()=>click());return button;}
  static void Stretch(RectTransform rect,float x=0,float y=0){rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;rect.offsetMin=new Vector2(x,y);rect.offsetMax=new Vector2(-x,-y);}
  RectTransform Create(XElement e,RectTransform parent){
   var tag=e.Name.LocalName;var rect=Node(A(e,"id",tag),parent);Layout(rect,e);
@@ -84,7 +85,7 @@ public sealed class PreviewMenu : MonoBehaviour {
   else if(tag=="slider-setting"){
    string key=A(e,"value");Fill(rect,new Color(.085f,.12f,.17f));var slider=rect.gameObject.AddComponent<Slider>();slider.minValue=N(e,"min");slider.maxValue=N(e,"max",100);if(slider.maxValue<Number(key))slider.maxValue=Number(key)*1.2f;
    var bar=Node("Fill",rect);bar.anchorMin=Vector2.zero;bar.anchorMax=Vector2.one;bar.offsetMin=new Vector2(0,2.2f);bar.offsetMax=new Vector2(0,-2.2f);Fill(bar,new Color(.13f,.52f,.66f)).raycastTarget=false;slider.fillRect=bar;
-   var thumb=Node("Thumb",rect);thumb.sizeDelta=new Vector2(1.2f,-2f);Fill(thumb,new Color(.45f,.86f,.96f));slider.handleRect=thumb;slider.direction=Slider.Direction.LeftToRight;
+   var thumb=Node("Thumb",rect);thumb.sizeDelta=new Vector2(1.2f,-2f);Fill(thumb,WorkshopTheme.ColorOf(WorkshopTheme.Current.Accent));slider.handleRect=thumb;slider.direction=Slider.Direction.LeftToRight;
    var valueRect=Node("Value",rect);Stretch(valueRect,2,0);var label=Label(valueRect,Number(key).ToString("0.##",CultureInfo.InvariantCulture),3.4f,TextAnchor.MiddleCenter);
    slider.SetValueWithoutNotify(Number(key));slider.onValueChanged.AddListener(v=>{float step=N(e,"increment",.1f);v=Mathf.Round(v/step)*step;Values[key]=v;label.text=v.ToString("0.##",CultureInfo.InvariantCulture);ResizePart(key,v);});
    rect.gameObject.AddComponent<PreviewTap>().Tap=()=>OpenNumber(key);Sliders[key]=slider;
@@ -120,6 +121,12 @@ public sealed class PreviewMenu : MonoBehaviour {
   switch(action){
    case "PlasmaEffect":sampleMaterial.SetFloat("_Mode",1);Set("HasEffect",true);break;case "SpaceEffect":sampleMaterial.SetFloat("_Mode",2);Set("HasEffect",true);break;
    case "ApplyEffectDraft":foreach(var id in sabers.GetComponentsInChildren<PartIdentity>())if(id.Id==WorkshopState.Instance.Project.Parts[0].Id)id.GetComponent<Renderer>().sharedMaterial=new Material(sampleMaterial);Activate("ShapeInspector");break;
+   case "OpenView":Modals["view-dialog"].SetActive(true);break;case "CloseView":Modals["view-dialog"].SetActive(false);break;
+   case "OpenHelp":if(sabers)sabers.SetActive(false);UpdateHelp();Modals["help-dialog"].SetActive(true);break;
+   case "CloseHelp":Modals["help-dialog"].SetActive(false);if(sabers)sabers.SetActive(true);break;
+   case "HelpNext":if(helpStep<6){helpStep++;UpdateHelp();}else Action("CloseHelp");break;
+   case "HelpBack":if(helpStep>0){helpStep--;UpdateHelp();}break;
+   case "HelpShow":Action("CloseHelp");Activate(helpStep==3?"ShaderInspector":"ShapeInspector");break;
    case "InspectShape":Activate("ShapeInspector");break;case "InspectColor":Activate("ColorInspector");break;case "InspectTexture":Activate("TextureInspector");break;case "ShaderWorkshop":Activate("ShaderInspector");break;
    case "NewPresetDialog":Modals["preset-dialog"].SetActive(true);break;case "OpenLibrary":Modals["library-dialog"].SetActive(true);break;case "AddPartDialog":Modals["part-dialog"].SetActive(true);break;
    case "CloseNumber":Modals["number-dialog"].SetActive(false);if(sabers)sabers.SetActive(true);break;

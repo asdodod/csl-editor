@@ -7,9 +7,9 @@ public static class WorkbenchLayout
 {
     public static readonly Vector2 Size=new Vector2(250,126);
     public static readonly Vector3 Position=new Vector3(0,1.2f,2);
-    public static readonly Vector3 PreviewOffset=new Vector3(.82f,.4f,-1);
-    public static readonly Vector2 PreviewSize=new Vector2(.32f,.52f);
-    public static float PreviewFit(Bounds bounds)=>Mathf.Min(1,PreviewSize.y/Mathf.Max(.001f,bounds.size.y),PreviewSize.x/Mathf.Max(.001f,bounds.size.x));
+    public static readonly Vector3 PreviewOffset=new Vector3(1.3f,.02f,-.4f);
+    public const float ActualSizeScale=1f;
+    public static void PlacePreviewFrame(Transform preview,Transform? wall,float zoom){preview.SetParent(wall,true);preview.SetPositionAndRotation(Vector3.zero,wall?wall!.rotation:Quaternion.identity);preview.localScale=Vector3.one*(zoom/(wall?wall!.lossyScale.x:1));}
     public const float Scale=.018f;
     public const float Radius=120;
     public static void Place(Transform wall){wall.SetPositionAndRotation(Position,Quaternion.identity);wall.localScale=Vector3.one*Scale;}

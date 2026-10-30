@@ -32,10 +32,11 @@ public static class PreviewBatch {
   if(Math.Abs(view.Number("PartWidth")-42)>.001)throw new Exception("Numeric entry failed");
   view.Activate("ColorInspector");Capture("03-material.png");view.Set("HasEffect",true);view.Activate("ShaderInspector");Capture("04-effects.png");
   view.Activate("ShapeInspector");view.Set("ShowTransform",true);Capture("05-transform.png");
+  view.Action("OpenHelp");Capture("06-help-en.png");for(int i=0;i<3;i++)view.Action("HelpNext");Capture("07-help-materials.png");for(int i=0;i<3;i++)view.Action("HelpNext");if(!view.Get("HelpTitle").ToString().StartsWith("7 / 7"))throw new Exception("Tutorial paging failed");view.Action("CloseHelp");
   EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(),"Assets/MenuPreview/MenuPreview.unity");
   File.WriteAllText(Path.Combine(output,"checks.txt"),"Same Editor.bsml loaded.\nUGUI layout and clipping rendered.\nSlider binding: 32 mm.\nShort tap opens keypad.\nNumeric entry: 42 mm.\nGame-specific BSML prefabs and VR input still require an in-game check.\n");
   EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
-  Debug.Log("MENU_PREVIEW_VERIFIED: slider, keypad, five rendered views");EditorApplication.Exit(0);
+  Debug.Log("MENU_PREVIEW_VERIFIED: slider, keypad, seven rendered views and tutorial paging");EditorApplication.Exit(0);
  }catch(Exception e){Debug.LogError("MENU_PREVIEW_FAILED "+e);EditorApplication.Exit(1);}}
  static void Capture(string name){
   Canvas.ForceUpdateCanvases();foreach(var text in view.GetComponentsInChildren<PreviewTextSize>(true))text.Apply();Canvas.ForceUpdateCanvases();

@@ -26,7 +26,7 @@ public sealed partial class EditorController : NotifiableBase,IInitializable,IDi
     private List<string> sources=new List<string>(),projects=new List<string>(),textures=new List<string>(),properties=new List<string>(),textureSlots=new List<string>();
     private int partIndex,materialIndex,propertyIndex,slotIndex,sectionIndex;
     private bool refreshing,advanced,visible=true,busy,editorOpen;
-    private float previewScale=.65f;
+    private float previewScale=WorkbenchLayout.ActualSizeScale;
     private Color left=new Color32(0xC8,0x14,0x14,0xFF),right=new Color32(0x28,0x8E,0xD2,0xFF);
     [UIComponent("source-list")] private DropDownListSetting sourceList=null!;
     [UIComponent("project-list")] private DropDownListSetting projectList=null!;
@@ -45,7 +45,7 @@ public sealed partial class EditorController : NotifiableBase,IInitializable,IDi
     [UIAction("OpenEditor")] public void OpenEditor(){Guard(()=>{
         if(workspace==null)workspace=new WorkshopWall(this);
         workspace.Show();EditorOpened();
-        if(!state.Ready){state.CreateStarter();partIndex=0;BuildPreview();SetStatus("Flux created. Select a part to edit.");}
+        if(!state.Ready){state.New();state.Project.Name="Untitled";partIndex=0;BuildPreview();SetStatus("Choose New to create your preset, or add a part.");}
     });}
     [UIAction("CloseEditor")] public void CloseEditor(){workspace?.Hide();EditorClosed();}
     [UIAction("RecenterWall")] public void RecenterWall(){workspace?.Recenter();if(preview)PlacePreview();}
@@ -103,25 +103,23 @@ public sealed partial class EditorController : NotifiableBase,IInitializable,IDi
     });}
     [UIAction("OpenSource")] public async void OpenSource(){await Run(async()=>{if(SourceChoice=="")throw new InvalidOperationException("Add a .saber to CustomSabers, then refresh files.");SetStatus("Loading saber...");await state.OpenSaber(SourceChoice);partIndex=-1;BuildPreview();SetStatus("Opened "+state.Project.Name+"");});}
     [UIAction("OpenProject")] public async void OpenProject(){await Run(async()=>{int index=ProjectOptions.IndexOf(ProjectChoice);if(index<0)throw new InvalidOperationException("No saved presets.");await state.LoadProject(Path.GetFileName(projects[index]));undo.Clear();redo.Clear();partIndex=-1;BuildPreview();ClosePresetDialog();CloseLibrary();SetStatus("Preset opened.");});}
-    [UIAction("New")] public void New(){Guard(()=>{state.CreateStarter();partIndex=0;BuildPreview();SetStatus("Flux created.");});}
+    [UIAction("New")] public void New(){Guard(()=>{state.CreateStarter();partIndex=0;BuildPreview();SetStatus("Segmented saber created.");});}
     [UIAction("Save")] public void Save(){Guard(()=>{var path=state.Save();RefreshFiles();ProjectChoice=Path.GetFileName(path).Replace(".workshop.json","");UpdateList(projectList,ProjectOptions,ProjectChoice);UpdateList(gameplayProjectList,ProjectOptions,ProjectChoice);SetStatus("Preset saved: "+Path.GetFileName(path));});}
     [UIAction("ShowPreview")] public void ShowPreview(){Guard(()=>{if(!state.Ready)throw new InvalidOperationException("Create or open a saber first.");if(!preview)BuildPreview();visible=true;PlacePreview();preview!.SetActive(true);NotifyPropertyChanged(nameof(PreviewVisible));});}
     private void PlacePreview(){
         if(!preview)return;
         var wall=workspace?.Transform;
-        var yaw=wall?wall!.rotation:Quaternion.identity;
-        preview!.transform.SetParent(wall,true);preview.transform.SetPositionAndRotation(Vector3.zero,yaw);
-        preview.transform.localScale=Vector3.one*(previewScale/(wall?wall!.lossyScale.x:1));
+        WorkbenchLayout.PlacePreviewFrame(preview!.transform,wall,previewScale);
         var target=WorkbenchLayout.PreviewCenter(wall);
         var meshes=preview.GetComponentsInChildren<Renderer>(true).Where(r=>(r is MeshRenderer||r is SkinnedMeshRenderer)&&!r.GetComponentInParent<SizeGuideMarker>()&&r.enabled&&VisibleParents(r.transform,preview.transform)).ToArray();var bounds=new Bounds(Vector3.zero,Vector3.zero);
         if(meshes.Length==0&&showSizeGuide&&guidePreview)meshes=guidePreview!.GetComponentsInChildren<Renderer>();
-        if(meshes.Length>0){bounds=meshes[0].bounds;foreach(var mesh in meshes.Skip(1))bounds.Encapsulate(mesh.bounds);}float fit=WorkbenchLayout.PreviewFit(bounds);if(fit<1){preview.transform.localScale*=fit;bounds.center*=fit;}preview.transform.position=target-bounds.center;ScalePreviewTrails();
+        if(meshes.Length>0){bounds=meshes[0].bounds;foreach(var mesh in meshes.Skip(1))bounds.Encapsulate(mesh.bounds);}preview.transform.position=target-bounds.center;ScalePreviewTrails();
         Plugin.Log.Info("Preview centered at "+target+" in static menu space");
     }
     private static bool VisibleParents(Transform node,Transform root){while(node!=root&&node){if(!node.gameObject.activeSelf)return false;node=node.parent;}return true;}
     private void BuildPreview(){if(preview){preview!.SetActive(false);Object.Destroy(preview);}preview=state.InstantiatePair();guidePreview=WorkshopAssets.AttachGuide(preview);guidePreview.SetActive(showSizeGuide);PlacePreview();RefreshSelection();ApplyColors();PreparePreview();ConfigureMotion();preview.SetActive(visible&&editorOpen&&!ShaderInspector);NotifyPropertyChanged(nameof(ProjectName));NotifyPropertyChanged(nameof(PlayEnabled));}
     public bool PreviewVisible {get=>visible;set{visible=value;if(preview)preview!.SetActive(value);NotifyPropertyChanged();}}
-    public float PreviewScale {get=>previewScale;set{previewScale=Mathf.Clamp(value,.2f,2);if(preview)PlacePreview();}}
+    public float PreviewScale {get=>previewScale;set{previewScale=Mathf.Clamp(value,.25f,2);if(preview)PlacePreview();NotifyPropertyChanged();}}
     public Color LeftColor {get=>left;set{left=value;ApplyColors();}}
     public Color RightColor {get=>right;set{right=value;ApplyColors();}}
     private void PreparePreview(){if(!preview)return;var presentation=preview!.GetComponent<PreviewPresentation>()??preview.AddComponent<PreviewPresentation>();presentation.Apply();foreach(var r in preview.GetComponentsInChildren<Renderer>(true)){var f=r.GetComponent<MeshFilter>();if(f&&f!.sharedMesh)foreach(var m in r.sharedMaterials)if(m)WorkshopState.SetBounds(m,f.sharedMesh.bounds);}}

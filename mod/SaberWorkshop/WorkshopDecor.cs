@@ -14,6 +14,7 @@ internal static class WorkshopDecor {
    var panel=title.transform.parent.gameObject;var image=panel.GetComponent<ImageView>()??panel.AddComponent<ImageView>();image.sprite=BeatSaberMarkupLanguage.Utilities.ImageResources.WhitePixel;image.material=BeatSaberMarkupLanguage.Utilities.ImageResources.NoGlowMat;image.color=new Color(.03f,.045f,.065f,1);image.raycastTarget=false;
   }
   foreach(var button in root.GetComponentsInChildren<Button>(true)){
+   if(button.name=="BSMLButton")WorkshopSurface.Button(button,BeatSaberMarkupLanguage.Utilities.ImageResources.WhitePixel,BeatSaberMarkupLanguage.Utilities.ImageResources.NoGlowMat);
    var text=button.GetComponentInChildren<TextMeshProUGUI>(true);if(!text)continue;
    string key=text.text switch {"Hide / show"=>"eye","Duplicate"=>"copy","Delete"=>"delete","Add part"=>"plus",_=>""};if(key=="")continue;
    var icon=new GameObject("Action icon",typeof(RectTransform),typeof(LayoutElement)).AddComponent<ImageView>();icon.GetComponent<LayoutElement>().ignoreLayout=true;icon.transform.SetParent(button.transform,false);icon.sprite=Icon(key);icon.material=BeatSaberMarkupLanguage.Utilities.ImageResources.NoGlowMat;icon.color=new Color(.45f,.85f,.93f);icon.raycastTarget=false;
