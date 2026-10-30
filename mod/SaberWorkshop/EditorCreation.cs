@@ -12,7 +12,7 @@ public sealed partial class EditorController
 {
     private GameObject? guidePreview;
     private bool showSizeGuide;
-    public bool ShowSizeGuide {get=>showSizeGuide;set{showSizeGuide=value;if(guidePreview)guidePreview!.SetActive(value);NotifyPropertyChanged();}}
+    public bool ShowSizeGuide {get=>showSizeGuide;set{showSizeGuide=value;if(guidePreview)guidePreview!.SetActive(value);PlacePreview();NotifyPropertyChanged();}}
     public string NewPresetName {get;set;}="My saber";
     public List<object> StarterOptions {get;}=new List<object>{"Straight","Segmented","Empty"};
     public string StarterChoice {get;set;}="Straight";

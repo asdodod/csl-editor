@@ -114,6 +114,7 @@ public sealed partial class EditorController : NotifiableBase,IInitializable,IDi
         preview.transform.localScale=Vector3.one*(previewScale/(wall?wall!.lossyScale.x:1));
         var target=WorkbenchLayout.PreviewCenter(wall);
         var meshes=preview.GetComponentsInChildren<Renderer>(true).Where(r=>(r is MeshRenderer||r is SkinnedMeshRenderer)&&!r.GetComponentInParent<SizeGuideMarker>()&&r.enabled&&VisibleParents(r.transform,preview.transform)).ToArray();var bounds=new Bounds(Vector3.zero,Vector3.zero);
+        if(meshes.Length==0&&showSizeGuide&&guidePreview)meshes=guidePreview!.GetComponentsInChildren<Renderer>();
         if(meshes.Length>0){bounds=meshes[0].bounds;foreach(var mesh in meshes.Skip(1))bounds.Encapsulate(mesh.bounds);}float fit=Mathf.Min(1,1/Mathf.Max(.001f,bounds.size.y),.42f/Mathf.Max(.001f,bounds.size.x));if(fit<1){preview.transform.localScale*=fit;bounds.center*=fit;}preview.transform.position=target-bounds.center;ScalePreviewTrails();
         Plugin.Log.Info("Preview centered at "+target+" in static menu space");
     }
