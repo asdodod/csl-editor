@@ -45,12 +45,24 @@ public class ProfilePart
     public string Id=Guid.NewGuid().ToString("N");public string Name="Part";public string Shape="profile";
     public float Length=.2f;public int Sides=32;public bool Caps=true;public string Side="both";public bool Visible=true;
     public float[] Position={0,0,0};public float[] Rotation={0,0,0};
+    public float WidthScale=1,DepthScale=1,HeightScale=1;
     [Newtonsoft.Json.JsonProperty(ObjectCreationHandling=Newtonsoft.Json.ObjectCreationHandling.Replace)]
     public List<Section> Sections=new List<Section>{new Section{T=0,Radius=.018f},new Section{T=1,Radius=.018f}};
     public SurfaceEdit Surface=new SurfaceEdit();
     public bool Inverted;
     public float OutlineThickness;
     public MeshData? Geometry;
+    public ParticleEdit? Particles;
+    public TrailEdit? Trail;
+}
+public class TrailEdit {
+    public string Type="Blade ribbon",Preset="Balanced";
+    public float Time=.18f,Width=.95f,Taper=.2f;
+}
+public class ParticleEdit
+{
+    public string Style="Sparks";
+    public float Rate=20,Life=.6f,Speed=.15f,Size=.004f,Spread=20;
 }
 public class MeshData
 {
@@ -60,7 +72,7 @@ public class MeshData
 }
 public class Section
 {
-    public float T;public float Radius=.01f;public float X;public float Y;
+    public float Aspect=1;public float T;public float Radius=.01f;public float X;public float Y;
 }
 public sealed class OwnedAssets : MonoBehaviour
 {

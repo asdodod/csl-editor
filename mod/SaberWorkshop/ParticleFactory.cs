@@ -1,0 +1,5 @@
+using UnityEngine;
+namespace SaberWorkshop;
+public static class ParticleFactory {
+ public static void Configure(ParticleSystem system,ParticleEdit edit){system.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);var main=system.main;main.loop=true;main.playOnAwake=true;main.maxParticles=2000;main.startLifetime=edit.Life;main.startSpeed=edit.Speed;main.startSize=edit.Size;main.startColor=Color.white;main.simulationSpace=ParticleSystemSimulationSpace.Local;var emission=system.emission;emission.rateOverTime=edit.Rate;var shape=system.shape;shape.enabled=true;shape.shapeType=edit.Style=="Dust"?ParticleSystemShapeType.Box:ParticleSystemShapeType.Cone;shape.angle=edit.Spread;shape.radius=.008f;shape.scale=edit.Style=="Dust"?new Vector3(.12f,.12f,.5f):Vector3.one;var color=system.colorOverLifetime;color.enabled=true;var gradient=new Gradient();gradient.SetKeys(new[]{new GradientColorKey(Color.white,0),new GradientColorKey(Color.white,1)},new[]{new GradientAlphaKey(0,0),new GradientAlphaKey(1,.1f),new GradientAlphaKey(0,1)});color.color=gradient;system.Play();}
+}

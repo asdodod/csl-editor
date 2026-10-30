@@ -11,13 +11,16 @@ public static class WorkshopAssets
 {
     private static Material? template;
     private static Material? guideTemplate;
+    private static Material? effectTemplate,particleTemplate,trailTemplate;
     private static bool attempted;
     private static MeshData? guide;
     public static Material? NewMaterial(){
         if(!attempted){attempted=true;using(var stream=Assembly.GetExecutingAssembly().GetManifestResourceStream("SaberWorkshop.workshop-tools.bundle")){
-            if(stream!=null){using(var memory=new MemoryStream()){stream.CopyTo(memory);var bundle=AssetBundle.LoadFromMemory(memory.ToArray());if(bundle){template=bundle.LoadAsset<Material>("Assets/WorkshopToolMaterial.mat");guideTemplate=bundle.LoadAsset<Material>("Assets/WorkshopGuideMaterial.mat");bundle.Unload(false);}}}
+            if(stream!=null){using(var memory=new MemoryStream()){stream.CopyTo(memory);var bundle=AssetBundle.LoadFromMemory(memory.ToArray());if(bundle){template=bundle.LoadAsset<Material>("Assets/WorkshopToolMaterial.mat");guideTemplate=bundle.LoadAsset<Material>("Assets/WorkshopGuideMaterial.mat");effectTemplate=bundle.LoadAsset<Material>("Assets/WorkshopEffectMaterial.mat");particleTemplate=bundle.LoadAsset<Material>("Assets/WorkshopParticleMaterial.mat");trailTemplate=bundle.LoadAsset<Material>("Assets/WorkshopTrailMaterial.mat");bundle.Unload(false);}}}
         }}return template?new Material(template!):null;
     }
+    public static Material EffectMaterial(bool particles=false){var init=NewMaterial();if(init)OwnedAssets.Release(init!);var source=particles?particleTemplate:effectTemplate;if(!source)throw new InvalidOperationException("Workshop effect assets are missing.");return new Material(source!);}
+    public static Material TrailMaterial(){var init=NewMaterial();if(init)OwnedAssets.Release(init!);if(!trailTemplate)throw new InvalidOperationException("Workshop trail assets are missing.");return new Material(trailTemplate!);}
     public static GameObject AttachGuide(GameObject preview){
         if(guide==null){using(var stream=Assembly.GetExecutingAssembly().GetManifestResourceStream("SaberWorkshop.size-guide.json"))using(var reader=new StreamReader(stream!))guide=JsonConvert.DeserializeObject<MeshData>(reader.ReadToEnd())!;}
         var root=new GameObject("Sizing guide");root.transform.SetParent(preview.transform,false);root.AddComponent<SizeGuideMarker>();var owner=root.AddComponent<OwnedAssets>();

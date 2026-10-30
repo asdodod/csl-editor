@@ -20,6 +20,7 @@ public sealed class WorkshopWall : IDisposable
 {
     private readonly EditorController editor;
     private FloatingScreen? screen;
+    private readonly System.Collections.Generic.List<(CanvasGroup group,float alpha,bool interact,bool rays,bool added)> menuGroups=new System.Collections.Generic.List<(CanvasGroup,float,bool,bool,bool)>();
     public Transform? Transform=>screen?screen!.transform:null;
 
     public WorkshopWall(EditorController editor){this.editor=editor;SceneManager.sceneLoaded+=SceneLoaded;}
@@ -35,10 +36,12 @@ public sealed class WorkshopWall : IDisposable
                 using(var reader=new StreamReader(stream!))BSMLParser.Instance.Parse(reader.ReadToEnd(),created.gameObject,editor);
                 ConfigureCurvedMasks(created.gameObject);
                 CompactFields(created.gameObject);
+                foreach(var modal in created.GetComponentsInChildren<ModalView>(true)){var layout=modal.GetComponent<LayoutElement>()??modal.gameObject.AddComponent<LayoutElement>();layout.ignoreLayout=true;}
+                WorkshopDecor.Apply(created.gameObject);
                 screen=created;
             }catch{Object.Destroy(created.gameObject);throw;}
         }
-        screen!.gameObject.SetActive(true);Recenter();Canvas.ForceUpdateCanvases();
+        HideMenu();screen!.gameObject.SetActive(true);Recenter();Canvas.ForceUpdateCanvases();
         int count=screen.GetComponentsInChildren<Button>(false).Count(b=>((RectTransform)b.transform).rect.width>0&&((RectTransform)b.transform).rect.height>0);
         Plugin.Log.Info("Workshop wall opened: "+count+" visible buttons; "+screen.ScreenSize+" world scale "+screen.transform.lossyScale);
     }
@@ -46,8 +49,16 @@ public sealed class WorkshopWall : IDisposable
         if(!screen)return;
         WorkbenchLayout.Place(screen!.transform);
     }
-    public void Hide(){if(screen)screen!.gameObject.SetActive(false);}
+    private void HideMenu(){if(menuGroups.Count>0)return;foreach(var system in Resources.FindObjectsOfTypeAll<ScreenSystem>()){if(!system.gameObject.activeInHierarchy||!system.gameObject.scene.isLoaded)continue;var group=system.GetComponent<CanvasGroup>();bool added=!group;if(!group)group=system.gameObject.AddComponent<CanvasGroup>();menuGroups.Add((group,group.alpha,group.interactable,group.blocksRaycasts,added));group.alpha=0;group.interactable=false;group.blocksRaycasts=false;}}
+    private void RestoreMenu(){foreach(var entry in menuGroups)if(entry.group){entry.group.alpha=entry.alpha;entry.group.interactable=entry.interact;entry.group.blocksRaycasts=entry.rays;if(entry.added)Object.Destroy(entry.group);}menuGroups.Clear();}
+    public void Hide(){if(screen)screen!.gameObject.SetActive(false);RestoreMenu();}
     private static void ConfigureCurvedMasks(GameObject root){
+        // EULA scroll prefabs carry viewport offsets and a preferred-width fitter.
+        // Clear both before using them in an inspector column.
+        foreach(var view in root.GetComponentsInChildren<BSMLScrollView>(true))foreach(var rect in view.GetComponentsInChildren<RectTransform>(true)){
+            if(rect.name=="Viewport"){rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;rect.offsetMin=new Vector2(1,1);rect.offsetMax=new Vector2(-5,-1);}
+            if(rect.name=="BSMLScrollViewContent"||rect.name=="BSMLScrollViewContentContainer"){rect.anchorMin=new Vector2(0,1);rect.anchorMax=Vector2.one;rect.pivot=new Vector2(.5f,1);rect.anchoredPosition=Vector2.zero;rect.sizeDelta=Vector2.zero;var fit=rect.GetComponent<ContentSizeFitter>();if(fit)fit!.horizontalFit=ContentSizeFitter.FitMode.Unconstrained;var layout=rect.GetComponent<VerticalLayoutGroup>();if(layout){layout!.childControlWidth=true;layout.childForceExpandWidth=true;}}
+        }
         foreach(var list in root.GetComponentsInChildren<CustomListTableData>(true)){var canvas=list.TableView.GetComponent<Canvas>();if(canvas)canvas!.overrideSorting=false;}
         var background=root.transform.Find("Background")?.GetComponent<ImageView>();
         if(background){background!.material=Utilities.ImageResources.NoGlowMat;background.color=new Color(.025f,.035f,.05f,1);}
@@ -69,9 +80,9 @@ public sealed class WorkshopWall : IDisposable
     }
     private static void FillControl(Transform parent,RectTransform? oldLabel,RectTransform? value){
         if(oldLabel)oldLabel!.gameObject.SetActive(false);if(!value)return;
-        var element=parent.GetComponent<LayoutElement>();if(element){element!.minHeight=0;element.preferredHeight=6.4f;}
+        var element=parent.GetComponent<LayoutElement>()??parent.gameObject.AddComponent<LayoutElement>();element.minWidth=0;element.minHeight=0;element.preferredHeight=6.4f;
         value!.anchorMin=Vector2.zero;value.anchorMax=Vector2.one;value.offsetMin=new Vector2(1,0);value.offsetMax=new Vector2(-1,0);
     }
     private void SceneLoaded(Scene scene,LoadSceneMode mode){if(scene.name=="GameCore"||scene.name=="EmptyTransition")editor.CloseEditor();}
-    public void Dispose(){SceneManager.sceneLoaded-=SceneLoaded;if(screen)Object.Destroy(screen!.gameObject);screen=null;}
+    public void Dispose(){RestoreMenu();SceneManager.sceneLoaded-=SceneLoaded;if(screen)Object.Destroy(screen!.gameObject);screen=null;}
 }

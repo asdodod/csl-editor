@@ -25,7 +25,7 @@ public sealed partial class EditorController
             var handle=state.AddPart("Handle",false);handle.Length=.22f;handle.Position[2]=-.17f;
             var blade=state.AddPart("Blade",true);blade.Length=1;blade.Position[2]=.08f;blade.Sections=new List<Section>{new Section{T=0,Radius=.007f},new Section{T=.96f,Radius=.006f},new Section{T=1,Radius=.0002f}};
         }}
-        state.Project.Name=name;undo.Clear();redo.Clear();partIndex=0;state.Save();BuildPreview();RefreshFiles();ProjectChoice=name;UpdateList(projectList,ProjectOptions,name);UpdateList(gameplayProjectList,ProjectOptions,name);SetStatus("Preset created: "+name);
+        state.Project.Name=name;undo.Clear();redo.Clear();partIndex=0;state.Save();BuildPreview();RefreshFiles();ProjectChoice=name;UpdateList(projectList,ProjectOptions,name);UpdateList(gameplayProjectList,ProjectOptions,name);ClosePresetDialog();SetStatus("Preset created: "+name);
     });}
     [UIAction("SaveCopy")] public void SaveCopy(){Guard(()=>{if(!state.Ready)throw new InvalidOperationException("Create a preset first.");string previous=state.Project.Name;try{state.Project.Name=AvailablePresetName(NewPresetName);state.Save();}catch{state.Project.Name=previous;throw;}RefreshFiles();ProjectChoice=state.Project.Name;UpdateList(projectList,ProjectOptions,ProjectChoice);UpdateList(gameplayProjectList,ProjectOptions,ProjectChoice);NotifyPropertyChanged(nameof(ProjectName));SetStatus("Saved copy: "+state.Project.Name);});}
     [UIAction("AddOutline")] public void AddOutline(){Guard(()=>{

@@ -17,7 +17,7 @@ class Contracts(unittest.TestCase):
             self.assertFalse(list(Path(folder).rglob('*.saber')))
     def test_menu_tags_and_bindings(self):
         source='\n'.join(p.read_text(encoding='utf-8') for p in (ROOT/'SaberWorkshop').glob('*.cs'))
-        tags={'list','scroll-view','text','horizontal','vertical','button','dropdown-list-setting','bool-setting','increment-setting','slider-setting','color-setting','string-setting'}
+        tags={'modal','list','scroll-view','text','horizontal','vertical','button','dropdown-list-setting','bool-setting','increment-setting','slider-setting','color-setting','string-setting'}
         trees=[ET.parse(ROOT/'SaberWorkshop'/file) for file in ['Editor.bsml','Gameplay.bsml']]
         members=set(re.findall(r'public\s+(?:[\w<>?]+)\s+(\w+)\s*(?:\{|=>)',source))
         actions=set(re.findall(r'\[UIAction\("([^"]+)"\)\]',source))
@@ -50,18 +50,24 @@ class Contracts(unittest.TestCase):
         tree=ET.parse(ROOT/'SaberWorkshop/Editor.bsml')
         self.assertEqual(tree.getroot().tag,'vertical')
         columns=tree.getroot().findall('horizontal')[1]
-        self.assertEqual(len(columns),5)
-        width=sum(float(c.get('preferred-width')) for c in columns)+float(columns.get('spacing'))*4
+        self.assertEqual(len(columns),3)
+        width=sum(float(c.get('preferred-width')) for c in columns)+float(columns.get('spacing'))*2
         self.assertLessEqual(width,250)
         self.assertEqual(float(tree.getroot().get('preferred-width')),250)
         self.assertEqual(tree.getroot().get('vertical-fit'),'Unconstrained')
-        self.assertEqual(len(tree.findall('.//scroll-view')),4)
+        self.assertEqual(len(tree.findall('.//scroll-view')),1)
         self.assertIsNotNone(tree.find('.//button[@on-click="CreatePreset"]'))
-        self.assertIsNotNone(tree.find('.//button[@on-click="AddOutline"]'))
+        self.assertIsNotNone(tree.find('.//button[@on-click="OutlinePair"]'))
+        self.assertIsNotNone(tree.find('.//button[@on-click="AddParticles"]'))
+        self.assertIsNotNone(tree.find('.//button[@on-click="AddTrail"]'))
+        self.assertIsNotNone(tree.find('.//string-setting[@value="TrailWidthText"]'))
+        self.assertIsNotNone(tree.find('.//vertical[@active="~ShaderInspector"]'))
         self.assertIsNotNone(tree.find('.//bool-setting[@value="ShowSizeGuide"]'))
         self.assertIn('Mask>()??flat.gameObject.AddComponent<Mask>()',wall)
         self.assertIn('FillControl',wall)
-        self.assertEqual(tree.getroot().find('horizontal/button').get('text'),'Create new preset')
+        self.assertEqual(tree.getroot().find('horizontal/button').get('on-click'),'NewPresetDialog')
+        self.assertIsNotNone(tree.find('.//modal[@id="preset-dialog"]'))
+        self.assertIn('layout.ignoreLayout=true',wall)
         for field in tree.iter():
             if field.tag.endswith('setting'):self.assertEqual(field.get('text'),'')
         for scroll in tree.findall('.//scroll-view'):self.assertLessEqual(float(scroll.get('preferred-height')),100)

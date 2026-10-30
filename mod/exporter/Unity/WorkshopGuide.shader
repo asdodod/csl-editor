@@ -1,6 +1,6 @@
 Shader "Workshop/Guide" {
 Properties {_Color("Color",Color)=(0.15,0.65,0.85,0.2)}
-SubShader {Tags {"Queue"="Transparent" "RenderType"="Transparent"} Pass {Blend SrcAlpha OneMinusSrcAlpha ZWrite Off Cull Off
+SubShader {Tags {"Queue"="Geometry+10" "RenderType"="Transparent"} Pass {Blend SrcAlpha OneMinusSrcAlpha ZWrite On Cull Off
 CGPROGRAM
 #pragma vertex vert
 #pragma fragment frag

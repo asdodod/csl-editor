@@ -21,7 +21,7 @@ public sealed partial class EditorController
         var config=JObject.Parse(File.ReadAllText(configPath));var python=(string?)config["PythonExecutable"];var script=(string?)config["Script"];
         if(string.IsNullOrEmpty(python)||string.IsNullOrEmpty(script)||!File.Exists(python)||!File.Exists(script))throw new InvalidOperationException("CSL exporter configuration is incomplete.");
         string folder=Path.Combine(WorkshopState.DataRoot,"ExportJobs");Directory.CreateDirectory(folder);string input=Path.Combine(folder,Guid.NewGuid().ToString("N")+".json");
-        var meshes=state.Project.Parts.Select(p=>{var mesh=WorkshopState.BuildMesh(p);try{return new{Part=p,Mesh=new{Positions=mesh.vertices.SelectMany(v=>new[]{v.x,v.y,v.z}).ToArray(),Normals=mesh.normals.SelectMany(v=>new[]{v.x,v.y,v.z}).ToArray(),UV=mesh.uv.SelectMany(v=>new[]{v.x,v.y}).ToArray(),Indices=mesh.triangles}};}finally{OwnedAssets.Release(mesh);}}).ToArray();
+        var meshes=state.Project.Parts.Select(p=>new{Part=p,Mesh=p.Particles!=null||p.Trail!=null?null:ExportMesh(p)}).ToArray();
         File.WriteAllText(input,JsonConvert.SerializeObject(new{Project=state.Project,Parts=meshes}),new UTF8Encoding(false));SetStatus("Exporting CSL .saber...");
         var start=new System.Diagnostics.ProcessStartInfo{FileName=python,Arguments=Quote(script!)+" --config "+Quote(configPath)+" --input "+Quote(input),UseShellExecute=false,CreateNoWindow=true,RedirectStandardOutput=true,RedirectStandardError=true,StandardOutputEncoding=Encoding.UTF8,StandardErrorEncoding=Encoding.UTF8};
         using(var process=new System.Diagnostics.Process{StartInfo=start}){
@@ -31,5 +31,6 @@ public sealed partial class EditorController
             SetStatus("CSL exported: Workshop/"+Path.GetFileName((string?)result["file"]));Plugin.Log.Info("CSL export verified: "+line);
         }
     });}
+    private static MeshData ExportMesh(ProfilePart p){var mesh=WorkshopState.BuildMesh(p);try{return MeshData.Capture(mesh);}finally{OwnedAssets.Release(mesh);}}
     private static string Quote(string value){if(value.Contains('"'))throw new InvalidDataException("Invalid exporter path");return "\""+value.Replace("\\","/")+"\"";}
 }
