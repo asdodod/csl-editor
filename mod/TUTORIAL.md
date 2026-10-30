@@ -6,17 +6,17 @@ Open **Solo → Mods → Saber Workshop → Open editor**. Press **Help** in the
 
 Press **New**, enter a name and choose **Straight** for a simple blade and handle. Press **Create**.
 
-**Segmented** starts with several blade sections; **Empty** starts with no parts.
+**Outline** starts with a handle, dark outline shell and smaller coloured inner blade. **Segmented** starts with several blade sections; **Empty** starts with no parts.
 
 ## 2. Build from parts
 
-The list on the left contains your parts. Click one to edit it.
+Your preset name and parts are on the left. Click a part to edit it.
 
 **Add part** creates a Blade, Handle, Ring, Particles or Trail. **Duplicate** copies the selected part in place. **Hide / show** changes visibility; **Delete** removes it.
 
 ## 3. Resize and move
 
-In **Part**, drag **Height**, **Width** or **Depth** to change size in millimetres. A short tap opens the numeric keypad.
+In **Part**, drag **Height**, **Width** or **Depth** to change size in millimetres. A short tap opens the numeric keypad. Expand **Ends and outline** to make the top or bottom **Flat** or **Pointed**, then adjust its tip length.
 
 Expand **Position and rotation** to place it. The preview starts at actual game size. **Center** resets its position. **View** opens zoom, reference mesh and test swing. **Actual size** restores 1:1 scale. The reference mesh is not exported.
 
@@ -28,7 +28,7 @@ Choose a sample shape and a target under **Apply material to**, then press **App
 
 ## 5. Create an outline
 
-Select a solid part. Expand **Outline and shape details** and press **Create outline pair**. This creates a larger dark inverted shell and a smaller coloured inner part.
+Select a solid part. Expand **Ends and outline** and press **Create outline pair**. This creates a larger dark inverted shell and a smaller coloured inner part.
 
 Select either part on the left and adjust its dimensions and colour independently. **Inverted faces** changes which side of a surface is visible.
 

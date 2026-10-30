@@ -69,7 +69,7 @@ public sealed class WorkshopWall : IDisposable
         }
     }
     private static void CompactFields(GameObject root){
-        foreach(var text in root.GetComponentsInChildren<TextMeshProUGUI>(true)){if(text.name!="BSMLText"){text.fontSize=3.4f;text.fontSizeMin=3.4f;text.fontSizeMax=3.4f;text.enableAutoSizing=false;}if(text.name!="BSMLText")text.enableWordWrapping=false;text.margin=Vector4.zero;}
+        foreach(var text in root.GetComponentsInChildren<TextMeshProUGUI>(true)){text.fontStyle=FontStyles.Normal;if(text.name!="BSMLText"){text.fontSize=3.4f;text.fontSizeMin=3.4f;text.fontSizeMax=3.4f;text.enableAutoSizing=false;}if(text.name!="BSMLText")text.enableWordWrapping=false;text.margin=Vector4.zero;}
         foreach(var button in root.GetComponentsInChildren<Button>(true).Where(b=>b.name=="BSMLButton")){var fitter=button.GetComponent<ContentSizeFitter>();if(fitter){fitter.horizontalFit=ContentSizeFitter.FitMode.Unconstrained;fitter.verticalFit=ContentSizeFitter.FitMode.Unconstrained;}var element=button.GetComponent<LayoutElement>();if(element){element.minWidth=0;element.minHeight=0;}}
         foreach(var setting in root.GetComponentsInChildren<IncDecSetting>(true))FillControl(setting.transform,setting.transform.Find("NameText") as RectTransform,setting.transform.Find("ValuePicker") as RectTransform);
         foreach(var setting in root.GetComponentsInChildren<StringSetting>(true))FillControl(setting.transform,setting.transform.Find("NameText") as RectTransform,setting.BoundingBox);

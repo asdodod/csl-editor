@@ -45,6 +45,16 @@ public sealed class WorkshopState
         var p=new ProfilePart{Name=name};
         var material=DefaultMaterial(glow);p.Surface=CaptureMaterial(material);p.Surface.UsePlayerColor=glow;OwnedAssets.Release(material);Project.Parts.Add(p);return p;
     }
+    public ProfilePart CreateOutlinePair(ProfilePart outer){
+        if(!Project.Parts.Contains(outer)||outer.Particles!=null||outer.Trail!=null)throw new InvalidOperationException("Select a solid part first.");
+        if(Project.Parts.Count>=400)throw new InvalidOperationException("Maximum 400 parts.");
+        var inner=JsonConvert.DeserializeObject<ProfilePart>(JsonConvert.SerializeObject(outer))!;
+        var shell=DefaultMaterial(false);shell.color=Color.black;var shellSurface=CaptureMaterial(shell);OwnedAssets.Release(shell);shellSurface.UsePlayerColor=false;
+        var fill=DefaultMaterial(true);var fillSurface=CaptureMaterial(fill);OwnedAssets.Release(fill);fillSurface.UsePlayerColor=true;
+        inner.Id=Guid.NewGuid().ToString("N");inner.Name=outer.Name+" inner";inner.Inverted=true;inner.OutlineThickness=0;inner.WidthScale*=.86f;inner.DepthScale*=.86f;inner.HeightScale*=.99f;inner.Surface=fillSurface;
+        outer.Name+=" outline";outer.Inverted=true;outer.OutlineThickness=0;outer.Surface=shellSurface;
+        Project.Parts.Add(inner);return inner;
+    }
     public async Task OpenSaber(string file){
         var root=Path.Combine(GameRoot,"CustomSabers");file=SafePath(root,file);
         if(!File.Exists(file)||new FileInfo(file).Length>256L*1024*1024)throw new InvalidDataException("File missing or larger than 256 MB");

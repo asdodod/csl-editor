@@ -21,6 +21,12 @@ public static class VerifyCreationFeatures {
   var imported=new ProfilePart{Geometry=MeshData.Capture(body),Inverted=true,OutlineThickness=.002f};var importedMesh=WorkshopState.BuildMesh(imported);Check(importedMesh.vertexCount==body.vertexCount,"mesh outline keeps source vertices");
   var parts=state.Project.Parts.Select(p=>{var mesh=WorkshopState.BuildMesh(p);try{return new{Part=p,Mesh=MeshData.Capture(mesh)};}finally{UnityEngine.Object.DestroyImmediate(mesh);}}).ToArray();
   File.WriteAllText(Path.Combine(WorkshopState.DataRoot,"outline-export-test.json"),JsonConvert.SerializeObject(new{Project=state.Project,Parts=parts}));
+  state.New();state.Project.Name="Outline pair verification";var outer=state.AddPart("Blade",true);outer.Position=new[]{.01f,.02f,.08f};outer.Rotation=new[]{0f,10f,0f};var inner=state.CreateOutlinePair(outer);
+  Check(state.Project.Parts.Count==2&&inner.Id!=outer.Id,"outline pair creates two independently selectable parts");
+  Check(inner.Position.SequenceEqual(outer.Position)&&inner.Rotation.SequenceEqual(outer.Rotation)&&!ReferenceEquals(inner.Position,outer.Position),"outline pair stays aligned with independent transforms");
+  var outerMesh=WorkshopState.BuildMesh(outer);var innerMesh=WorkshopState.BuildMesh(inner);Check(innerMesh.bounds.size.x<outerMesh.bounds.size.x&&innerMesh.bounds.size.y<outerMesh.bounds.size.y&&innerMesh.bounds.size.z<outerMesh.bounds.size.z,"outline inner geometry is smaller on every axis");
+  Check(outer.Inverted&&inner.Inverted&&!outer.Surface.UsePlayerColor&&inner.Surface.UsePlayerColor,"outline shell and inner colour sources remain independent");
+  string pairSaved=state.Save();state.LoadProject(pairSaved).GetAwaiter().GetResult();Check(state.Project.Parts.Count==2&&Math.Abs(state.Project.Parts[1].WidthScale-.86f)<.000001f,"outline pair survives save and load");UnityEngine.Object.DestroyImmediate(outerMesh);UnityEngine.Object.DestroyImmediate(innerMesh);
   UnityEngine.Object.DestroyImmediate(importedMesh);UnityEngine.Object.DestroyImmediate(mat);UnityEngine.Object.DestroyImmediate(pair);UnityEngine.Object.DestroyImmediate(body);UnityEngine.Object.DestroyImmediate(hull);
  }
 }

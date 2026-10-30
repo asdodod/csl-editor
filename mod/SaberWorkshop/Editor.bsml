@@ -1,5 +1,5 @@
-<vertical preferred-width="250" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" anchor-min="0 0" anchor-max="1 1" size-delta="0 0" pivot="0.5 0.5" anchored-position="0 0" vertical-fit="Unconstrained" pad-top="1" pad-bottom="1">
-  <horizontal preferred-width="250" preferred-height="12" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
+<vertical preferred-width="258" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" anchor-min="0 0" anchor-max="1 1" size-delta="0 0" pivot="0.5 0.5" anchored-position="0 0" vertical-fit="Unconstrained" pad-top="4" pad-bottom="4" pad-left="4" pad-right="4">
+  <horizontal preferred-width="250" preferred-height="10" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false" child-align="MiddleLeft">
     <text text="~EditorTitle" preferred-width="68" preferred-height="8" font-size="4" word-wrapping="false" overflow-mode="Ellipsis" />
     <button text="New" on-click="NewPresetDialog" preferred-width="22" preferred-height="8" />
     <button text="Open" on-click="OpenLibrary" preferred-width="22" preferred-height="8" />
@@ -10,123 +10,145 @@
     <button text="Help" on-click="OpenHelp" preferred-width="20" preferred-height="8" />
     <button text="Close" on-click="CloseEditor" preferred-width="24" preferred-height="8" />
   </horizontal>
-  <horizontal preferred-width="250" preferred-height="104" spacing="3" child-control-width="true" child-control-height="true" child-expand-width="false">
-    <vertical preferred-width="58" preferred-height="104" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained">
-      <text text="PARTS" preferred-width="58" preferred-height="6" font-size="3.8" word-wrapping="false" overflow-mode="Ellipsis" />
-      <list id="part-tree" list-style="Simple" select-cell="SelectTreePart" list-width="58" visible-cells="14" cell-size="5" show-scrollbar="true" preferred-height="70" />
+  <horizontal preferred-width="250" preferred-height="100" spacing="3" child-control-width="true" child-control-height="true" child-expand-width="false">
+    <vertical preferred-width="58" preferred-height="100" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained">
+      <text text="PRESET" preferred-width="58" preferred-height="6" font-size="3.8" word-wrapping="false" overflow-mode="Ellipsis" />
+      <string-setting text="" value="ProjectName" apply-on-change="true" bind-value="true" preferred-width="58" preferred-height="7" />
+      <text text="PARTS" preferred-width="58" preferred-height="5" font-size="3.8" word-wrapping="false" overflow-mode="Ellipsis" />
+      <list id="part-tree" list-style="Simple" select-cell="SelectTreePart" list-width="58" visible-cells="11" cell-size="5" show-scrollbar="true" preferred-height="55" />
       <horizontal preferred-width="58" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
-        <button text="Hide / show" on-click="TogglePart" preferred-width="28.5" preferred-height="7" />
-        <button text="Duplicate" on-click="DuplicatePart" preferred-width="28.5" preferred-height="7" />
+        <button text="Hide / show" on-click="TogglePart" interactable="~HasSelection" preferred-width="28.5" preferred-height="7" />
+        <button text="Duplicate" on-click="DuplicatePart" interactable="~CanDuplicatePart" preferred-width="28.5" preferred-height="7" />
       </horizontal>
       <horizontal preferred-width="58" preferred-height="8" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
         <button text="Add part" on-click="AddPartDialog" preferred-width="28.5" preferred-height="8" />
-        <button text="Delete" on-click="DeletePart" preferred-width="28.5" preferred-height="8" />
+        <button text="Delete" on-click="DeletePart" interactable="~HasSelection" preferred-width="28.5" preferred-height="8" />
       </horizontal>
     </vertical>
-    <vertical preferred-width="104" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" preferred-height="104">
+    <vertical preferred-width="104" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" preferred-height="100">
       <horizontal preferred-width="104" preferred-height="8" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
         <button text="~ShapeTabLabel" on-click="InspectShape" preferred-width="25.25" preferred-height="8" />
         <button text="~ColorTabLabel" on-click="InspectColor" preferred-width="25.25" preferred-height="8" />
         <button text="~TextureTabLabel" on-click="InspectTexture" preferred-width="25.25" preferred-height="8" />
         <button text="~ShaderTabLabel" on-click="ShaderWorkshop" preferred-width="25.25" preferred-height="8" />
       </horizontal>
-      <scroll-view preferred-width="104" preferred-height="94">
+      <scroll-view preferred-width="104" preferred-height="90">
         <vertical preferred-width="96" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" vertical-fit="PreferredSize">
           <vertical active="~HasSelection" child-control-height="true" child-control-width="true" child-expand-height="false" preferred-width="96" vertical-fit="PreferredSize" spacing="1">
             <vertical preferred-width="96" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" active="~ShapeInspector" vertical-fit="PreferredSize">
-              <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                <text text="Part name" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                <string-setting text="" value="PartName" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="8" />
+              <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                <text text="Part name" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                <string-setting text="" value="PartName" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="7" />
               </horizontal>
               <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" active="~IsSolidPart" vertical-fit="PreferredSize">
-                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                  <text text="Height · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                  <slider-setting text="" value="PartHeight" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="8" min="0.05" max="1500" increment="1" show-buttons="false" formatter="FormatHeight" />
+                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                  <text text="Height · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                  <slider-setting text="" value="PartHeight" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="7" min="0.05" max="1500" increment="1" show-buttons="false" formatter="FormatHeight" />
                 </horizontal>
-                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                  <text text="Width · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                  <slider-setting text="" value="PartWidth" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="8" min="0.05" max="100" increment="0.1" show-buttons="false" formatter="FormatWidth" />
+                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                  <text text="Width · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                  <slider-setting text="" value="PartWidth" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="7" min="0.05" max="100" increment="0.1" show-buttons="false" formatter="FormatWidth" />
                 </horizontal>
-                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                  <text text="Depth · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                  <slider-setting text="" value="PartDepth" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="8" min="0.05" max="100" increment="0.1" show-buttons="false" formatter="FormatDepth" />
+                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                  <text text="Depth · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                  <slider-setting text="" value="PartDepth" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="7" min="0.05" max="100" increment="0.1" show-buttons="false" formatter="FormatDepth" />
                 </horizontal>
-                <horizontal preferred-width="94" preferred-height="8" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="Unconstrained" spacing="2" child-expand-width="false">
-                  <text text="Cross section" font-size="3.4" preferred-height="8" word-wrapping="false" preferred-width="30" />
-                  <dropdown-list-setting text="" value="CrossSection" choices="CrossSections" bind-value="true" apply-on-change="true" preferred-height="8" preferred-width="62.0" />
+                <horizontal preferred-width="94" preferred-height="7" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="Unconstrained" spacing="2" child-expand-width="false">
+                  <text text="Cross section" font-size="3.4" preferred-height="7" word-wrapping="false" preferred-width="30" />
+                  <dropdown-list-setting text="" value="CrossSection" choices="CrossSections" bind-value="true" apply-on-change="true" preferred-height="7" preferred-width="62.0" />
                 </horizontal>
               </vertical>
               <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" active="~IsParticle" vertical-fit="PreferredSize">
-                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                  <text text="Particle example" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                  <dropdown-list-setting text="" value="ParticleStyle" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" choices="ParticleStyles" />
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                  <text text="Particle example" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                  <dropdown-list-setting text="" value="ParticleStyle" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="7" choices="ParticleStyles" />
                 </horizontal>
-                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                  <text text="Particles / second" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                  <slider-setting text="" value="ParticleRate" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="1.0" min="0.0" max="500.0" show-buttons="false" formatter="FormatNumber" />
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                  <text text="Particles / second" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                  <slider-setting text="" value="ParticleRate" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="7" increment="1.0" min="0.0" max="500.0" show-buttons="false" formatter="FormatNumber" />
                 </horizontal>
-                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                  <text text="Lifetime · seconds" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                  <slider-setting text="" value="ParticleLife" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.05" min="0.05" max="10.0" show-buttons="false" formatter="FormatNumber" />
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                  <text text="Lifetime · seconds" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                  <slider-setting text="" value="ParticleLife" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="7" increment="0.05" min="0.05" max="10.0" show-buttons="false" formatter="FormatNumber" />
                 </horizontal>
-                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                  <text text="Speed · m/s" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                  <slider-setting text="" value="ParticleSpeed" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.01" min="0.0" max="5.0" show-buttons="false" formatter="FormatNumber" />
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                  <text text="Speed · m/s" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                  <slider-setting text="" value="ParticleSpeed" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="7" increment="0.01" min="0.0" max="5.0" show-buttons="false" formatter="FormatNumber" />
                 </horizontal>
-                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                  <text text="Size · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                  <slider-setting text="" value="ParticleSize" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.1" min="0.1" max="100.0" show-buttons="false" formatter="FormatNumber" />
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                  <text text="Size · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                  <slider-setting text="" value="ParticleSize" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="7" increment="0.1" min="0.1" max="100.0" show-buttons="false" formatter="FormatNumber" />
                 </horizontal>
-                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                  <text text="Spread · degrees" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                  <slider-setting text="" value="ParticleSpread" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="1.0" min="0.0" max="90.0" show-buttons="false" formatter="FormatNumber" />
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                  <text text="Spread · degrees" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                  <slider-setting text="" value="ParticleSpread" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="7" increment="1.0" min="0.0" max="90.0" show-buttons="false" formatter="FormatNumber" />
                 </horizontal>
               </vertical>
               <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="PreferredSize" spacing="1" active="~IsTrail">
-                <horizontal preferred-width="92" preferred-height="8" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="Unconstrained" spacing="2" child-expand-width="false">
-                  <text text="Trail type" preferred-height="8" font-size="3.4" word-wrapping="false" preferred-width="30" />
-                  <dropdown-list-setting text="" value="TrailType" bind-value="true" apply-on-change="true" preferred-height="8" preferred-width="60.0" choices="TrailTypes" />
+                <horizontal preferred-width="92" preferred-height="7" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="Unconstrained" spacing="2" child-expand-width="false">
+                  <text text="Trail type" preferred-height="7" font-size="3.4" word-wrapping="false" preferred-width="30" />
+                  <dropdown-list-setting text="" value="TrailType" bind-value="true" apply-on-change="true" preferred-height="7" preferred-width="60.0" choices="TrailTypes" />
                 </horizontal>
-                <horizontal preferred-width="92" preferred-height="8" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="Unconstrained" spacing="2" child-expand-width="false">
-                  <text text="Start with" preferred-height="8" font-size="3.4" word-wrapping="false" preferred-width="30" />
-                  <dropdown-list-setting text="" value="TrailPreset" bind-value="true" apply-on-change="true" preferred-height="8" preferred-width="60.0" choices="TrailPresets" />
+                <horizontal preferred-width="92" preferred-height="7" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="Unconstrained" spacing="2" child-expand-width="false">
+                  <text text="Start with" preferred-height="7" font-size="3.4" word-wrapping="false" preferred-width="30" />
+                  <dropdown-list-setting text="" value="TrailPreset" bind-value="true" apply-on-change="true" preferred-height="7" preferred-width="60.0" choices="TrailPresets" />
                 </horizontal>
-                <horizontal preferred-width="92" preferred-height="8" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="Unconstrained" spacing="2" child-expand-width="false">
-                  <text text="Width · mm" preferred-height="8" font-size="3.4" word-wrapping="false" preferred-width="30" />
-                  <slider-setting text="" value="TrailWidth" bind-value="true" apply-on-change="true" preferred-height="8" preferred-width="60.0" min="0.1" max="1200" increment="0.5" show-buttons="false" formatter="FormatNumber" />
+                <horizontal preferred-width="92" preferred-height="7" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="Unconstrained" spacing="2" child-expand-width="false">
+                  <text text="Width · mm" preferred-height="7" font-size="3.4" word-wrapping="false" preferred-width="30" />
+                  <slider-setting text="" value="TrailWidth" bind-value="true" apply-on-change="true" preferred-height="7" preferred-width="60.0" min="0.1" max="1200" increment="0.5" show-buttons="false" formatter="FormatNumber" />
                 </horizontal>
-                <horizontal preferred-width="92" preferred-height="8" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="Unconstrained" spacing="2" child-expand-width="false">
-                  <text text="Fade time · ms" preferred-height="8" font-size="3.4" word-wrapping="false" preferred-width="30" />
-                  <slider-setting text="" value="TrailTime" bind-value="true" apply-on-change="true" preferred-height="8" preferred-width="60.0" increment="10.0" min="20.0" max="2000.0" show-buttons="false" formatter="FormatNumber" />
+                <horizontal preferred-width="92" preferred-height="7" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="Unconstrained" spacing="2" child-expand-width="false">
+                  <text text="Fade time · ms" preferred-height="7" font-size="3.4" word-wrapping="false" preferred-width="30" />
+                  <slider-setting text="" value="TrailTime" bind-value="true" apply-on-change="true" preferred-height="7" preferred-width="60.0" increment="10.0" min="20.0" max="2000.0" show-buttons="false" formatter="FormatNumber" />
                 </horizontal>
-                <horizontal preferred-width="92" preferred-height="8" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="Unconstrained" spacing="2" child-expand-width="false">
-                  <text text="Tail width · %" preferred-height="8" font-size="3.4" word-wrapping="false" preferred-width="30" />
-                  <slider-setting text="" value="TrailTaper" bind-value="true" apply-on-change="true" preferred-height="8" preferred-width="60.0" increment="5.0" min="0.0" max="100.0" show-buttons="false" formatter="FormatNumber" />
+                <horizontal preferred-width="92" preferred-height="7" child-control-height="true" child-control-width="true" child-expand-height="false" vertical-fit="Unconstrained" spacing="2" child-expand-width="false">
+                  <text text="Tail width · %" preferred-height="7" font-size="3.4" word-wrapping="false" preferred-width="30" />
+                  <slider-setting text="" value="TrailTaper" bind-value="true" apply-on-change="true" preferred-height="7" preferred-width="60.0" increment="5.0" min="0.0" max="100.0" show-buttons="false" formatter="FormatNumber" />
                 </horizontal>
                 <text text="100%: same width. 0%: ends in a point." font-size="3.4" preferred-height="5" preferred-width="92" word-wrapping="false" />
                 <text text="Use Colour to tint it. A texture is optional." font-size="3.4" preferred-height="5" preferred-width="92" word-wrapping="false" />
               </vertical>
               <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" active="~HasTint">
                 <text text="COLOUR" preferred-width="94" preferred-height="5" font-size="3.6" word-wrapping="false" overflow-mode="Ellipsis" />
-                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                  <text text="Colour source" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                  <dropdown-list-setting text="" value="ColorSource" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" choices="ColorSources" />
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                  <text text="Colour source" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                  <dropdown-list-setting text="" value="ColorSource" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="7" choices="ColorSources" />
                 </horizontal>
-                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                  <text text="RGB colour" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                  <color-setting text="" value="TintColor" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" />
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                  <text text="RGB colour" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                  <color-setting text="" value="TintColor" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="7" />
                 </horizontal>
-                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" active="~HasGlow" child-expand-width="false">
-                  <text text="Glow" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                  <slider-setting text="" value="Glow" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.05" min="0" max="5" show-buttons="false" formatter="FormatNumber" />
+                <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" active="~HasGlow" child-expand-width="false">
+                  <text text="Glow" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                  <slider-setting text="" value="Glow" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="7" increment="0.05" min="0" max="5" show-buttons="false" formatter="FormatNumber" />
                 </horizontal>
               </vertical>
               <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" active="~IsSolidPart">
                 <horizontal preferred-width="94" preferred-height="6.4" spacing="0" child-control-width="true" child-control-height="true" child-expand-width="false">
-                  <text text="Outline and shape details" preferred-width="76" preferred-height="6.4" font-size="3.4" word-wrapping="false" overflow-mode="Ellipsis" />
+                  <text text="Ends and outline" preferred-width="76" preferred-height="6.4" font-size="3.4" word-wrapping="false" overflow-mode="Ellipsis" />
                   <bool-setting text="" value="ShowShapeDetails" bind-value="true" apply-on-change="true" preferred-width="18" preferred-height="6.4" />
                 </horizontal>
                 <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" active="~ShowShapeDetails">
+                  <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" vertical-fit="PreferredSize" active="~IsProfile">
+                    <horizontal preferred-width="92" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
+                      <text text="Top end" preferred-width="30" preferred-height="7" font-size="3.4" word-wrapping="false" />
+                      <button text="Flat" on-click="FlatTop" preferred-width="30" preferred-height="7" />
+                      <button text="Pointed" on-click="PointTop" preferred-width="30" preferred-height="7" />
+                    </horizontal>
+                    <horizontal active="~TopTapered" preferred-width="92" preferred-height="7" spacing="2" child-control-width="true" child-control-height="true" child-expand-width="false">
+                      <text text="Tip length · mm" preferred-width="30" preferred-height="7" font-size="3.4" word-wrapping="false" />
+                      <slider-setting text="" value="TopEndLength" apply-on-change="true" bind-value="true" preferred-width="60" preferred-height="7" min="0.1" max="300" increment="0.1" show-buttons="false" formatter="FormatNumber" />
+                    </horizontal>
+                    <horizontal preferred-width="92" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
+                      <text text="Bottom end" preferred-width="30" preferred-height="7" font-size="3.4" word-wrapping="false" />
+                      <button text="Flat" on-click="FlatBottom" preferred-width="30" preferred-height="7" />
+                      <button text="Pointed" on-click="PointBottom" preferred-width="30" preferred-height="7" />
+                    </horizontal>
+                    <horizontal active="~BottomTapered" preferred-width="92" preferred-height="7" spacing="2" child-control-width="true" child-control-height="true" child-expand-width="false">
+                      <text text="Bottom tip · mm" preferred-width="30" preferred-height="7" font-size="3.4" word-wrapping="false" />
+                      <slider-setting text="" value="BottomEndLength" apply-on-change="true" bind-value="true" preferred-width="60" preferred-height="7" min="0.1" max="300" increment="0.1" show-buttons="false" formatter="FormatNumber" />
+                    </horizontal>
+                  </vertical>
                   <horizontal preferred-width="94" preferred-height="6.4" child-control-width="true" child-control-height="true" child-expand-width="false">
                     <text text="Inverted faces" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="76" preferred-height="6.4" />
                     <bool-setting text="" value="InvertedFaces" apply-on-change="true" bind-value="true" preferred-width="18" preferred-height="6.4" />
@@ -141,33 +163,33 @@
                       <bool-setting text="" value="ShowShapePoints" apply-on-change="true" bind-value="true" preferred-width="18" preferred-height="6.4" />
                     </horizontal>
                     <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" active="~ShowShapePoints" vertical-fit="PreferredSize">
-                      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                        <text text="Shape point" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                        <dropdown-list-setting text="" value="SectionChoice" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" id="section-list" choices="SectionOptions" />
+                      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                        <text text="Shape point" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                        <dropdown-list-setting text="" value="SectionChoice" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="7" id="section-list" choices="SectionOptions" />
                       </horizontal>
                       <horizontal preferred-width="92" preferred-height="7" spacing="1" child-control-width="true" child-control-height="true" child-expand-width="false">
                         <button text="Add point" on-click="AddSection" preferred-width="45.5" preferred-height="7" />
                         <button text="Remove point" on-click="DeleteSection" preferred-width="45.5" preferred-height="7" />
                       </horizontal>
-                      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                        <text text="Along height · %" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                        <slider-setting text="" value="SectionPosition" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="1.0" min="0.0" max="100.0" show-buttons="false" formatter="FormatNumber" />
+                      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                        <text text="Along height · %" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                        <slider-setting text="" value="SectionPosition" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="7" increment="1.0" min="0.0" max="100.0" show-buttons="false" formatter="FormatNumber" />
                       </horizontal>
-                      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                        <text text="Point width · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                        <slider-setting text="" value="PointWidth" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.1" min="0.05" max="600.0" show-buttons="false" formatter="FormatNumber" />
+                      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                        <text text="Point width · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                        <slider-setting text="" value="PointWidth" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="7" increment="0.1" min="0.05" max="600.0" show-buttons="false" formatter="FormatNumber" />
                       </horizontal>
-                      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                        <text text="Point depth · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                        <slider-setting text="" value="PointDepth" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.1" min="0.05" max="600.0" show-buttons="false" formatter="FormatNumber" />
+                      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                        <text text="Point depth · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                        <slider-setting text="" value="PointDepth" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="7" increment="0.1" min="0.05" max="600.0" show-buttons="false" formatter="FormatNumber" />
                       </horizontal>
-                      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                        <text text="Offset X · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                        <slider-setting text="" value="SectionX" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.1" min="-300.0" max="300.0" show-buttons="false" formatter="FormatNumber" />
+                      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                        <text text="Offset X · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                        <slider-setting text="" value="SectionX" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="7" increment="0.1" min="-300.0" max="300.0" show-buttons="false" formatter="FormatNumber" />
                       </horizontal>
-                      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                        <text text="Offset Y · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                        <slider-setting text="" value="SectionY" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="8" increment="0.1" min="-300.0" max="300.0" show-buttons="false" formatter="FormatNumber" />
+                      <horizontal preferred-width="92" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                        <text text="Offset Y · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                        <slider-setting text="" value="SectionY" apply-on-change="true" bind-value="true" preferred-width="60.0" preferred-height="7" increment="0.1" min="-300.0" max="300.0" show-buttons="false" formatter="FormatNumber" />
                       </horizontal>
                     </vertical>
                   </vertical>
@@ -178,29 +200,29 @@
                 <bool-setting text="" value="ShowTransform" bind-value="true" apply-on-change="true" preferred-width="18" preferred-height="6.4" />
               </horizontal>
               <vertical preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1" horizontal-fit="Unconstrained" vertical-fit="PreferredSize" active="~ShowTransform">
-                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                  <text text="Position X · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                  <slider-setting text="" value="PositionX" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="8" increment="1" min="-300" max="300" show-buttons="false" formatter="FormatNumber" />
+                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                  <text text="Position X · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                  <slider-setting text="" value="PositionX" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="7" increment="1" min="-300" max="300" show-buttons="false" formatter="FormatNumber" />
                 </horizontal>
-                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                  <text text="Position Y · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                  <slider-setting text="" value="PositionY" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="8" increment="1" min="-300" max="300" show-buttons="false" formatter="FormatNumber" />
+                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                  <text text="Position Y · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                  <slider-setting text="" value="PositionY" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="7" increment="1" min="-300" max="300" show-buttons="false" formatter="FormatNumber" />
                 </horizontal>
-                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                  <text text="Position Z · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                  <slider-setting text="" value="PositionZ" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="8" increment="1" min="-300" max="300" show-buttons="false" formatter="FormatNumber" />
+                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                  <text text="Position Z · mm" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                  <slider-setting text="" value="PositionZ" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="7" increment="1" min="-300" max="300" show-buttons="false" formatter="FormatNumber" />
                 </horizontal>
-                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                  <text text="Rotation X · degrees" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                  <slider-setting text="" value="RotationX" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="8" increment="1" min="-180" max="180" show-buttons="false" formatter="FormatNumber" />
+                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                  <text text="Rotation X · degrees" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                  <slider-setting text="" value="RotationX" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="7" increment="1" min="-180" max="180" show-buttons="false" formatter="FormatNumber" />
                 </horizontal>
-                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                  <text text="Rotation Y · degrees" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                  <slider-setting text="" value="RotationY" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="8" increment="1" min="-180" max="180" show-buttons="false" formatter="FormatNumber" />
+                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                  <text text="Rotation Y · degrees" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                  <slider-setting text="" value="RotationY" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="7" increment="1" min="-180" max="180" show-buttons="false" formatter="FormatNumber" />
                 </horizontal>
-                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="8" child-expand-width="false">
-                  <text text="Rotation Z · degrees" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="8" />
-                  <slider-setting text="" value="RotationZ" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="8" increment="1" min="-180" max="180" show-buttons="false" formatter="FormatNumber" />
+                <horizontal preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="2" horizontal-fit="Unconstrained" vertical-fit="Unconstrained" preferred-height="7" child-expand-width="false">
+                  <text text="Rotation Z · degrees" font-size="3.4" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="30" preferred-height="7" />
+                  <slider-setting text="" value="RotationZ" apply-on-change="true" bind-value="true" preferred-width="62.0" preferred-height="7" increment="1" min="-180" max="180" show-buttons="false" formatter="FormatNumber" />
                 </horizontal>
               </vertical>
             </vertical>
@@ -390,11 +412,18 @@
               </vertical>
             </vertical>
           </vertical>
-          <text active="~NoSelection" text="Add a part on the left to start modelling." font-size="3.4" preferred-height="12" preferred-width="94" word-wrapping="true" />
+          <vertical active="~EmptyProject" preferred-width="94" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="3" vertical-fit="PreferredSize">
+            <text text="Create your saber" font-size="5" preferred-height="10" preferred-width="94" word-wrapping="false" />
+            <text text="Start with a blade and handle, then edit each part." font-size="3.8" preferred-height="15" preferred-width="94" word-wrapping="true" />
+            <button text="Create new preset" on-click="NewPresetDialog" preferred-width="94" preferred-height="10" />
+            <button text="Open preset" on-click="OpenLibrary" preferred-width="94" preferred-height="9" />
+            <button text="Add first part" on-click="AddPartDialog" preferred-width="94" preferred-height="9" />
+          </vertical>
+          <text active="~NeedsSelection" text="Select a part on the left to edit it." font-size="3.8" preferred-height="12" preferred-width="94" word-wrapping="true" />
         </vertical>
       </scroll-view>
     </vertical>
-    <vertical preferred-width="82" preferred-height="104" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1">
+    <vertical preferred-width="82" preferred-height="100" child-control-height="true" child-control-width="true" child-expand-height="false" spacing="1">
       <horizontal preferred-width="82" preferred-height="8" child-control-width="true" child-control-height="true" child-expand-width="false" spacing="1">
         <text text="~PreviewTitle" font-size="3.8" align="Left" word-wrapping="false" overflow-mode="Overflow" preferred-width="44" preferred-height="8" />
         <horizontal preferred-width="37" preferred-height="8" child-control-width="true" child-control-height="true" child-expand-width="false" spacing="1" active="~SaberPreviewArea">

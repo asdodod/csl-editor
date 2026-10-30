@@ -68,6 +68,7 @@ public sealed partial class EditorController {
     }
     private static string InputTitle(string name)=>name switch {
         "PartHeight"=>"Height · mm","PartWidth"=>"Width · mm","PartDepth"=>"Depth · mm",
+        "TopEndLength"=>"Tip length · mm","BottomEndLength"=>"Bottom tip · mm",
         "PositionX"=>"Position X · mm","PositionY"=>"Position Y · mm","PositionZ"=>"Position Z · mm",
         "RotationX"=>"Rotation X · degrees","RotationY"=>"Rotation Y · degrees","RotationZ"=>"Rotation Z · degrees",
         "TrailWidth"=>"Trail width · mm","TrailTime"=>"Fade time · ms","TrailTaper"=>"Tail width · %",
@@ -94,7 +95,7 @@ public sealed partial class EditorController {
     [UIAction("CloseLibrary")] public void CloseLibrary(){if(libraryDialog)libraryDialog.Hide(true);if(preview)preview!.SetActive(visible&&editorOpen&&!ShaderInspector);}
     [UIAction("AddPartDialog")] public void AddPartDialog(){if(preview)preview!.SetActive(false);if(partDialog)partDialog.Show(true,false);}
     [UIAction("ClosePartDialog")] public void ClosePartDialog(){if(partDialog)partDialog.Hide(true);if(preview)preview!.SetActive(visible&&editorOpen&&!ShaderInspector);}
-    [UIAction("CreateChosenPart")] public void CreateChosenPart(){switch(NewPartType){case "Handle":AddHandle();break;case "Ring":AddRing();break;case "Particles":AddParticles();break;case "Trail":AddTrail();break;default:AddBlade();break;}ClosePartDialog();}
+    [UIAction("CreateChosenPart")] public void CreateChosenPart(){switch(NewPartType){case "Handle":AddHandle();break;case "Ring":AddRing();break;case "Particles":AddParticles();break;case "Trail":AddTrail();break;default:AddBlade();break;}SetInspector("shape");ClosePartDialog();}
 }
 
 public sealed class SliderTapInput : MonoBehaviour,IPointerDownHandler,IPointerUpHandler,IDragHandler {

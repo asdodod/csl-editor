@@ -16,6 +16,7 @@ Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'NativeWidgetProbe.cs') -Destina
 & (Join-Path $repo 'mod/tests/prepare-unity-harness.ps1') -UnityProject $UnityProject -GameDir $BeatSaberDir
 & (Join-Path $PSScriptRoot 'prepare-preview.ps1') -UnityProject $UnityProject
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'NativeMenuCapture.cs') -Destination (Join-Path $UnityProject 'Assets/Editor/NativeMenuCapture.cs')
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'NativeButtonRegression.cs') -Destination (Join-Path $UnityProject 'Assets/Editor/NativeButtonRegression.cs')
 $surface=[IO.File]::ReadAllText((Join-Path $repo 'mod/SaberWorkshop/WorkshopSurface.cs')).Replace('namespace SaberWorkshop;','namespace SaberWorkshop {')+"`n}"
 [IO.File]::WriteAllText((Join-Path $UnityProject 'Assets/WorkshopSurface.cs'),$surface)
 $curve=[IO.File]::ReadAllText((Join-Path $repo 'mod/SaberWorkshop/CurvedRawImageMesh.cs')).Replace('namespace SaberWorkshop;','namespace SaberWorkshop {')+"`n}"

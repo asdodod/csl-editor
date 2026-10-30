@@ -57,8 +57,10 @@ class Contracts(unittest.TestCase):
         columns=tree.getroot().findall('horizontal')[1]
         self.assertEqual(len(columns),3)
         width=sum(float(c.get('preferred-width')) for c in columns)+float(columns.get('spacing'))*2
-        self.assertLessEqual(width,250)
-        self.assertEqual(float(tree.getroot().get('preferred-width')),250)
+        root_width=float(tree.getroot().get('preferred-width'))
+        inner_width=root_width-float(tree.getroot().get('pad-left','0'))-float(tree.getroot().get('pad-right','0'))
+        self.assertLessEqual(width,inner_width)
+        for row in tree.getroot().findall('horizontal'):self.assertLessEqual(float(row.get('preferred-width')),inner_width)
         self.assertEqual(tree.getroot().get('vertical-fit'),'Unconstrained')
         self.assertEqual(len(tree.findall('.//scroll-view')),1)
         self.assertIsNotNone(tree.find('.//button[@on-click="CreatePreset"]'))

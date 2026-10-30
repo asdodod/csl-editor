@@ -35,6 +35,7 @@ public static class NativeWidgetProbe {
   foreach(var m in materials.Where(m=>m.name.Contains("UI")||m.name.Contains("Curved")))lines.Add("MATERIAL "+m.name+" shader="+m.shader.name);
   var ui=materials.First(m=>m.name=="UINoGlow");
   var curved=materials.First(m=>m.name=="Teko-Medium SDF Curved");
+  NativeButtonRegression.Run(mainFont,curved,ui);
   RenderNative(output,mainFont,curved,ui);
   NativeMenuCapture.Run(output,mainFont,curved,ui);
   if(errors.Count>0)throw new Exception("Native rendering reported errors: "+string.Join("; ",errors.Distinct()));
@@ -42,9 +43,9 @@ public static class NativeWidgetProbe {
  }catch(Exception e){Debug.LogError("NATIVE_UI_PROBE_FAILED "+e);EditorApplication.Exit(1);}}
  static RectTransform Rect(string name,Transform parent,Vector2 position,Vector2 size){var r=new GameObject(name,typeof(RectTransform)).GetComponent<RectTransform>();r.SetParent(parent,false);r.anchorMin=r.anchorMax=Vector2.one*.5f;r.sizeDelta=size;r.anchoredPosition=position;return r;}
  static void RenderNative(string output,TMP_FontAsset font,Material fontMaterial,Material ui){
-  var root=new GameObject("Native workshop",typeof(RectTransform),typeof(Canvas));var canvas=root.GetComponent<Canvas>();canvas.renderMode=RenderMode.WorldSpace;canvas.additionalShaderChannels=AdditionalCanvasShaderChannels.TexCoord1|AdditionalCanvasShaderChannels.TexCoord2;((RectTransform)root.transform).sizeDelta=new Vector2(250,126);root.AddComponent<CurvedCanvasSettings>().SetRadius(120);
+  var root=new GameObject("Native workshop",typeof(RectTransform),typeof(Canvas));var canvas=root.GetComponent<Canvas>();canvas.renderMode=RenderMode.WorldSpace;canvas.additionalShaderChannels=AdditionalCanvasShaderChannels.TexCoord1|AdditionalCanvasShaderChannels.TexCoord2;((RectTransform)root.transform).sizeDelta=SaberWorkshop.WorkbenchLayout.Size;root.AddComponent<CurvedCanvasSettings>().SetRadius(120);
   var pixel=Sprite.Create(Texture2D.whiteTexture,new Rect(0,0,1,1),Vector2.one*.5f,1);
-  WorkshopSurface.Image(Rect("Background",root.transform,Vector2.zero,new Vector2(250,126)),pixel,ui,new Color(.025f,.035f,.05f));
+  WorkshopSurface.Image(Rect("Background",root.transform,Vector2.zero,SaberWorkshop.WorkbenchLayout.Size),pixel,ui,new Color(.025f,.035f,.05f));
   Action<Transform,string,Vector2,Vector2,float> text=(parent,value,pos,size,points)=>{var r=Rect(value,parent,pos,size);var t=r.gameObject.AddComponent<CurvedTextMeshPro>();t.font=font;t.fontSharedMaterial=fontMaterial;t.fontSize=points;t.color=new Color(.88f,.92f,.96f);t.text=value;t.alignment=TextAlignmentOptions.MidlineLeft;t.enableWordWrapping=false;t.raycastTarget=false;};
   text(root.transform,"SABER WORKSHOP",new Vector2(-86,52),new Vector2(68,8),5);
   float x=-46;foreach(var title in new[]{"New","Open","Save","Export CSL","Undo","Redo","Help","Close"}){var r=Rect(title,root.transform,new Vector2(x,52),new Vector2(19,8));var b=r.gameObject.AddComponent<Button>();WorkshopSurface.Button(b,pixel,ui);text(r,title,Vector2.zero,new Vector2(16,8),3.4f);x+=21;}

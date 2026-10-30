@@ -13,17 +13,19 @@ using SaberWorkshop;
 // VR raycasting are still outside this fixture's coverage.
 public static class NativeMenuCapture {
  public static void Run(string output,TMP_FontAsset font,Material textMaterial,Material ui){
-  foreach(var page in new[]{"part","effects","help"}){
+  foreach(var page in new[]{"empty","part","ends","effects","help"}){
    EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
-   var root=new GameObject("Native markup preview",typeof(RectTransform),typeof(Canvas));var canvas=root.GetComponent<Canvas>();canvas.renderMode=RenderMode.WorldSpace;canvas.additionalShaderChannels=AdditionalCanvasShaderChannels.TexCoord1|AdditionalCanvasShaderChannels.TexCoord2;((RectTransform)root.transform).sizeDelta=new Vector2(250,126);
-   var view=root.AddComponent<PreviewMenu>();view.Initialize(File.ReadAllText("Assets/MenuPreview/Editor.bsml"));
+   var root=new GameObject("Native markup preview",typeof(RectTransform),typeof(Canvas));var canvas=root.GetComponent<Canvas>();canvas.renderMode=RenderMode.WorldSpace;canvas.additionalShaderChannels=AdditionalCanvasShaderChannels.TexCoord1|AdditionalCanvasShaderChannels.TexCoord2;((RectTransform)root.transform).sizeDelta=SaberWorkshop.WorkbenchLayout.Size;
+   var view=root.AddComponent<PreviewMenu>();view.Initialize(File.ReadAllText("Assets/MenuPreview/Editor.bsml"),page=="empty");
    if(page=="effects"){view.Set("HasEffect",true);view.Activate("ShaderInspector");}else if(page=="help")view.Action("OpenHelp");
+   else if(page=="ends")view.Set("ShowShapeDetails",true);
    Canvas.ForceUpdateCanvases();foreach(var t in root.GetComponentsInChildren<PreviewTextSize>(true))t.Apply();Canvas.ForceUpdateCanvases();
+   if(page=="ends"){root.GetComponentInChildren<ScrollRect>().verticalNormalizedPosition=.15f;Canvas.ForceUpdateCanvases();}
    // Mask caches its sibling Graphic using CLR ?? rather than Unity's null
    // check, so replacing a Graphic requires recreating the fixture's mask.
    var masks=root.GetComponentsInChildren<Mask>(true).Select(m=>new{Node=m.gameObject,Show=m.showMaskGraphic}).ToArray();foreach(var mask in root.GetComponentsInChildren<Mask>(true))UnityEngine.Object.DestroyImmediate(mask);
    var pixel=Sprite.Create(Texture2D.whiteTexture,new Rect(0,0,1,1),Vector2.one*.5f,1);
-   var background=new GameObject("Curved background",typeof(RectTransform)).GetComponent<RectTransform>();background.SetParent(root.transform,false);background.SetAsFirstSibling();background.sizeDelta=new Vector2(250,126);WorkshopSurface.Image(background,pixel,ui,new Color(.025f,.035f,.05f));
+   var background=new GameObject("Curved background",typeof(RectTransform)).GetComponent<RectTransform>();background.SetParent(root.transform,false);background.SetAsFirstSibling();background.sizeDelta=SaberWorkshop.WorkbenchLayout.Size;WorkshopSurface.Image(background,pixel,ui,new Color(.025f,.035f,.05f));
    foreach(var sizing in root.GetComponentsInChildren<PreviewTextSize>(true)){
     var old=sizing.Label;var parent=sizing.Parent;string text=old.text;var align=old.alignment;float size=sizing.FontSize;bool wrap=old.horizontalOverflow==HorizontalWrapMode.Wrap;
     UnityEngine.Object.DestroyImmediate(sizing.gameObject);var label=parent.gameObject.AddComponent<CurvedTextMeshPro>();label.font=font;label.fontSharedMaterial=textMaterial;label.fontSize=size;label.text=text;label.color=new Color(.88f,.92f,.96f);label.raycastTarget=false;label.enableWordWrapping=wrap;
@@ -44,8 +46,8 @@ public static class NativeMenuCapture {
    NativeWidgetProbe.Capture(camera,Path.Combine(output,"menu-"+page+".png"));
    if(page=="part"){camera.transform.position=new Vector3(55,10,-240);camera.transform.LookAt(Vector3.zero);NativeWidgetProbe.Capture(camera,Path.Combine(output,"menu-angle.png"));}
   }
-  File.WriteAllText(Path.Combine(output,"coverage.txt"),"Actual game ImageView, CurvedTextMeshPro, Teko font/atlas, UINoGlow material and CurvedCanvasSettings.\nSame Editor.bsml and WorkshopSurface button code as the mod.\nSetting controls use the layout fixture, not complete BSML game prefabs. VR input and game scene composition still need an in-game check.\n");
+  File.WriteAllText(Path.Combine(output,"coverage.txt"),"Actual game ImageView, CurvedTextMeshPro, Teko font/atlas, UINoGlow material and CurvedCanvasSettings.\nReal NoTransitionsButton and ButtonStaticAnimations checked using a simulated Practice animation clip: old underline stays disabled, text style is normal, original click binding survives.\nSame Editor.bsml and WorkshopSurface button code as the mod.\nSetting controls use the layout fixture, not complete BSML game prefabs. VR input and game scene composition still need an in-game check.\n");
   EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
-  Debug.Log("NATIVE_MENU_CAPTURE_COMPLETE three XML views and angled view");
+  Debug.Log("NATIVE_MENU_CAPTURE_COMPLETE empty, part, ends, effects, help and angled views");
  }
 }

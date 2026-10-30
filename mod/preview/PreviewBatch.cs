@@ -15,7 +15,7 @@ public static class PreviewBatch {
  static void Create(string path){
   EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
   new GameObject("Event system",typeof(EventSystem),typeof(StandaloneInputModule));
-  var canvas=new GameObject("Offline Workshop",typeof(RectTransform),typeof(Canvas),typeof(GraphicRaycaster));var rect=(RectTransform)canvas.transform;rect.sizeDelta=new Vector2(250,126);canvas.GetComponent<Canvas>().renderMode=RenderMode.WorldSpace;canvas.AddComponent<Image>().color=new Color(.025f,.035f,.05f);
+  var canvas=new GameObject("Offline Workshop",typeof(RectTransform),typeof(Canvas),typeof(GraphicRaycaster));var rect=(RectTransform)canvas.transform;rect.sizeDelta=SaberWorkshop.WorkbenchLayout.Size;canvas.GetComponent<Canvas>().renderMode=RenderMode.WorldSpace;canvas.AddComponent<Image>().color=new Color(.025f,.035f,.05f);
   view=canvas.AddComponent<PreviewMenu>();view.Initialize(File.ReadAllText(path));
   camera=new GameObject("Preview camera").AddComponent<Camera>();camera.transform.position=new Vector3(0,0,-150);camera.orthographic=true;camera.orthographicSize=75;camera.nearClipPlane=.1f;camera.farClipPlane=300;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.018f,.025f,.04f);
  }
