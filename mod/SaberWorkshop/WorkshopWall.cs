@@ -59,26 +59,18 @@ public sealed class WorkshopWall : IDisposable
         }
     }
     private static void CompactFields(GameObject root){
-        foreach(var text in root.GetComponentsInChildren<TextMeshProUGUI>(true)){
-            text.fontSize=3;text.fontSizeMin=2.6f;text.fontSizeMax=3;text.enableWordWrapping=false;text.overflowMode=TextOverflowModes.Ellipsis;
-        }
-        foreach(var setting in root.GetComponentsInChildren<IncDecSetting>(true))StackField(setting.transform,setting.transform.Find("NameText") as RectTransform,setting.transform.Find("ValuePicker") as RectTransform);
-        foreach(var setting in root.GetComponentsInChildren<StringSetting>(true))StackField(setting.transform,setting.transform.Find("NameText") as RectTransform,setting.BoundingBox);
-        foreach(var setting in root.GetComponentsInChildren<ColorSetting>(true))StackField(setting.transform,setting.transform.Find("NameText") as RectTransform,setting.transform.Find("ValuePicker") as RectTransform);
-        foreach(var setting in root.GetComponentsInChildren<GenericSliderSetting>(true))StackField(setting.transform,setting.transform.Find("Title") as RectTransform,setting.Slider.transform as RectTransform);
-        foreach(var setting in root.GetComponentsInChildren<DropDownListSetting>(true)){
-            var parent=setting.transform.parent;var label=parent.Find("Label") as RectTransform;if(!label)continue;
-            var layout=parent.GetComponent<HorizontalOrVerticalLayoutGroup>();if(layout)layout!.enabled=false;
-            StackField(parent,label,setting.transform as RectTransform);
-        }
-        foreach(var setting in root.GetComponentsInChildren<ToggleSetting>(true)){
-            var label=setting.transform.Find("NameText") as RectTransform;if(!label)continue;label!.anchorMin=Vector2.zero;label.anchorMax=Vector2.one;label.offsetMin=new Vector2(1,0);label.offsetMax=new Vector2(-17,0);
-        }
+        foreach(var text in root.GetComponentsInChildren<TextMeshProUGUI>(true)){if(text.name!="BSMLText"){text.fontSize=3;text.fontSizeMin=2.6f;text.fontSizeMax=3;}text.enableWordWrapping=false;text.margin=Vector4.zero;}
+        foreach(var setting in root.GetComponentsInChildren<IncDecSetting>(true))FillControl(setting.transform,setting.transform.Find("NameText") as RectTransform,setting.transform.Find("ValuePicker") as RectTransform);
+        foreach(var setting in root.GetComponentsInChildren<StringSetting>(true))FillControl(setting.transform,setting.transform.Find("NameText") as RectTransform,setting.BoundingBox);
+        foreach(var setting in root.GetComponentsInChildren<ColorSetting>(true))FillControl(setting.transform,setting.transform.Find("NameText") as RectTransform,setting.transform.Find("ValuePicker") as RectTransform);
+        foreach(var setting in root.GetComponentsInChildren<GenericSliderSetting>(true))FillControl(setting.transform,setting.transform.Find("Title") as RectTransform,setting.Slider.transform as RectTransform);
+        foreach(var setting in root.GetComponentsInChildren<DropDownListSetting>(true)){var parent=setting.transform.parent;var layout=parent.GetComponent<HorizontalOrVerticalLayoutGroup>();if(layout)layout!.enabled=false;FillControl(parent,parent.Find("Label") as RectTransform,setting.transform as RectTransform);}
+        foreach(var setting in root.GetComponentsInChildren<ToggleSetting>(true))FillControl(setting.transform,setting.transform.Find("NameText") as RectTransform,setting.transform.Find("SwitchView") as RectTransform);
     }
-    private static void StackField(Transform parent,RectTransform? label,RectTransform? value){
-        if(!label||!value)return;var element=parent.GetComponent<LayoutElement>();if(element)element!.preferredHeight=10;
-        label!.anchorMin=new Vector2(0,1);label.anchorMax=Vector2.one;label.pivot=new Vector2(.5f,1);label.sizeDelta=new Vector2(-2,3.2f);label.anchoredPosition=Vector2.zero;
-        value!.anchorMin=Vector2.zero;value.anchorMax=new Vector2(1,0);value.pivot=new Vector2(.5f,0);value.sizeDelta=new Vector2(-2,6.4f);value.anchoredPosition=Vector2.zero;
+    private static void FillControl(Transform parent,RectTransform? oldLabel,RectTransform? value){
+        if(oldLabel)oldLabel!.gameObject.SetActive(false);if(!value)return;
+        var element=parent.GetComponent<LayoutElement>();if(element){element!.minHeight=0;element.preferredHeight=6.4f;}
+        value!.anchorMin=Vector2.zero;value.anchorMax=Vector2.one;value.offsetMin=new Vector2(1,0);value.offsetMax=new Vector2(-1,0);
     }
     private void SceneLoaded(Scene scene,LoadSceneMode mode){if(scene.name=="GameCore"||scene.name=="EmptyTransition")editor.CloseEditor();}
     public void Dispose(){SceneManager.sceneLoaded-=SceneLoaded;if(screen)Object.Destroy(screen!.gameObject);screen=null;}

@@ -60,7 +60,10 @@ class Contracts(unittest.TestCase):
         self.assertIsNotNone(tree.find('.//button[@on-click="AddOutline"]'))
         self.assertIsNotNone(tree.find('.//bool-setting[@value="ShowSizeGuide"]'))
         self.assertIn('Mask>()??flat.gameObject.AddComponent<Mask>()',wall)
-        self.assertIn('StackField',wall)
+        self.assertIn('FillControl',wall)
+        self.assertEqual(tree.getroot().find('horizontal/button').get('text'),'Create new preset')
+        for field in tree.iter():
+            if field.tag.endswith('setting'):self.assertEqual(field.get('text'),'')
         for scroll in tree.findall('.//scroll-view'):self.assertLessEqual(float(scroll.get('preferred-height')),100)
         for e in tree.iter():self.assertNotIn('Page',e.get('active',''))
         for e in tree.iter():
